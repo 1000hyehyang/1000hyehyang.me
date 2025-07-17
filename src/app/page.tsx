@@ -1,103 +1,66 @@
 import Image from "next/image";
+import Link from "next/link";
+import { getAllBlogPosts } from "@/lib/mdx";
+import { BottomNav } from "@/components/layout/BottomNav";
 
 export default function Home() {
+  const posts = getAllBlogPosts().slice(0, 3);
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+    <div className="flex flex-col min-h-screen items-center justify-between px-4 pt-12 pb-28">
+      <main className="w-full flex flex-col items-center gap-8">
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
+          src="https://avatars.githubusercontent.com/u/102294782?v=4"
+          alt="프로필"
+          width={72}
+          height={72}
+          className="rounded-full mb-2"
           priority
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        <div className="text-center w-full">
+          <div className="text-base font-medium mb-1">Today</div>
+          <div className="text-sm text-muted-foreground mb-4">
+            Founder {" "}
+            <a
+              href="https://github.com/bricks-team"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-primary"
+              tabIndex={0}
+              aria-label="bricks-team 깃허브로 이동"
+            >
+              @bricks-team ↗
+            </a>
+            , working as a Design Engineer.
+          </div>
         </div>
+        <section className="w-full">
+          <div className="font-semibold mb-2">최근 작성한 글</div>
+          <ul className="text-sm text-muted-foreground flex flex-col gap-1">
+            {posts.map(post => (
+              <li key={post.slug}>
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="hover:underline focus:underline focus:outline-none"
+                  tabIndex={0}
+                  aria-label={`${post.title} 상세 보기`}
+                >
+                  {post.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+        <section className="w-full">
+          <div className="font-semibold mb-2">링크</div>
+          <ul className="text-sm text-muted-foreground flex flex-col gap-1">
+            <li><Link href="/about" className="hover:underline">이력</Link></li>
+            <li><a href="https://github.com/yourid" target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub ↗</a></li>
+            <li><a href="https://x.com/yourid" target="_blank" rel="noopener noreferrer" className="hover:underline">X ↗</a></li>
+            <li><a href="https://linkedin.com/in/yourid" target="_blank" rel="noopener noreferrer" className="hover:underline">LinkedIn ↗</a></li>
+          </ul>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <BottomNav />
     </div>
   );
 }
