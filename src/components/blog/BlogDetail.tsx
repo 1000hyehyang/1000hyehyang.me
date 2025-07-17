@@ -1,8 +1,20 @@
+"use client";
+
 import { BlogFrontmatter } from "@/types";
-import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
-import Giscus from "@giscus/react";
-import Link from "next/link";
+import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+import { useTheme } from "next-themes";
+
+const MDXRemote = dynamic(() => import("next-mdx-remote").then(mod => ({ default: mod.MDXRemote })), {
+  ssr: false,
+  loading: () => <div className="animate-pulse">콘텐츠 로딩 중...</div>
+});
+
+const Giscus = dynamic(() => import("@giscus/react"), {
+  ssr: false,
+  loading: () => <div className="mt-8 p-4 text-center text-muted-foreground">댓글 로딩 중...</div>
+});
 
 const GISCUS_REPO = process.env.NEXT_PUBLIC_GISCUS_REPO! as `${string}/${string}`;
 const GISCUS_REPO_ID = process.env.NEXT_PUBLIC_GISCUS_REPO_ID!;
@@ -15,46 +27,32 @@ interface BlogDetailProps {
 }
 
 export const BlogDetail = ({ frontmatter, mdxSource }: BlogDetailProps) => {
-  const handleShareClick = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      // TODO: 토스트 메시지 추가 가능
-    } catch (error) {
-      console.error("Failed to copy URL:", error);
-    }
-  };
-
-  const handleShareKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      handleShareClick();
-    }
-  };
+  const { theme } = useTheme();
 
   return (
     <article className="prose prose-neutral dark:prose-invert max-w-none">
-      <h1 className="font-bold text-2xl mb-2">{frontmatter.title}</h1>
-      <div className="text-sm text-muted-foreground mb-4 flex gap-2 items-center">
-        <span>{frontmatter.category}</span>
-        <span>·</span>
-        <span>{frontmatter.date}</span>
-        {frontmatter.tags && (
-          <span className="ml-2 flex flex-wrap gap-1">
-            {frontmatter.tags.map((tag) => (
-              <span key={tag} className="bg-accent text-accent-foreground rounded px-2 py-0.5 text-xs">#{tag}</span>
-            ))}
-          </span>
-        )}
-      </div>
       {frontmatter.thumbnail && (
         <Image 
           src={frontmatter.thumbnail} 
           alt={`${frontmatter.title} 썸네일`} 
           width={1200} 
           height={630} 
-          className="rounded-lg mb-6 w-full max-h-80 object-cover" 
+          className="rounded-lg mb-6 w-full aspect-[16/9] object-cover" 
         />
       )}
+      {frontmatter.tags && (
+        <div className="flex flex-wrap gap-1 mb-3">
+          {frontmatter.tags.map((tag) => (
+            <span key={tag} className="bg-accent text-accent-foreground rounded px-2 py-0.5 text-xs">#{tag}</span>
+          ))}
+        </div>
+      )}
+      <h1 className="font-bold text-2xl mb-2">{frontmatter.title}</h1>
+      <div className="text-sm text-muted-foreground mb-4 flex gap-2 items-center">
+        <span>{frontmatter.category}</span>
+        <span>·</span>
+        <span>{frontmatter.date}</span>
+      </div>
       <MDXRemote {...mdxSource} />
       <div className="mt-8">
         <Giscus
@@ -67,23 +65,10 @@ export const BlogDetail = ({ frontmatter, mdxSource }: BlogDetailProps) => {
           reactionsEnabled="1"
           emitMetadata="0"
           inputPosition="top"
-          theme="preferred_color_scheme"
+          theme={theme === "dark" ? "dark" : "light"}
           lang="ko"
           loading="lazy"
         />
-      </div>
-      <div className="mt-6 flex gap-2">
-        <Link href="/blog" className="text-primary underline">← 블로그 목록</Link>
-        <button
-          type="button"
-          className="text-muted-foreground underline"
-          onClick={handleShareClick}
-          onKeyDown={handleShareKeyDown}
-          aria-label="현재 페이지 URL 복사"
-          tabIndex={0}
-        >
-          공유
-        </button>
       </div>
     </article>
   );
