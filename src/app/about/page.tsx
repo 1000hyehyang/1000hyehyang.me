@@ -37,7 +37,7 @@ const EXPERIENCE_DATA: TimelineItem[] = [
     period: "2025.01 - 2025.07",
     title: "프로그래머스 생성형 AI 활용 백엔드 데브코스 1기",
     description: "생성형 AI를 활용한 Spring Boot 백엔드 개발",
-    logo: "/programmers.jfif",
+    logo: "/programmers.png",
     logoAlt: "프로그래머스 로고"
   }
 ];
