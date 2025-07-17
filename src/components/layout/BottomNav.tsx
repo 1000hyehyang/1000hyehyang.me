@@ -2,8 +2,9 @@
 import { usePathname, useRouter } from "next/navigation";
 import { Home, PenTool, Archive, Citrus } from "lucide-react";
 import { useState } from "react";
+import { NavItem } from "@/types";
 
-const NAVS = [
+const NAV_ITEMS: NavItem[] = [
   { href: "/", icon: Home, label: "홈" },
   { href: "/blog", icon: PenTool, label: "블로그" },
   { href: "/portfolio", icon: Archive, label: "프로젝트" },
@@ -13,26 +14,35 @@ const NAVS = [
 export const BottomNav = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const [focused, setFocused] = useState<string | null>(null);
-  const [hovered, setHovered] = useState<string | null>(null);
+  const [focusedItem, setFocusedItem] = useState<string | null>(null);
+
+  const handleNavClick = (href: string) => {
+    router.push(href);
+  };
+
+  const handleNavFocus = (href: string) => {
+    setFocusedItem(href);
+  };
+
+  const handleNavBlur = () => {
+    setFocusedItem(null);
+  };
 
   return (
     <nav
       className="fixed bottom-4 inset-x-0 mx-auto z-50 flex gap-1 w-fit"
       aria-label="하단 네비게이션"
     >
-      {NAVS.map(({ href, icon: Icon, label }) => {
-        const isActive = pathname === href || focused === href;
-        const isHovered = hovered === href;
+      {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
+        const isActive = pathname === href || focusedItem === href;
+        
         return (
           <button
             key={href}
             type="button"
-            onClick={() => router.push(href)}
-            onFocus={() => setFocused(href)}
-            onBlur={() => setFocused(null)}
-            onMouseEnter={() => setHovered(href)}
-            onMouseLeave={() => setHovered(null)}
+            onClick={() => handleNavClick(href)}
+            onFocus={() => handleNavFocus(href)}
+            onBlur={handleNavBlur}
             className={
               "flex items-center justify-center p-3 rounded-lg transition-colors duration-200 select-none hover:cursor-pointer " +
               (isActive

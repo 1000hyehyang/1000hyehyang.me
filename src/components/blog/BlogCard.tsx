@@ -6,6 +6,14 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const BlogCard = ({ title, date, category, tags, thumbnail, summary, slug }: BlogFrontmatter) => {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      const link = event.currentTarget as HTMLAnchorElement;
+      link.click();
+    }
+  };
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -13,9 +21,21 @@ export const BlogCard = ({ title, date, category, tags, thumbnail, summary, slug
       transition={{ duration: 0.4 }}
       className="bg-card border border-border rounded-lg shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow"
     >
-      <Link href={`/blog/${slug}`} tabIndex={0} aria-label={`${title} 상세 보기`} className="flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-ring">
+      <Link 
+        href={`/blog/${slug}`} 
+        tabIndex={0} 
+        aria-label={`${title} 상세 보기`} 
+        className="flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-ring"
+        onKeyDown={handleKeyDown}
+      >
         {thumbnail && (
-          <Image src={thumbnail} alt={title} width={600} height={320} className="w-full h-40 object-cover" />
+          <Image 
+            src={thumbnail} 
+            alt={`${title} 썸네일`} 
+            width={600} 
+            height={320} 
+            className="w-full h-40 object-cover" 
+          />
         )}
         <div className="flex-1 flex flex-col gap-2 p-4">
           <div className="text-xs text-muted-foreground mb-1 flex gap-2 items-center">

@@ -2,6 +2,7 @@ import { BlogFrontmatter } from "@/types";
 import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 import Giscus from "@giscus/react";
 import Link from "next/link";
+import Image from "next/image";
 
 const GISCUS_REPO = process.env.NEXT_PUBLIC_GISCUS_REPO! as `${string}/${string}`;
 const GISCUS_REPO_ID = process.env.NEXT_PUBLIC_GISCUS_REPO_ID!;
@@ -14,6 +15,22 @@ interface BlogDetailProps {
 }
 
 export const BlogDetail = ({ frontmatter, mdxSource }: BlogDetailProps) => {
+  const handleShareClick = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      // TODO: 토스트 메시지 추가 가능
+    } catch (error) {
+      console.error("Failed to copy URL:", error);
+    }
+  };
+
+  const handleShareKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleShareClick();
+    }
+  };
+
   return (
     <article className="prose prose-neutral dark:prose-invert max-w-none">
       <h1 className="font-bold text-2xl mb-2">{frontmatter.title}</h1>
@@ -30,7 +47,13 @@ export const BlogDetail = ({ frontmatter, mdxSource }: BlogDetailProps) => {
         )}
       </div>
       {frontmatter.thumbnail && (
-        <img src={frontmatter.thumbnail} alt={frontmatter.title} className="rounded-lg mb-6 w-full max-h-80 object-cover" />
+        <Image 
+          src={frontmatter.thumbnail} 
+          alt={`${frontmatter.title} 썸네일`} 
+          width={1200} 
+          height={630} 
+          className="rounded-lg mb-6 w-full max-h-80 object-cover" 
+        />
       )}
       <MDXRemote {...mdxSource} />
       <div className="mt-8">
@@ -54,7 +77,10 @@ export const BlogDetail = ({ frontmatter, mdxSource }: BlogDetailProps) => {
         <button
           type="button"
           className="text-muted-foreground underline"
-          onClick={() => navigator.clipboard.writeText(window.location.href)}
+          onClick={handleShareClick}
+          onKeyDown={handleShareKeyDown}
+          aria-label="현재 페이지 URL 복사"
+          tabIndex={0}
         >
           공유
         </button>

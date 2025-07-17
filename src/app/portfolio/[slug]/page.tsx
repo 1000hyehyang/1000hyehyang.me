@@ -1,4 +1,4 @@
-import { getPortfolioBySlug, getMdxSource } from "@/lib/mdx";
+import { getPortfolioBySlug, serializeMdxContent } from "@/lib/mdx";
 import { PortfolioDetail } from "@/components/portfolio/PortfolioDetail";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -37,6 +37,6 @@ export default async function PortfolioDetailPage({ params }: { params: Promise<
   const { slug } = await params;
   const project = getPortfolioBySlug(slug);
   if (!project) return notFound();
-  const mdxSource = await getMdxSource(project.content);
+  const mdxSource = await serializeMdxContent(project.content);
   return <PortfolioDetail frontmatter={project.frontmatter} mdxSource={mdxSource} />;
 } 

@@ -20,4 +20,26 @@ export type PortfolioFrontmatter = {
 };
 
 export type Tag = string;
-export type Category = string; 
+export type Category = string;
+
+// 공통 타입들
+export type NavItem = {
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+};
+
+export type TimelineItem = {
+  period: string;
+  title: string;
+  description: string;
+  logo: string;
+  logoAlt: string;
+};
+
+export type GiscusConfig = {
+  repo: `${string}/${string}`;
+  repoId: string;
+  category: string;
+  categoryId: string;
+}; 
