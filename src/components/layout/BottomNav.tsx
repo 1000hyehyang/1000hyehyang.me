@@ -36,8 +36,8 @@ export const BottomNav = () => {
             className={
               "flex items-center justify-center p-3 rounded-lg transition-colors duration-200 select-none hover:cursor-pointer " +
               (isActive
-                ? "bg-white/40 dark:bg-black/20 text-primary border border-white/20 dark:border-black/10"
-                : "bg-white/20 dark:bg-black/10 text-muted-foreground border border-white/10 dark:border-black/5") +
+                ? "bg-white/40 dark:bg-black/20 text-orange-300 border border-white/20 dark:border-black/10"
+                : "bg-white/40 dark:bg-black/30 text-muted-foreground border border-white/10 dark:border-black/5") +
               " backdrop-blur-xl"
             }
             aria-label={label}

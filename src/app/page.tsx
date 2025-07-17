@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getAllBlogPosts } from "@/lib/mdx";
-import { BottomNav } from "@/components/layout/BottomNav";
 
 export default function Home() {
   const posts = getAllBlogPosts().slice(0, 3);
@@ -34,7 +33,6 @@ export default function Home() {
           </ul>
         </section>
       </main>
-      <BottomNav />
     </div>
   );
 }
