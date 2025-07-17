@@ -1,7 +1,7 @@
 import { getAllBlogPosts, getAllPortfolio } from "@/lib/mdx";
 
 export async function GET() {
-  const baseUrl = "https://your-domain.com";
+  const baseUrl = "https://1000hyehyang.me";
   const blogPosts = getAllBlogPosts();
   const portfolios = getAllPortfolio();
 

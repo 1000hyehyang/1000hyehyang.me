@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
       title: post.frontmatter.title,
       description: post.frontmatter.summary,
       type: "article",
-      url: `https://your-domain.com/blog/${params.slug}`,
+      url: `https://1000hyehyang.me/blog/${params.slug}`,
       images: [
         {
           url: post.frontmatter.thumbnail || "/og/default.png",

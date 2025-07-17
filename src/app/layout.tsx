@@ -17,21 +17,21 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "홍길동 블로그 & 포트폴리오",
-    template: "%s | 홍길동 블로그"
+    default: "1000hyehyang.me",
+    template: "%s | 1000hyehyang.me"
   },
   description: "Next.js, TypeScript, 최신 UI/UX 기반의 개발자 블로그 & 포트폴리오",
   openGraph: {
-    title: "홍길동 블로그 & 포트폴리오",
+    title: "1000hyehyang.me",
     description: "Next.js, TypeScript, 최신 UI/UX 기반의 개발자 블로그 & 포트폴리오",
-    url: "https://your-domain.com",
-    siteName: "홍길동 블로그",
+    url: "https://1000hyehyang.me",
+    siteName: "1000hyehyang.me",
     images: [
       {
         url: "/og/default.png",
         width: 1200,
         height: 630,
-        alt: "홍길동 블로그 OG 이미지"
+        alt: "1000hyehyang.me OG 이미지"
       }
     ],
     locale: "ko_KR",
@@ -39,11 +39,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "홍길동 블로그 & 포트폴리오",
+    title: "1000hyehyang.me",
     description: "Next.js, TypeScript, 최신 UI/UX 기반의 개발자 블로그 & 포트폴리오",
     images: ["/og/default.png"]
   },
-  metadataBase: new URL("https://your-domain.com")
+  metadataBase: new URL("https://1000hyehyang.me")
 };
 
 export default function RootLayout({

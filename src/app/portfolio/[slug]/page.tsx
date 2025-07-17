@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PortfolioDetailPageProps): Pr
       title: project.frontmatter.title,
       description: project.frontmatter.summary,
       type: "article",
-      url: `https://your-domain.com/portfolio/${params.slug}`,
+      url: `https://1000hyehyang.me/portfolio/${params.slug}`,
       images: [
         {
           url: project.frontmatter.images?.[0] || "/og/default.png",
