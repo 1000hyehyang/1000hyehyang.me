@@ -60,7 +60,7 @@ export default function RootLayout({
               <ThemeToggle />
             </div>
           </header>
-          <main className="min-h-[80vh] container mx-auto px-4 py-8">
+          <main className="min-h-[80vh] container mx-auto px-4 py-8 pb-24">
             <div className="w-full max-w-[768px] mx-auto px-0">{children}</div>
           </main>
           <BottomNav />

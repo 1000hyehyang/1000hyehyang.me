@@ -36,8 +36,8 @@ export const BottomNav = () => {
             className={
               "flex items-center justify-center p-3 rounded-lg transition-colors duration-200 select-none hover:cursor-pointer " +
               (isActive
-                ? "bg-neutral-200 dark:bg-neutral-800 text-primary"
-                : "bg-neutral-100 dark:bg-neutral-900 text-muted-foreground") +
+                ? "bg-white/40 dark:bg-black/20 text-primary border border-white/20 dark:border-black/10"
+                : "bg-white/20 dark:bg-black/10 text-muted-foreground border border-white/10 dark:border-black/5") +
               " backdrop-blur-xl"
             }
             aria-label={label}
@@ -50,5 +50,4 @@ export const BottomNav = () => {
       })}
     </nav>
   );
-};
-// glassmorphism: bg-white/60 dark:bg-black/40 border border-white/40 dark:border-black/40 backdrop-blur-xl 
+}; 
