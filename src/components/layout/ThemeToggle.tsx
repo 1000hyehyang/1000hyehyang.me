@@ -14,7 +14,7 @@ export const ThemeToggle = () => {
     <button
       type="button"
       aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
-      className="inline-flex items-center justify-center rounded-md p-2 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring text-orange-400 dark:text-orange-200"
+      className="inline-flex items-center justify-center rounded-md p-2 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring text-orange-300 dark:text-orange-200"
       onClick={handleToggle}
       tabIndex={0}
       onKeyDown={e => { if (e.key === "Enter" || e.key === " ") handleToggle(); }}
