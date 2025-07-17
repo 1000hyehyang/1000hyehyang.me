@@ -3,12 +3,9 @@ import { PortfolioDetail } from "@/components/portfolio/PortfolioDetail";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-interface PortfolioDetailPageProps {
-  params: { slug: string };
-}
-
-export async function generateMetadata({ params }: PortfolioDetailPageProps): Promise<Metadata> {
-  const project = getPortfolioBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const project = getPortfolioBySlug(slug);
   if (!project) return {};
   return {
     title: project.frontmatter.title,
@@ -17,7 +14,7 @@ export async function generateMetadata({ params }: PortfolioDetailPageProps): Pr
       title: project.frontmatter.title,
       description: project.frontmatter.summary,
       type: "article",
-      url: `https://1000hyehyang.me/portfolio/${params.slug}`,
+      url: `https://1000hyehyang.me/portfolio/${slug}`,
       images: [
         {
           url: project.frontmatter.images?.[0] || "/og/default.png",
@@ -36,8 +33,9 @@ export async function generateMetadata({ params }: PortfolioDetailPageProps): Pr
   };
 }
 
-export default async function PortfolioDetailPage({ params }: PortfolioDetailPageProps) {
-  const project = getPortfolioBySlug(params.slug);
+export default async function PortfolioDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const project = getPortfolioBySlug(slug);
   if (!project) return notFound();
   const mdxSource = await getMdxSource(project.content);
   return <PortfolioDetail frontmatter={project.frontmatter} mdxSource={mdxSource} />;

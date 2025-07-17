@@ -3,7 +3,7 @@ import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 import Giscus from "@giscus/react";
 import Link from "next/link";
 
-const GISCUS_REPO = process.env.NEXT_PUBLIC_GISCUS_REPO!;
+const GISCUS_REPO = process.env.NEXT_PUBLIC_GISCUS_REPO! as `${string}/${string}`;
 const GISCUS_REPO_ID = process.env.NEXT_PUBLIC_GISCUS_REPO_ID!;
 const GISCUS_CATEGORY = process.env.NEXT_PUBLIC_GISCUS_CATEGORY!;
 const GISCUS_CATEGORY_ID = process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID!;

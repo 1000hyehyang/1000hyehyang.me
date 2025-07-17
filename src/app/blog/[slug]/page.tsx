@@ -3,12 +3,9 @@ import { BlogDetail } from "@/components/blog/BlogDetail";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-interface BlogDetailPageProps {
-  params: { slug: string };
-}
-
-export async function generateMetadata({ params }: BlogDetailPageProps): Promise<Metadata> {
-  const post = getBlogPostBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getBlogPostBySlug(slug);
   if (!post) return {};
   return {
     title: post.frontmatter.title,
@@ -17,7 +14,7 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
       title: post.frontmatter.title,
       description: post.frontmatter.summary,
       type: "article",
-      url: `https://1000hyehyang.me/blog/${params.slug}`,
+      url: `https://1000hyehyang.me/blog/${slug}`,
       images: [
         {
           url: post.frontmatter.thumbnail || "/og/default.png",
@@ -36,8 +33,9 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
   };
 }
 
-export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
-  const post = getBlogPostBySlug(params.slug);
+export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = getBlogPostBySlug(slug);
   if (!post) return notFound();
   const mdxSource = await getMdxSource(post.content);
   return <BlogDetail frontmatter={post.frontmatter} mdxSource={mdxSource} />;
