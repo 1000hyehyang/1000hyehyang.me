@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { SITE_CONFIG } from "@/lib/config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,21 +18,21 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "1000hyehyang.me",
-    template: "%s | 1000hyehyang.me"
+    default: SITE_CONFIG.name,
+    template: `%s | ${SITE_CONFIG.name}`
   },
-  description: "Next.js, TypeScript, 최신 UI/UX 기반의 개발자 블로그 & 포트폴리오",
+  description: SITE_CONFIG.description,
   openGraph: {
-    title: "1000hyehyang.me",
-    description: "Next.js, TypeScript, 최신 UI/UX 기반의 개발자 블로그 & 포트폴리오",
-    url: "https://1000hyehyang.me",
-    siteName: "1000hyehyang.me",
+    title: SITE_CONFIG.name,
+    description: SITE_CONFIG.description,
+    url: SITE_CONFIG.url,
+    siteName: SITE_CONFIG.name,
     images: [
       {
         url: "/og/default.png",
         width: 1200,
         height: 630,
-        alt: "1000hyehyang.me OG 이미지"
+        alt: `${SITE_CONFIG.name} OG 이미지`
       }
     ],
     locale: "ko_KR",
@@ -39,11 +40,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "1000hyehyang.me",
-    description: "Next.js, TypeScript, 최신 UI/UX 기반의 개발자 블로그 & 포트폴리오",
+    title: SITE_CONFIG.name,
+    description: SITE_CONFIG.description,
     images: ["/og/default.png"]
   },
-  metadataBase: new URL("https://1000hyehyang.me")
+  metadataBase: new URL(SITE_CONFIG.url)
 };
 
 export default function RootLayout({

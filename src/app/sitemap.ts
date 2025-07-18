@@ -1,7 +1,8 @@
 import { getAllBlogPosts, getAllPortfolio } from "@/lib/mdx";
+import { SITE_CONFIG } from "@/lib/config";
 
 export default async function sitemap() {
-  const baseUrl = "https://1000hyehyang.me";
+  const baseUrl = SITE_CONFIG.url;
   const blogPosts = getAllBlogPosts();
   const portfolios = getAllPortfolio();
 

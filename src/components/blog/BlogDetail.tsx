@@ -33,6 +33,12 @@ export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
         <span>{frontmatter.category}</span>
         <span>·</span>
         <span>{frontmatter.date}</span>
+        {frontmatter.author && (
+          <>
+            <span>·</span>
+            <span>by {frontmatter.author}</span>
+          </>
+        )}
       </div>
       {children}
       <div className="mt-8">

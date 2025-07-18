@@ -6,6 +6,8 @@ export type BlogFrontmatter = {
   thumbnail?: string;
   summary?: string;
   slug: string;
+  author?: string;
+  updatedAt?: string;
 };
 
 export type PortfolioFrontmatter = {

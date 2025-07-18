@@ -2,6 +2,7 @@ import { getPortfolioBySlug } from "@/lib/mdx";
 import { PortfolioDetail } from "@/components/portfolio/PortfolioDetail";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { SITE_CONFIG } from "@/lib/config";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: project.frontmatter.title,
       description: project.frontmatter.summary,
       type: "article",
-      url: `https://1000hyehyang.me/portfolio/${slug}`,
+      url: `${SITE_CONFIG.url}/portfolio/${slug}`,
       images: [
         {
           url: project.frontmatter.images?.[0] || "/og/default.png",

@@ -1,11 +1,12 @@
-import { getBlogPostBySlug } from "@/lib/mdx";
+import { getBlogPostBySlug } from "@/lib/github";
 import { BlogDetail } from "@/components/blog/BlogDetail";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { SITE_CONFIG } from "@/lib/config";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const post = getBlogPostBySlug(slug);
+  const post = await getBlogPostBySlug(slug);
   if (!post) return {};
   return {
     title: post.frontmatter.title,
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: post.frontmatter.title,
       description: post.frontmatter.summary,
       type: "article",
-      url: `https://1000hyehyang.me/blog/${slug}`,
+      url: `${SITE_CONFIG.url}/blog/${slug}`,
       images: [
         {
           url: post.frontmatter.thumbnail || "/og/default.png",
@@ -35,12 +36,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getBlogPostBySlug(slug);
+  const post = await getBlogPostBySlug(slug);
   if (!post) return notFound();
   
   return (
     <BlogDetail frontmatter={post.frontmatter}>
-      <div dangerouslySetInnerHTML={{ __html: post.content }} />
+      <div className="markdown-content" dangerouslySetInnerHTML={{ __html: post.content }} />
     </BlogDetail>
   );
 } 

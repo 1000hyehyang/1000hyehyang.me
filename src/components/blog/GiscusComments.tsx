@@ -2,16 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
+import { GISCUS_CONFIG } from "@/lib/config";
 
 const Giscus = dynamic(() => import("@giscus/react"), {
   ssr: false,
   loading: () => <div className="mt-8 p-4 text-center text-muted-foreground">댓글 로딩 중...</div>
 });
-
-const GISCUS_REPO = process.env.NEXT_PUBLIC_GISCUS_REPO! as `${string}/${string}`;
-const GISCUS_REPO_ID = process.env.NEXT_PUBLIC_GISCUS_REPO_ID!;
-const GISCUS_CATEGORY = process.env.NEXT_PUBLIC_GISCUS_CATEGORY!;
-const GISCUS_CATEGORY_ID = process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID!;
 
 export const GiscusComments = () => {
   const { theme } = useTheme();
@@ -19,10 +15,10 @@ export const GiscusComments = () => {
   return (
     <Giscus
       id="comments"
-      repo={GISCUS_REPO}
-      repoId={GISCUS_REPO_ID}
-      category={GISCUS_CATEGORY}
-      categoryId={GISCUS_CATEGORY_ID}
+      repo={GISCUS_CONFIG.repo as `${string}/${string}`}
+      repoId={GISCUS_CONFIG.repoId}
+      category={GISCUS_CONFIG.category}
+      categoryId={GISCUS_CONFIG.categoryId}
       mapping="pathname"
       reactionsEnabled="1"
       emitMetadata="0"
