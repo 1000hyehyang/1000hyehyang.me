@@ -1,13 +1,14 @@
+"use client";
+
 import { PortfolioFrontmatter } from "@/types";
-import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 import Image from "next/image";
 
 interface PortfolioDetailProps {
   frontmatter: PortfolioFrontmatter;
-  mdxSource: MDXRemoteSerializeResult;
+  children: React.ReactNode;
 }
 
-export const PortfolioDetail = ({ frontmatter, mdxSource }: PortfolioDetailProps) => {
+export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps) => {
   return (
     <article className="prose prose-neutral dark:prose-invert max-w-none">
       <h1 className="font-bold text-2xl mb-2">{frontmatter.title}</h1>
@@ -37,7 +38,7 @@ export const PortfolioDetail = ({ frontmatter, mdxSource }: PortfolioDetailProps
           ))}
         </div>
       )}
-      <MDXRemote {...mdxSource} />
+      {children}
       {frontmatter.links && frontmatter.links.length > 0 && (
         <div className="mt-6 flex gap-2 flex-wrap">
           {frontmatter.links.map((link, index) => (

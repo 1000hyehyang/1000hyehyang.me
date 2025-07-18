@@ -1,4 +1,4 @@
-import { getBlogPostBySlug, serializeMdxContent } from "@/lib/mdx";
+import { getBlogPostBySlug } from "@/lib/mdx";
 import { BlogDetail } from "@/components/blog/BlogDetail";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -37,6 +37,10 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   const { slug } = await params;
   const post = getBlogPostBySlug(slug);
   if (!post) return notFound();
-  const mdxSource = await serializeMdxContent(post.content);
-  return <BlogDetail frontmatter={post.frontmatter} mdxSource={mdxSource} />;
+  
+  return (
+    <BlogDetail frontmatter={post.frontmatter}>
+      <div dangerouslySetInnerHTML={{ __html: post.content }} />
+    </BlogDetail>
+  );
 } 

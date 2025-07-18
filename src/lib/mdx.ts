@@ -2,9 +2,6 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { BlogFrontmatter, PortfolioFrontmatter } from "@/types";
-import { serialize } from "next-mdx-remote/serialize";
-import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
 
 const BLOG_PATH = path.join(process.cwd(), "src/content/blog");
 const PORTFOLIO_PATH = path.join(process.cwd(), "src/content/portfolio");
@@ -99,14 +96,4 @@ export const getPortfolioBySlug = (slug: string): { frontmatter: PortfolioFrontm
     frontmatter: { ...(data as PortfolioFrontmatter), slug },
     content,
   };
-};
-
-export const serializeMdxContent = async (mdxContent: string) => {
-  return await serialize(mdxContent, {
-    mdxOptions: {
-      remarkPlugins: [remarkGfm],
-      rehypePlugins: [rehypeHighlight],
-      format: "mdx"
-    },
-  });
 }; 

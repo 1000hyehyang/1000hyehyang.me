@@ -1,34 +1,15 @@
 "use client";
 
 import { BlogFrontmatter } from "@/types";
-import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import Image from "next/image";
-import dynamic from "next/dynamic";
-import { useTheme } from "next-themes";
-
-const MDXRemote = dynamic(() => import("next-mdx-remote").then(mod => ({ default: mod.MDXRemote })), {
-  ssr: false,
-  loading: () => <div className="animate-pulse">콘텐츠 로딩 중...</div>
-});
-
-const Giscus = dynamic(() => import("@giscus/react"), {
-  ssr: false,
-  loading: () => <div className="mt-8 p-4 text-center text-muted-foreground">댓글 로딩 중...</div>
-});
-
-const GISCUS_REPO = process.env.NEXT_PUBLIC_GISCUS_REPO! as `${string}/${string}`;
-const GISCUS_REPO_ID = process.env.NEXT_PUBLIC_GISCUS_REPO_ID!;
-const GISCUS_CATEGORY = process.env.NEXT_PUBLIC_GISCUS_CATEGORY!;
-const GISCUS_CATEGORY_ID = process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID!;
+import { GiscusComments } from "./GiscusComments";
 
 interface BlogDetailProps {
   frontmatter: BlogFrontmatter;
-  mdxSource: MDXRemoteSerializeResult;
+  children: React.ReactNode;
 }
 
-export const BlogDetail = ({ frontmatter, mdxSource }: BlogDetailProps) => {
-  const { theme } = useTheme();
-
+export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
   return (
     <article className="prose prose-neutral dark:prose-invert max-w-none">
       {frontmatter.thumbnail && (
@@ -53,22 +34,9 @@ export const BlogDetail = ({ frontmatter, mdxSource }: BlogDetailProps) => {
         <span>·</span>
         <span>{frontmatter.date}</span>
       </div>
-      <MDXRemote {...mdxSource} />
+      {children}
       <div className="mt-8">
-        <Giscus
-          id="comments"
-          repo={GISCUS_REPO}
-          repoId={GISCUS_REPO_ID}
-          category={GISCUS_CATEGORY}
-          categoryId={GISCUS_CATEGORY_ID}
-          mapping="pathname"
-          reactionsEnabled="1"
-          emitMetadata="0"
-          inputPosition="top"
-          theme={theme === "dark" ? "dark" : "light"}
-          lang="ko"
-          loading="lazy"
-        />
+        <GiscusComments />
       </div>
     </article>
   );
