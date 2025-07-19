@@ -4,12 +4,15 @@ import { BlogFrontmatter } from "@/types";
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 
 interface BlogCardProps extends BlogFrontmatter {
   variants?: Variants;
 }
 
 export const BlogCard = ({ title, date, category, tags, thumbnail, summary, slug, variants }: BlogCardProps) => {
+  const [imageError, setImageError] = useState(false);
+  
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -36,19 +39,22 @@ export const BlogCard = ({ title, date, category, tags, thumbnail, summary, slug
         className="flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-ring group"
         onKeyDown={handleKeyDown}
       >
-        {thumbnail && (
-          <div className="w-full h-56 p-2">
-            <div className="w-full h-full aspect-square">
+        <div className="w-full h-56 p-2">
+          <div className="w-full h-full aspect-square">
+            {thumbnail && !imageError ? (
               <Image 
                 src={thumbnail} 
                 alt={`${title} 썸네일`} 
                 width={400} 
                 height={400} 
                 className="w-full h-full object-cover rounded-md" 
+                onError={() => setImageError(true)}
               />
-            </div>
+            ) : (
+              <div className="w-full h-full bg-muted rounded-md" />
+            )}
           </div>
-        )}
+        </div>
         <div className="flex-1 p-4 flex flex-col">
           <div className="text-xs text-muted-foreground mb-2 flex gap-2 items-center">
             <span>{category}</span>

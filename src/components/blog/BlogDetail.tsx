@@ -3,6 +3,7 @@
 import { BlogFrontmatter } from "@/types";
 import Image from "next/image";
 import { GiscusComments } from "./GiscusComments";
+import { useState } from "react";
 
 interface BlogDetailProps {
   frontmatter: BlogFrontmatter;
@@ -10,17 +11,24 @@ interface BlogDetailProps {
 }
 
 export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
+  const [imageError, setImageError] = useState(false);
+
   return (
     <article className="prose prose-neutral dark:prose-invert max-w-none">
-      {frontmatter.thumbnail && (
-        <Image 
-          src={frontmatter.thumbnail} 
-          alt={`${frontmatter.title} 썸네일`} 
-          width={1200} 
-          height={630} 
-          className="rounded-lg mb-6 w-full aspect-[16/9] object-cover" 
-        />
-      )}
+      <div className="w-full aspect-[16/9] rounded-lg mb-6">
+        {frontmatter.thumbnail && !imageError ? (
+          <Image 
+            src={frontmatter.thumbnail} 
+            alt={`${frontmatter.title} 썸네일`} 
+            width={1200} 
+            height={630} 
+            className="w-full h-full object-cover rounded-lg" 
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-full h-full bg-muted rounded-lg" />
+        )}
+      </div>
       {frontmatter.tags && (
         <div className="flex flex-wrap gap-1 mb-3">
           {frontmatter.tags.map((tag) => (

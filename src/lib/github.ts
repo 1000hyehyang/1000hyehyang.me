@@ -35,42 +35,109 @@ interface GitHubResponse {
   };
 }
 
+// 상수들
+const GITHUB_API_BASE = "https://api.github.com";
+const GITHUB_GRAPHQL_ENDPOINT = "https://api.github.com/graphql";
+const USER_ATTACHMENTS_PREFIX = "github.com/user-attachments/assets/";
+const VALID_HOSTNAMES = ["githubusercontent.com", "github.com"];
+
+// GitHub Discussions 이미지 URL을 실제 접근 가능한 URL로 변환하는 함수
+const convertGitHubImageUrl = async (url: string): Promise<string> => {
+  if (!url.includes(USER_ATTACHMENTS_PREFIX)) {
+    return url;
+  }
+
+  const assetId = url.split('/').pop();
+  if (!assetId) {
+    return url;
+  }
+
+  try {
+    const response = await fetch(`${GITHUB_API_BASE}/user/assets/${assetId}`, {
+      headers: {
+        'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      if (data.url) {
+        console.log("Converted GitHub asset URL:", url, "->", data.url);
+        return data.url;
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching GitHub asset URL:", error);
+  }
+  
+  console.log("Failed to convert URL, using original:", url);
+  return url;
+};
+
+// 이미지 URL이 유효한지 검증하는 함수
+const isValidImageUrl = (url: string): boolean => {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === 'https:' && 
+           VALID_HOSTNAMES.some(hostname => urlObj.hostname.includes(hostname));
+  } catch {
+    return false;
+  }
+};
+
 // 썸네일을 본문에서 추출하는 함수
-const extractThumbnail = (body: string, fallback: string): string => {
+const extractThumbnail = async (body: string): Promise<string> => {
   // GitHub Discussions의 img 태그 형태: <img width="..." height="..." alt="..." src="..." />
   const imgTagMatch = body.match(/<img[^>]+src="([^"]+)"[^>]*>/);
   if (imgTagMatch) {
-    return imgTagMatch[1];
+    const originalUrl = imgTagMatch[1];
+    const convertedUrl = await convertGitHubImageUrl(originalUrl);
+    if (isValidImageUrl(convertedUrl)) {
+      console.log("Extracted thumbnail from img tag:", originalUrl, "->", convertedUrl);
+      return convertedUrl;
+    }
   }
   
   // 마크다운 이미지 형태: ![...](url)
   const markdownMatch = body.match(/!\[.*?\]\((.*?)\)/);
   if (markdownMatch) {
-    return markdownMatch[1];
+    const originalUrl = markdownMatch[1];
+    const convertedUrl = await convertGitHubImageUrl(originalUrl);
+    if (isValidImageUrl(convertedUrl)) {
+      console.log("Extracted thumbnail from markdown:", originalUrl, "->", convertedUrl);
+      return convertedUrl;
+    }
   }
   
-  return fallback;
+  console.log("No thumbnail found");
+  return "";
 };
 
 // 본문에서 썸네일로 사용된 첫 번째 이미지를 제거하는 함수
 const removeThumbnailFromContent = (body: string, thumbnail: string): string => {
-  // 썸네일이 작성자 아바타인 경우 제거하지 않음
-  if (thumbnail.includes('avatars.githubusercontent.com')) {
+  if (!thumbnail) {
     return body;
   }
   
   // GitHub Discussions의 img 태그 형태 제거
   const imgTagPattern = /<img[^>]+src="([^"]+)"[^>]*>/;
   const imgTagMatch = body.match(imgTagPattern);
-  if (imgTagMatch && imgTagMatch[1] === thumbnail) {
-    return body.replace(imgTagPattern, '');
+  if (imgTagMatch) {
+    const originalUrl = imgTagMatch[1];
+    if (originalUrl === thumbnail || originalUrl.includes(USER_ATTACHMENTS_PREFIX)) {
+      return body.replace(imgTagPattern, '');
+    }
   }
   
   // 마크다운 이미지 형태 제거
   const markdownPattern = /!\[.*?\]\((.*?)\)/;
   const markdownMatch = body.match(markdownPattern);
-  if (markdownMatch && markdownMatch[1] === thumbnail) {
-    return body.replace(markdownPattern, '');
+  if (markdownMatch) {
+    const originalUrl = markdownMatch[1];
+    if (originalUrl === thumbnail || originalUrl.includes(USER_ATTACHMENTS_PREFIX)) {
+      return body.replace(markdownPattern, '');
+    }
   }
   
   return body;
@@ -125,7 +192,7 @@ const fetchDiscussions = async (): Promise<GitHubDiscussion[]> => {
   `;
 
   try {
-    const response = await fetch("https://api.github.com/graphql", {
+    const response = await fetch(GITHUB_GRAPHQL_ENDPOINT, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${GITHUB_CONFIG.token}`,
@@ -139,9 +206,6 @@ const fetchDiscussions = async (): Promise<GitHubDiscussion[]> => {
     }
 
     const data: GitHubResponse = await response.json();
-    
-    // 디버깅을 위한 로그 추가
-    console.log("GitHub API Response:", JSON.stringify(data, null, 2));
     
     if (!data.data?.repository) {
       console.error("Repository not found. Check if the repository exists and Discussions is enabled.");
@@ -158,59 +222,46 @@ const fetchDiscussions = async (): Promise<GitHubDiscussion[]> => {
 export const getAllBlogPosts = async (): Promise<BlogFrontmatter[]> => {
   const discussions = await fetchDiscussions();
   
-  return discussions
-    .filter(discussion => {
-      // 블로그 포스트로 사용할 카테고리 필터링
-      const isBlogCategory = discussion.category.name === GITHUB_CONFIG.discussionCategory;
-      // 작성자가 설정된 사용자인지 확인
-      const isAuthorValid = discussion.author.login === GITHUB_CONFIG.author;
-      
-      return isBlogCategory && isAuthorValid;
-    })
-    .map(discussion => {
-      const labels = discussion.labels.nodes.map(label => label.name);
-      
-      // 카테고리와 태그 분리
-      const { category, tags } = separateCategoryAndTags(labels);
-      
-      // 썸네일을 본문에서 추출
-      const thumbnail = extractThumbnail(discussion.body, discussion.author.avatarUrl);
+  const posts = await Promise.all(
+    discussions
+      .filter(discussion => {
+        const isBlogCategory = discussion.category.name === GITHUB_CONFIG.discussionCategory;
+        const isAuthorValid = discussion.author.login === GITHUB_CONFIG.author;
+        return isBlogCategory && isAuthorValid;
+      })
+      .map(async discussion => {
+        const labels = discussion.labels.nodes.map(label => label.name);
+        const { category, tags } = separateCategoryAndTags(labels);
+        const thumbnail = await extractThumbnail(discussion.body);
 
-      return {
-        title: discussion.title,
-        date: new Date(discussion.createdAt).toISOString().split('T')[0],
-        category,
-        tags,
-        thumbnail,
-        summary: discussion.body.substring(0, 150) + "...",
-        slug: discussion.id,
-        author: discussion.author.login,
-        updatedAt: discussion.updatedAt,
-      };
-    })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        return {
+          title: discussion.title,
+          date: new Date(discussion.createdAt).toISOString().split('T')[0],
+          category,
+          tags,
+          thumbnail,
+          summary: discussion.body.substring(0, 150) + "...",
+          slug: discussion.id,
+          author: discussion.author.login,
+          updatedAt: discussion.updatedAt,
+        };
+      })
+  );
+  
+  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
 export const getBlogPostBySlug = async (slug: string): Promise<{ frontmatter: BlogFrontmatter; content: string } | null> => {
   const discussions = await fetchDiscussions();
   const discussion = discussions.find(d => d.id === slug);
   
-  if (!discussion) return null;
-  
-  // 작성자가 설정된 사용자인지 확인
-  if (discussion.author.login !== GITHUB_CONFIG.author) {
+  if (!discussion || discussion.author.login !== GITHUB_CONFIG.author) {
     return null;
   }
   
   const labels = discussion.labels.nodes.map(label => label.name);
-  
-  // 카테고리와 태그 분리
   const { category, tags } = separateCategoryAndTags(labels);
-  
-  // 썸네일을 본문에서 추출
-  const thumbnail = extractThumbnail(discussion.body, discussion.author.avatarUrl);
-  
-  // 본문에서 썸네일 이미지 제거
+  const thumbnail = await extractThumbnail(discussion.body);
   const cleanedContent = removeThumbnailFromContent(discussion.body, thumbnail);
 
   return {
