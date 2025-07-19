@@ -149,7 +149,6 @@ export async function GET() {
 export async function POST() {
   try {
     const clientIP = await getClientIP();
-    const today = new Date().toDateString();
     
     // IP 기반 방문자 데이터 확인
     const ipVisitorsData = await getIPVisitorsData();
