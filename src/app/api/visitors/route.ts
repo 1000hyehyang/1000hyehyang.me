@@ -46,8 +46,8 @@ const getClientIP = async (): Promise<string> => {
     return cfConnectingIP;
   }
   
-  // 기본값 (로컬 개발 환경)
-  return "127.0.0.1";
+  // IPv6 루프백 주소도 localhost로 처리
+  return "localhost";
 };
 
 const getVisitorsData = async (): Promise<VisitorsData> => {

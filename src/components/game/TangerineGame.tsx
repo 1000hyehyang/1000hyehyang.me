@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useTangerineGameStore, type Tangerine } from "@/lib/tangerine-game";
 import { TangerineGrid } from "./TangerineGrid";
-import { GameControls } from "./GameControls";
+import { GameControls, type GameControlsRef } from "./GameControls";
 import { GameStats } from "./GameStats";
 import { RotateCcw } from "lucide-react";
 import { useAudio } from "@/hooks/useAudio";
@@ -25,12 +25,9 @@ export const TangerineGame = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
   const [playerName, setPlayerName] = useState("");
+  const [hasSaved, setHasSaved] = useState(false);
 
-  // endGame 함수를 메모이제이션
-  const endGame = useCallback(() => {
-    endGameFromStore();
-    setShowGameOver(true);
-  }, [endGameFromStore]);
+  const gameControlsRef = useRef<GameControlsRef>(null);
 
   // 배경 음악 관리
   const bgMusic = useAudio({
@@ -86,10 +83,11 @@ export const TangerineGame = () => {
 
   // 게임 종료 처리
   useEffect(() => {
-    if (timeLeft <= 0 && (isPlaying || isPaused)) {
-      endGame();
+    if (timeLeft <= 0) {
+      endGameFromStore();
+      setShowGameOver(true);
     }
-  }, [timeLeft, isPlaying, isPaused, endGame]);
+  }, [timeLeft, endGameFromStore]);
 
   // 게임 시작 시 배경음악 재생
   useEffect(() => {
@@ -108,11 +106,26 @@ export const TangerineGame = () => {
     setShowGameOver(false);
     setSaveSuccess(false);
     setPlayerName("");
+    setHasSaved(false);
   };
 
   const handleSaveScore = async () => {
-    if (isSaving) return;
+    if (isSaving || hasSaved) return;
     
+    // 클라이언트 측 점수 검증
+    if (!Number.isInteger(score) || score < 0 || score > 10000) {
+      console.error('유효하지 않은 점수입니다.');
+      return;
+    }
+
+    // 플레이어명 정제
+    const sanitizedPlayerName = playerName
+      .replace(/[<>]/g, '')
+      .replace(/javascript:/gi, '')
+      .replace(/on\w+=/gi, '')
+      .trim()
+      .slice(0, 20);
+
     setIsSaving(true);
     try {
       const response = await fetch('/api/tangerine-game', {
@@ -122,17 +135,24 @@ export const TangerineGame = () => {
         },
         body: JSON.stringify({
           score,
-          playerName: playerName.trim() || `Player_${Math.random().toString(36).substr(2, 4)}`
+          playerName: sanitizedPlayerName || `Player_${Math.random().toString(36).substr(2, 4)}`
         }),
       });
 
       if (response.ok) {
         setSaveSuccess(true);
+        setHasSaved(true);
+        // 점수 저장 성공 시 리더보드 새로고침
+        if (gameControlsRef.current) {
+          gameControlsRef.current.refreshLeaderboard();
+        }
+        // 1초 후 모달창 닫기
         setTimeout(() => {
-          setSaveSuccess(false);
-        }, 3000);
+          handleGameOverClose();
+        }, 1000);
       } else {
-        console.error('점수 저장 실패');
+        const errorData = await response.json();
+        console.error('점수 저장 실패:', errorData.error);
       }
     } catch (error) {
       console.error('점수 저장 실패:', error);
@@ -212,13 +232,17 @@ export const TangerineGame = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        <GameControls bgMusic={{
-          toggleMute: bgMusic.toggleMute,
-          isMuted: bgMusic.isMuted
-        }} sfxSound={{
-          toggleMute: sfxSound.toggleMute,
-          isMuted: sfxSound.isMuted
-        }} />
+        <GameControls 
+          ref={gameControlsRef}
+          bgMusic={{
+            toggleMute: bgMusic.toggleMute,
+            isMuted: bgMusic.isMuted
+          }} 
+          sfxSound={{
+            toggleMute: sfxSound.toggleMute,
+            isMuted: sfxSound.isMuted
+          }} 
+        />
       </motion.div>
 
       {/* 게임 보드 */}
@@ -245,28 +269,25 @@ export const TangerineGame = () => {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <h2 className="text-xl font-semibold text-center mb-4">
-              🏆 명예의 전당 등록
+            <h2 className="text-lg font-semibold text-center mb-4">
+              게임 종료
             </h2>
             <div className="text-center mb-6">
-              <p className="text-lg mb-2">최종 점수: <span className="font-semibold text-orange-500">{score}</span></p>
-              <p className="text-sm text-muted-foreground">
-                당신의 기록을 명예의 전당에 남겨보세요!
-              </p>
+              <p className="text-lg mb-2">최종 점수: <span className="font-semibold">{score}</span></p>
             </div>
 
             {/* 플레이어명 입력 */}
             <div className="mb-6">
               <label htmlFor="playerName" className="block text-sm font-medium text-muted-foreground mb-2">
-                🎮 플레이어명
+                플레이어명
               </label>
               <input
                 id="playerName"
                 type="text"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
-                placeholder="당신의 이름을 입력하세요"
-                className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500/20"
+                placeholder="이름을 입력하세요"
+                className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/20 focus:bg-background"
                 maxLength={20}
               />
             </div>
@@ -279,21 +300,21 @@ export const TangerineGame = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
               >
-                🎉 명예의 전당에 등록되었습니다!
+                점수가 저장되었습니다
               </motion.div>
             )}
             
             <div className="flex gap-3 justify-center">
               <button
                 className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-                  isSaving 
+                  isSaving || hasSaved
                     ? 'bg-muted text-muted-foreground cursor-not-allowed' 
-                    : 'bg-orange-500 text-white hover:bg-orange-600'
+                    : 'bg-foreground text-background hover:bg-foreground/90'
                 }`}
                 onClick={handleSaveScore}
-                disabled={isSaving}
+                disabled={isSaving || hasSaved}
               >
-                {isSaving ? '등록 중...' : '🏆 전당에 등록'}
+                {isSaving ? '저장 중...' : hasSaved ? '저장 완료' : '점수 저장'}
               </button>
               <button
                 className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded text-sm font-medium transition-colors"
