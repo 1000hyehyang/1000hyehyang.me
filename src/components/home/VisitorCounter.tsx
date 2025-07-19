@@ -13,15 +13,6 @@ export const VisitorCounter = () => {
   const [visitors, setVisitors] = useState<VisitorsData | null>(null);
 
   const incrementVisitors = async () => {
-    // 세션 스토리지를 확인하여 이미 방문했는지 체크
-    const hasVisitedToday = sessionStorage.getItem("visitedToday");
-    const today = new Date().toDateString();
-    
-    if (hasVisitedToday === today) {
-      // 오늘 이미 방문한 경우 카운트 증가하지 않음
-      return;
-    }
-
     try {
       const response = await fetch("/api/visitors", {
         method: "POST",
@@ -33,8 +24,6 @@ export const VisitorCounter = () => {
       if (response.ok) {
         const data = await response.json();
         setVisitors(data);
-        // 세션 스토리지에 오늘 방문 기록 저장
-        sessionStorage.setItem("visitedToday", today);
       }
     } catch (error) {
       console.error("방문자 수 증가 실패:", error);
