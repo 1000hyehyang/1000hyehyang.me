@@ -3,10 +3,43 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* 프리텐다드 폰트 CDN */
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-SemiBold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -120,5 +153,49 @@
     @apply bg-background text-foreground;
     overflow-y: scroll;
     scrollbar-gutter: stable;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  }
+  
+  /* 다크모드 전환 시 깜빡임 방지를 위한 최적화 */
+  html {
+    transition: none;
+  }
+  
+  /* 핵심 UI 요소들만 부드러운 전환 적용 */
+  .bg-background,
+  .bg-card,
+  .bg-muted,
+  .bg-accent,
+  .text-foreground,
+  .text-muted-foreground,
+  .border-border {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  
+  /* 성능에 영향을 주는 요소들은 애니메이션 제외 */
+  img, svg, canvas, video, iframe {
+    transition: none !important;
+  }
+  
+  /* 복잡한 레이아웃 요소들도 애니메이션 제외 */
+  .prose, .prose * {
+    transition: none;
+  }
+  
+  /* Giscus iframe에 프리텐다드 폰트 적용 */
+  iframe[src*="giscus.app"] {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
+  }
+  
+  /* Giscus 관련 요소들에 폰트 적용 */
+  .gsc-comment-box,
+  .gsc-comment-box *,
+  .gsc-reply-box,
+  .gsc-reply-box *,
+  .gsc-header,
+  .gsc-header *,
+  .gsc-comment,
+  .gsc-comment * {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
   }
 }

@@ -1,15 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { SITE_CONFIG } from "@/lib/config";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -54,7 +49,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
+      <head>
+        <link rel="preconnect" href="https://fastly.jsdelivr.net" />
+        <link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
+      </head>
+      <body className={`${geistMono.variable} antialiased bg-background text-foreground`}>
         <ThemeProvider>
           <header className="w-full px-6 py-4">
             <div className="w-full max-w-[768px] mx-auto flex justify-end">
