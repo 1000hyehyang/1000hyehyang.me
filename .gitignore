@@ -43,6 +43,3 @@ next-env.d.ts
 
 # Contentlayer
 .contentlayer
-
-# 방문자 데이터
-/data
