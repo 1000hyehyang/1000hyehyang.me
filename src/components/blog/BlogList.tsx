@@ -53,7 +53,7 @@ export const BlogList = ({ posts }: BlogListProps) => {
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 selectedCategory === category
                   ? "bg-muted/50 text-foreground"
-                  : "bg-transparent text-foreground hover:bg-muted/30"
+                  : "bg-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground"
               }`}
               aria-label={`${category} 카테고리 필터`}
               tabIndex={0}
