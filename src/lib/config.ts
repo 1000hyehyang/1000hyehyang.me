@@ -27,8 +27,6 @@ export const GISCUS_CONFIG = {
   categoryId: process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID || "",
 } as const;
 
-export const BLOG_CATEGORIES = process.env.NEXT_PUBLIC_BLOG_CATEGORIES?.split(",").filter(Boolean) || [];
-
 export const getValidatedGitHubConfig = () => {
   if (typeof window !== 'undefined') {
     throw new Error('getValidatedGitHubConfig should only be called on server side');

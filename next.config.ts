@@ -8,22 +8,14 @@ const withMDX = createMDX({
   },
 });
 
-// 허용할 이미지 도메인들
-const ALLOWED_IMAGE_DOMAINS = [
-  "avatars.githubusercontent.com",
-  "github.com",
-  "user-images.githubusercontent.com",
-  "user-attachments.githubusercontent.com",
-  "private-user-images.githubusercontent.com",
-  "www.github.com", // GitHub Discussions 원본 URL
-];
-
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: ALLOWED_IMAGE_DOMAINS.map(hostname => ({
-      protocol: "https",
-      hostname,
-    })),
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
+    ],
   },
   experimental: {
     esmExternals: true,

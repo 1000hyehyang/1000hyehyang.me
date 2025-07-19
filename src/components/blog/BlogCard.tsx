@@ -3,17 +3,12 @@
 import { BlogFrontmatter } from "@/types";
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
 
 interface BlogCardProps extends BlogFrontmatter {
   variants?: Variants;
 }
 
-export const BlogCard = ({ title, date, category, tags, thumbnail, summary, slug, variants }: BlogCardProps) => {
-  const [imageError, setImageError] = useState(false);
-  const [useOriginalUrl, setUseOriginalUrl] = useState(false);
-  
+export const BlogCard = ({ title, date, category, tags, summary, slug, variants }: BlogCardProps) => {
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -22,63 +17,29 @@ export const BlogCard = ({ title, date, category, tags, thumbnail, summary, slug
     }
   };
 
-  const handleImageError = () => {
-    if (!useOriginalUrl && thumbnail?.includes('github.com/user-attachments/assets/')) {
-      setUseOriginalUrl(true);
-    } else {
-      setImageError(true);
-    }
-  };
-
-  const imageSrc = useOriginalUrl && thumbnail?.includes('github.com/user-attachments/assets/') 
-    ? thumbnail 
-    : thumbnail;
-
-  const showImage = imageSrc && !imageError;
-
   return (
     <motion.article
       initial="hidden"
       animate="show"
       variants={variants}
-      whileHover={{ 
-        y: -4,
-        transition: { duration: 0.2, ease: "easeOut" }
-      }}
-      className="bg-card overflow-hidden cursor-pointer rounded-lg"
+      className="bg-card border border-border overflow-hidden cursor-pointer rounded-lg hover:bg-accent/10 dark:hover:bg-accent/60 transition-colors"
     >
       <Link 
         href={`/blog/${slug}`} 
         tabIndex={0} 
         aria-label={`${title} 상세 보기`} 
-        className="flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-ring group"
+        className="flex flex-col h-full p-6 focus:outline-none focus:ring-2 focus:ring-ring"
         onKeyDown={handleKeyDown}
       >
-        <div className="w-full h-56 p-2">
-          <div className="w-full h-full aspect-square">
-            {showImage ? (
-              <Image 
-                src={imageSrc} 
-                alt={`${title} 썸네일`} 
-                width={400} 
-                height={400} 
-                className="w-full h-full object-cover rounded-md" 
-                onError={handleImageError}
-              />
-            ) : (
-              <div className="w-full h-full bg-muted rounded-md" />
-            )}
-          </div>
-        </div>
-        <div className="flex-1 p-4 flex flex-col">
-          <div className="text-xs text-muted-foreground mb-2 flex gap-2 items-center">
+        <div className="flex-1 flex flex-col">
+          <div className="text-xs text-muted-foreground mb-3 flex gap-2 items-center">
             <span>{category}</span>
             <span>·</span>
             <span>{date}</span>
           </div>
-          <h2 className="font-bold text-lg line-clamp-2 mb-2 leading-tight group-hover:text-orange-300 transition-colors">{title}</h2>
+          <h2 className="font-bold text-xl line-clamp-2 mb-3 leading-tight">{title}</h2>
           {summary && (
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-3 leading-relaxed">{summary}</p>
+            <p className="text-sm text-muted-foreground line-clamp-3 mb-4 leading-relaxed">{summary}</p>
           )}
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-auto">

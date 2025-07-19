@@ -13,19 +13,21 @@ export const GiscusComments = () => {
   const { theme } = useTheme();
 
   return (
-    <Giscus
-      id="comments"
-      repo={GISCUS_CONFIG.repo as `${string}/${string}`}
-      repoId={GISCUS_CONFIG.repoId}
-      category={GISCUS_CONFIG.category}
-      categoryId={GISCUS_CONFIG.categoryId}
-      mapping="pathname"
-      reactionsEnabled="1"
-      emitMetadata="0"
-      inputPosition="top"
-      theme={theme === "dark" ? "dark" : "light"}
-      lang="ko"
-      loading="lazy"
-    />
+    <div className="mt-8">
+      <Giscus
+        id="comments"
+        repo={GISCUS_CONFIG.repo as `${string}/${string}`}
+        repoId={GISCUS_CONFIG.repoId}
+        category={GISCUS_CONFIG.category}
+        categoryId={GISCUS_CONFIG.categoryId}
+        mapping="pathname"
+        reactionsEnabled="1"
+        emitMetadata="0"
+        inputPosition="top"
+        theme={theme === "dark" ? "dark" : "light"}
+        lang="ko"
+        loading="lazy"
+      />
+    </div>
   );
 }; 

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getAllBlogPosts } from "@/lib/github";
-import { SITE_CONFIG, GITHUB_CONFIG } from "@/lib/config";
+import { GITHUB_CONFIG } from "@/lib/config";
 
 export default async function Home() {
   const posts = (await getAllBlogPosts()).slice(0, 3);

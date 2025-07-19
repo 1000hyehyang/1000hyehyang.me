@@ -50,10 +50,10 @@ export const BlogList = ({ posts }: BlogListProps) => {
               key={category}
               type="button"
               onClick={() => handleCategoryClick(category)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 selectedCategory === category
-                  ? "bg-muted text-foreground"
-                  : "bg-transparent text-foreground hover:bg-muted/50"
+                  ? "bg-muted/50 text-foreground"
+                  : "bg-transparent text-foreground hover:bg-muted/30"
               }`}
               aria-label={`${category} 카테고리 필터`}
               tabIndex={0}

@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       url: `${SITE_CONFIG.url}/blog/${slug}`,
       images: [
         {
-          url: post.frontmatter.thumbnail || "/og/default.png",
+          url: "/og/default.png",
           width: 1200,
           height: 630,
           alt: post.frontmatter.title,
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       card: "summary_large_image",
       title: post.frontmatter.title,
       description: post.frontmatter.summary,
-      images: [post.frontmatter.thumbnail || "/og/default.png"],
+      images: ["/og/default.png"],
     },
   };
 }
