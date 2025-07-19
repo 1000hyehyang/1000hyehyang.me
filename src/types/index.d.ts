@@ -1,3 +1,4 @@
+// 블로그 관련 타입
 export type BlogFrontmatter = {
   title: string;
   date: string;
@@ -9,6 +10,7 @@ export type BlogFrontmatter = {
   updatedAt?: string;
 };
 
+// 포트폴리오 관련 타입
 export type PortfolioFrontmatter = {
   title: string;
   period: string;
@@ -18,12 +20,13 @@ export type PortfolioFrontmatter = {
   slug: string;
   githubUrl?: string;
   siteUrl?: string;
+  category: "project" | "hackathon";
 };
 
+// 공통 타입들
 export type Tag = string;
 export type Category = string;
 
-// 공통 타입들
 export type NavItem = {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -43,4 +46,23 @@ export type GiscusConfig = {
   repoId: string;
   category: string;
   categoryId: string;
+};
+
+// 컴포넌트 Props 타입들
+export type BlogCardProps = BlogFrontmatter & {
+  variants?: import("framer-motion").Variants;
+};
+
+export type BlogDetailProps = {
+  frontmatter: BlogFrontmatter;
+  children: React.ReactNode;
+};
+
+export type PortfolioCardProps = PortfolioFrontmatter & {
+  variants?: import("framer-motion").Variants;
+};
+
+export type PortfolioDetailProps = {
+  frontmatter: PortfolioFrontmatter;
+  children: React.ReactNode;
 }; 

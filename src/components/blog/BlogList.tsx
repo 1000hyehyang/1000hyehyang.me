@@ -3,24 +3,11 @@ import { BlogFrontmatter } from "@/types";
 import { BlogCard } from "./BlogCard";
 import { motion } from "framer-motion";
 import { useState, useMemo } from "react";
+import { listVariants, cardVariants } from "@/lib/animations";
 
 interface BlogListProps {
   posts: BlogFrontmatter[];
 }
-
-const listVariants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.12,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: -25 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8 } },
-};
 
 export const BlogList = ({ posts }: BlogListProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");

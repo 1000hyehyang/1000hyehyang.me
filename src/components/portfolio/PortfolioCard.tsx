@@ -1,21 +1,14 @@
 "use client";
 
-import { PortfolioFrontmatter } from "@/types";
-import { motion, Variants } from "framer-motion";
+import { PortfolioCardProps } from "@/types";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-
-interface PortfolioCardProps extends PortfolioFrontmatter {
-  variants?: Variants;
-}
+import { handleKeyDown } from "@/lib/utils";
 
 export const PortfolioCard = ({ title, period, images, summary, slug, variants }: PortfolioCardProps) => {
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      const link = event.currentTarget as HTMLAnchorElement;
-      link.click();
-    }
+  const handleClick = () => {
+    // 클릭 핸들러 로직이 필요한 경우 여기에 추가
   };
 
   return (
@@ -23,14 +16,14 @@ export const PortfolioCard = ({ title, period, images, summary, slug, variants }
       initial="hidden"
       animate="show"
       variants={variants}
-      className="p-4 bg-card border border-border overflow-hidden cursor-pointer rounded-lg hover:bg-accent/10 dark:hover:bg-accent/60 transition-colors"
+      className="bg-card border border-border overflow-hidden cursor-pointer rounded-lg hover:bg-accent/10 dark:hover:bg-accent/60 transition-colors"
     >
       <Link 
-        href={`/portfolio/${slug}`} 
+        href={`/portfolio/projects/${slug}`} 
         tabIndex={0} 
         aria-label={`${title} 상세 보기`} 
-        className="flex flex-col h-full focus:outline-none"
-        onKeyDown={handleKeyDown}
+        className="flex flex-col h-full p-4 focus:outline-none"
+        onKeyDown={(e) => handleKeyDown(e, handleClick)}
       >
         <div className="text-xs text-muted-foreground mb-2">
           {period}

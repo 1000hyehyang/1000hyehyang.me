@@ -1,9 +1,8 @@
-import { getAllBlogPosts, getAllPortfolio } from "@/lib/mdx";
+import { getAllPortfolio } from "@/lib/mdx";
 import { SITE_CONFIG } from "@/lib/config";
 
 export default async function sitemap() {
   const baseUrl = SITE_CONFIG.url;
-  const blogPosts = getAllBlogPosts();
   const portfolios = getAllPortfolio();
 
   const urls = [
@@ -11,12 +10,8 @@ export default async function sitemap() {
     { url: `${baseUrl}/blog`, lastModified: new Date().toISOString() },
     { url: `${baseUrl}/portfolio`, lastModified: new Date().toISOString() },
     { url: `${baseUrl}/about`, lastModified: new Date().toISOString() },
-    ...blogPosts.map(post => ({
-      url: `${baseUrl}/blog/${post.slug}`,
-      lastModified: post.date,
-    })),
     ...portfolios.map(p => ({
-      url: `${baseUrl}/portfolio/${p.slug}`,
+      url: `${baseUrl}/portfolio/projects/${p.slug}`,
       lastModified: p.period,
     })),
   ];

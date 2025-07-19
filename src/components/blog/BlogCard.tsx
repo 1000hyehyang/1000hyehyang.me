@@ -1,20 +1,13 @@
-"use client"
+"use client";
 
-import { BlogFrontmatter } from "@/types";
-import { motion, Variants } from "framer-motion";
+import { BlogCardProps } from "@/types";
+import { motion } from "framer-motion";
 import Link from "next/link";
-
-interface BlogCardProps extends BlogFrontmatter {
-  variants?: Variants;
-}
+import { handleKeyDown } from "@/lib/utils";
 
 export const BlogCard = ({ title, date, category, tags, summary, slug, variants }: BlogCardProps) => {
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      const link = event.currentTarget as HTMLAnchorElement;
-      link.click();
-    }
+  const handleClick = () => {
+    // 클릭 핸들러 로직이 필요한 경우 여기에 추가
   };
 
   return (
@@ -28,8 +21,8 @@ export const BlogCard = ({ title, date, category, tags, summary, slug, variants 
         href={`/blog/${slug}`} 
         tabIndex={0} 
         aria-label={`${title} 상세 보기`} 
-        className="flex flex-col h-full p-6 focus:outline-none focus:ring-2 focus:ring-ring"
-        onKeyDown={handleKeyDown}
+        className="flex flex-col h-full p-6 focus:outline-none"
+        onKeyDown={(e) => handleKeyDown(e, handleClick)}
       >
         <div className="flex-1 flex flex-col">
           <div className="text-xs text-muted-foreground mb-3 flex gap-2 items-center">

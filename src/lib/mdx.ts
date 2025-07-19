@@ -1,18 +1,32 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { BlogFrontmatter, PortfolioFrontmatter } from "@/types";
+import { PortfolioFrontmatter } from "@/types";
 
-const BLOG_PATH = path.join(process.cwd(), "src/content/blog");
 const PORTFOLIO_PATH = path.join(process.cwd(), "src/content/portfolio");
 
-const readMdxFiles = (directoryPath: string): string[] => {
+const readMdxFilesRecursively = (directoryPath: string): string[] => {
+  const files: string[] = [];
+  
   try {
-    return fs.readdirSync(directoryPath).filter((file) => file.endsWith(".mdx"));
+    const items = fs.readdirSync(directoryPath, { withFileTypes: true });
+    
+    for (const item of items) {
+      const fullPath = path.join(directoryPath, item.name);
+      
+      if (item.isDirectory()) {
+        // 재귀적으로 하위 디렉토리 탐색
+        const subFiles = readMdxFilesRecursively(fullPath);
+        files.push(...subFiles);
+      } else if (item.isFile() && item.name.endsWith(".mdx")) {
+        files.push(fullPath);
+      }
+    }
   } catch (error) {
     console.error(`Error reading directory ${directoryPath}:`, error);
-    return [];
   }
+  
+  return files;
 };
 
 const parseMdxFile = (filePath: string) => {
@@ -26,55 +40,22 @@ const parseMdxFile = (filePath: string) => {
   }
 };
 
-export const getAllBlogPosts = (): BlogFrontmatter[] => {
-  const files = readMdxFiles(BLOG_PATH);
-  
-  return files
-    .map((file) => {
-      const filePath = path.join(BLOG_PATH, file);
-      const parsed = parseMdxFile(filePath);
-      if (!parsed) return null;
-      
-      const { data } = parsed;
-      return {
-        ...(data as BlogFrontmatter),
-        slug: data.slug || file.replace(/\.mdx$/, ""),
-      };
-    })
-    .filter((post): post is BlogFrontmatter => post !== null)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-};
-
-export const getBlogPostBySlug = (slug: string): { frontmatter: BlogFrontmatter; content: string } | null => {
-  const files = readMdxFiles(BLOG_PATH);
-  const targetFile = files.find((file) => file.replace(/\.mdx$/, "") === slug);
-  
-  if (!targetFile) return null;
-  
-  const filePath = path.join(BLOG_PATH, targetFile);
-  const parsed = parseMdxFile(filePath);
-  if (!parsed) return null;
-  
-  const { data, content } = parsed;
-  return {
-    frontmatter: { ...(data as BlogFrontmatter), slug },
-    content,
-  };
-};
-
 export const getAllPortfolio = (): PortfolioFrontmatter[] => {
-  const files = readMdxFiles(PORTFOLIO_PATH);
+  const files = readMdxFilesRecursively(PORTFOLIO_PATH);
   
   return files
-    .map((file) => {
-      const filePath = path.join(PORTFOLIO_PATH, file);
+    .map((filePath) => {
       const parsed = parseMdxFile(filePath);
       if (!parsed) return null;
       
       const { data } = parsed;
+      const relativePath = path.relative(PORTFOLIO_PATH, filePath);
+      // 파일 경로 기반으로 slug 생성 (project/ururu.mdx -> project/ururu)
+      const slug = relativePath.replace(/\.mdx$/, "").replace(/\\/g, "/");
+      
       return {
         ...(data as PortfolioFrontmatter),
-        slug: data.slug || file.replace(/\.mdx$/, ""),
+        slug,
       };
     })
     .filter((project): project is PortfolioFrontmatter => project !== null)
@@ -82,18 +63,25 @@ export const getAllPortfolio = (): PortfolioFrontmatter[] => {
 };
 
 export const getPortfolioBySlug = (slug: string): { frontmatter: PortfolioFrontmatter; content: string } | null => {
-  const files = readMdxFiles(PORTFOLIO_PATH);
-  const targetFile = files.find((file) => file.replace(/\.mdx$/, "") === slug);
+  const files = readMdxFilesRecursively(PORTFOLIO_PATH);
+  
+  const targetFile = files.find((filePath) => {
+    const relativePath = path.relative(PORTFOLIO_PATH, filePath);
+    const fileSlug = relativePath.replace(/\.mdx$/, "").replace(/\\/g, "/");
+    return fileSlug === slug;
+  });
   
   if (!targetFile) return null;
   
-  const filePath = path.join(PORTFOLIO_PATH, targetFile);
-  const parsed = parseMdxFile(filePath);
+  const parsed = parseMdxFile(targetFile);
   if (!parsed) return null;
   
   const { data, content } = parsed;
+  const relativePath = path.relative(PORTFOLIO_PATH, targetFile);
+  const actualSlug = relativePath.replace(/\.mdx$/, "").replace(/\\/g, "/");
+  
   return {
-    frontmatter: { ...(data as PortfolioFrontmatter), slug },
+    frontmatter: { ...(data as PortfolioFrontmatter), slug: actualSlug },
     content,
   };
 }; 

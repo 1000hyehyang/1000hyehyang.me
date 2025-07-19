@@ -1,40 +1,14 @@
 "use client";
 
-import { BlogFrontmatter } from "@/types";
+import { BlogDetailProps } from "@/types";
 import { GiscusComments } from "./GiscusComments";
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-
-interface BlogDetailProps {
-  frontmatter: BlogFrontmatter;
-  children: React.ReactNode;
-}
+import { containerVariants, itemVariants } from "@/lib/animations";
 
 export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  const containerVariants = {
-    hidden: { opacity: 0, y: -50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: -30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
 
   return (
     <motion.article

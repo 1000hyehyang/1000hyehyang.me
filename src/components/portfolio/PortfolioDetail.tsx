@@ -1,41 +1,15 @@
 "use client";
 
-import { PortfolioFrontmatter } from "@/types";
+import { PortfolioDetailProps } from "@/types";
 import Image from "next/image";
 import { ExternalLink, Github } from "lucide-react";
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-
-interface PortfolioDetailProps {
-  frontmatter: PortfolioFrontmatter;
-  children: React.ReactNode;
-}
+import { containerVariants, itemVariants } from "@/lib/animations";
 
 export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  const containerVariants = {
-    hidden: { opacity: 0, y: -50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: -30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
 
   return (
     <motion.article
@@ -92,16 +66,18 @@ export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps)
       </motion.div>
 
       {/* 썸네일 이미지 */}
-      <motion.div variants={itemVariants} className="mb-8">
-        <Image
-          src="/portfolio/ururu.png"
-          alt={`${frontmatter.title} 썸네일`}
-          width={800}
-          height={400}
-          className="w-full rounded-lg object-cover"
-          priority
-        />
-      </motion.div>
+      {frontmatter.images && frontmatter.images[0] && (
+        <motion.div variants={itemVariants} className="mb-8">
+          <Image
+            src={frontmatter.images[0]}
+            alt={`${frontmatter.title} 썸네일`}
+            width={800}
+            height={400}
+            className="w-full rounded-lg object-cover"
+            priority
+          />
+        </motion.div>
+      )}
 
       {/* 기술 스택 */}
       {frontmatter.tech && frontmatter.tech.length > 0 && (
