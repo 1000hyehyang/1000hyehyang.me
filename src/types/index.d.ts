@@ -13,11 +13,11 @@ export type PortfolioFrontmatter = {
   title: string;
   period: string;
   tech: string[];
-  role: string;
-  links?: string[];
   images?: string[];
   summary?: string;
   slug: string;
+  githubUrl?: string;
+  siteUrl?: string;
 };
 
 export type Tag = string;

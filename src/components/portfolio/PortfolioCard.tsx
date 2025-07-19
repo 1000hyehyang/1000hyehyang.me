@@ -1,11 +1,15 @@
 "use client";
 
 import { PortfolioFrontmatter } from "@/types";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 
-export const PortfolioCard = ({ title, period, role, images, summary, slug }: PortfolioFrontmatter) => {
+interface PortfolioCardProps extends PortfolioFrontmatter {
+  variants?: Variants;
+}
+
+export const PortfolioCard = ({ title, period, images, summary, slug, variants }: PortfolioCardProps) => {
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -16,20 +20,20 @@ export const PortfolioCard = ({ title, period, role, images, summary, slug }: Po
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="rounded-xl border border-border bg-card shadow-sm p-4 flex flex-col gap-2 hover:shadow-md transition-shadow"
+      initial="hidden"
+      animate="show"
+      variants={variants}
+      className="p-4 bg-card border border-border overflow-hidden cursor-pointer rounded-lg hover:bg-accent/10 dark:hover:bg-accent/60 transition-colors"
     >
       <Link 
         href={`/portfolio/${slug}`} 
         tabIndex={0} 
         aria-label={`${title} 상세 보기`} 
-        className="flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-ring"
+        className="flex flex-col h-full focus:outline-none"
         onKeyDown={handleKeyDown}
       >
         <div className="text-xs text-muted-foreground mb-2">
-          {period} · {role}
+          {period}
         </div>
         {images && images[0] && (
           <Image
@@ -37,7 +41,7 @@ export const PortfolioCard = ({ title, period, role, images, summary, slug }: Po
             alt={`${title} 썸네일`}
             width={600}
             height={300}
-            className="w-full aspect-[3/1.5] object-cover rounded-xl mb-3"
+            className="w-full aspect-[3/1.5] object-cover rounded-lg mb-3"
             priority
           />
         )}
