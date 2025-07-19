@@ -24,7 +24,7 @@ export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps)
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           {/* 프로젝트 정보 */}
           <div className="flex-1">
-            <h1 className="text-3xl font-bold mb-4">{frontmatter.title}</h1>
+            <h1 className="text-3xl font-semibold mb-4">{frontmatter.title}</h1>
             <div className="space-y-2 text-sm text-muted-foreground">
               <div>{frontmatter.period}</div>
               {frontmatter.summary && (

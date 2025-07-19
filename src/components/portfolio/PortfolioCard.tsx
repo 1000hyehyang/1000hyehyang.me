@@ -39,7 +39,7 @@ export const PortfolioCard = ({ title, period, images, summary, slug, variants }
           />
         )}
         <div className="flex-1 flex flex-col gap-1">
-          <h2 className="font-bold text-lg mb-1">{title}</h2>
+          <h2 className="font-semibold text-lg mb-1">{title}</h2>
           <p className="text-sm text-muted-foreground mb-1">{summary}</p>
         </div>
       </Link>

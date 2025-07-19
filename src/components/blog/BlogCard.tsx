@@ -30,7 +30,7 @@ export const BlogCard = ({ title, date, category, tags, summary, slug, variants 
             <span>·</span>
             <span>{date}</span>
           </div>
-          <h2 className="font-bold text-xl line-clamp-2 mb-3 leading-tight">{title}</h2>
+          <h2 className="font-semibold text-xl line-clamp-2 mb-3 leading-tight">{title}</h2>
           {summary && (
             <p className="text-sm text-muted-foreground line-clamp-3 mb-4 leading-relaxed">{summary}</p>
           )}

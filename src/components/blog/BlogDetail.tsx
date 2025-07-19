@@ -25,7 +25,7 @@ export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
           ))}
         </motion.div>
       )}
-      <motion.h1 variants={itemVariants} className="font-bold text-3xl mb-4">{frontmatter.title}</motion.h1>
+      <motion.h1 variants={itemVariants} className="font-semibold text-3xl mb-4">{frontmatter.title}</motion.h1>
       <motion.div variants={itemVariants} className="text-sm text-muted-foreground mb-6 flex gap-2 items-center">
         <span>{frontmatter.category}</span>
         <span>·</span>
