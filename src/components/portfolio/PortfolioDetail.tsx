@@ -74,7 +74,7 @@ export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps)
             width={800}
             height={400}
             className="w-full rounded-lg object-cover"
-            priority
+            unoptimized
           />
         </motion.div>
       )}
