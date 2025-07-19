@@ -3,16 +3,11 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { containerVariants } from "@/lib/animations";
-import { BlogFrontmatter } from "@/types";
 import { ProfileSection } from "./ProfileSection";
 import { IntroSection } from "./IntroSection";
 import { ContactSection } from "./ContactSection";
 
-interface HomeContentProps {
-  posts: BlogFrontmatter[];
-}
-
-export const HomeContent = ({ posts }: HomeContentProps) => {
+export const HomeContent = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
