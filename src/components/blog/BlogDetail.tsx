@@ -2,6 +2,9 @@
 
 import { BlogFrontmatter } from "@/types";
 import { GiscusComments } from "./GiscusComments";
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef } from "react";
 
 interface BlogDetailProps {
   frontmatter: BlogFrontmatter;
@@ -9,17 +12,47 @@ interface BlogDetailProps {
 }
 
 export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: -50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: -30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
   return (
-    <article className="prose prose-neutral dark:prose-invert max-w-none">
+    <motion.article
+      ref={ref}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      variants={containerVariants}
+      className="prose prose-neutral dark:prose-invert max-w-none"
+    >
       {frontmatter.tags && frontmatter.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-4">
+        <motion.div variants={itemVariants} className="flex flex-wrap gap-1 mb-4">
           {frontmatter.tags.map((tag) => (
             <span key={tag} className="bg-accent text-accent-foreground rounded px-2 py-0.5 text-xs">#{tag}</span>
           ))}
-        </div>
+        </motion.div>
       )}
-      <h1 className="font-bold text-3xl mb-4">{frontmatter.title}</h1>
-      <div className="text-sm text-muted-foreground mb-6 flex gap-2 items-center">
+      <motion.h1 variants={itemVariants} className="font-bold text-3xl mb-4">{frontmatter.title}</motion.h1>
+      <motion.div variants={itemVariants} className="text-sm text-muted-foreground mb-6 flex gap-2 items-center">
         <span>{frontmatter.category}</span>
         <span>·</span>
         <span>{frontmatter.date}</span>
@@ -29,11 +62,13 @@ export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
             <span>by {frontmatter.author}</span>
           </>
         )}
-      </div>
-      {children}
-      <div className="mt-8">
+      </motion.div>
+      <motion.div variants={itemVariants}>
+        {children}
+      </motion.div>
+      <motion.div variants={itemVariants} className="mt-8">
         <GiscusComments />
-      </div>
-    </article>
+      </motion.div>
+    </motion.article>
   );
 }; 
