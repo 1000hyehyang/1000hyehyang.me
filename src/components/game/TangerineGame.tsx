@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTangerineGameStore, type Tangerine } from "@/lib/tangerine-game";
 import { TangerineGrid } from "./TangerineGrid";
 import { GameControls, type GameControlsRef } from "./GameControls";
@@ -22,7 +22,6 @@ export const TangerineGame = () => {
 
   const [showGameOver, setShowGameOver] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [hasSaved, setHasSaved] = useState(false);
@@ -104,7 +103,6 @@ export const TangerineGame = () => {
 
   const handleGameOverClose = () => {
     setShowGameOver(false);
-    setSaveSuccess(false);
     setPlayerName("");
     setHasSaved(false);
   };
@@ -113,7 +111,7 @@ export const TangerineGame = () => {
     if (isSaving || hasSaved) return;
     
     // 클라이언트 측 점수 검증
-    if (!Number.isInteger(score) || score < 0 || score > 10000) {
+    if (!Number.isInteger(score) || score < 0 || score > 50000) {
       console.error('유효하지 않은 점수입니다.');
       return;
     }
@@ -140,7 +138,6 @@ export const TangerineGame = () => {
       });
 
       if (response.ok) {
-        setSaveSuccess(true);
         setHasSaved(true);
         // 점수 저장 성공 시 리더보드 새로고침
         if (gameControlsRef.current) {
@@ -256,76 +253,68 @@ export const TangerineGame = () => {
       </motion.div>
 
       {/* 게임 오버 모달 */}
-      {showGameOver && (
-        <motion.div
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
-        >
+      <AnimatePresence>
+        {showGameOver && (
           <motion.div
-            className="bg-card border rounded-lg p-6 max-w-sm w-full"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
           >
-            <h2 className="text-lg font-semibold text-center mb-4">
-              게임 종료
-            </h2>
-            <div className="text-center mb-6">
-              <p className="text-lg mb-2">최종 점수: <span className="font-semibold">{score}</span></p>
-            </div>
+            <motion.div
+              className="bg-card border rounded-lg p-6 max-w-sm w-full"
+              initial={{ scale: 0.8, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 20 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <h2 className="text-lg font-semibold text-center mb-4">
+                게임 종료
+              </h2>
+              <div className="text-center mb-6">
+                <p className="text-lg mb-2">최종 점수: <span className="font-semibold">{score}</span></p>
+              </div>
 
-            {/* 플레이어명 입력 */}
-            <div className="mb-6">
-              <label htmlFor="playerName" className="block text-sm font-medium text-muted-foreground mb-2">
-                플레이어명
-              </label>
-              <input
-                id="playerName"
-                type="text"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
-                placeholder="이름을 입력하세요"
-                className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/20 focus:bg-background"
-                maxLength={20}
-              />
-            </div>
-            
-            {/* 저장 성공 메시지 */}
-            {saveSuccess && (
-              <motion.div
-                className="mb-4 p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded text-center text-sm"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                점수가 저장되었습니다
-              </motion.div>
-            )}
-            
-            <div className="flex gap-3 justify-center">
-              <button
-                className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-                  isSaving || hasSaved
-                    ? 'bg-muted text-muted-foreground cursor-not-allowed' 
-                    : 'bg-foreground text-background hover:bg-foreground/90'
-                }`}
-                onClick={handleSaveScore}
-                disabled={isSaving || hasSaved}
-              >
-                {isSaving ? '저장 중...' : hasSaved ? '저장 완료' : '점수 저장'}
-              </button>
-              <button
-                className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded text-sm font-medium transition-colors"
-                onClick={handleGameOverClose}
-              >
-                닫기
-              </button>
-            </div>
+              {/* 플레이어명 입력 */}
+              <div className="mb-6">
+                <label htmlFor="playerName" className="block text-sm font-medium text-muted-foreground mb-2">
+                  플레이어명
+                </label>
+                <input
+                  id="playerName"
+                  type="text"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  placeholder="이름을 입력하세요"
+                  className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/20 focus:bg-background"
+                  maxLength={20}
+                />
+              </div>
+                          
+              <div className="flex gap-3 justify-center">
+                <button
+                  className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                    isSaving || hasSaved
+                      ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                      : 'bg-foreground text-background hover:bg-foreground/90'
+                  }`}
+                  onClick={handleSaveScore}
+                  disabled={isSaving || hasSaved}
+                >
+                  {isSaving ? '저장 중...' : hasSaved ? '저장 완료' : '점수 저장'}
+                </button>
+                <button
+                  className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded text-sm font-medium transition-colors"
+                  onClick={handleGameOverClose}
+                >
+                  닫기
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* 게임 설명 */}
       <motion.div

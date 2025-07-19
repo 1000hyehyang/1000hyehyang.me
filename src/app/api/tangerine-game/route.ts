@@ -40,8 +40,8 @@ const sanitizeInput = (input: string): string => {
 
 // 점수 유효성 검증 함수
 const validateScore = (score: number): boolean => {
-  // 점수는 0 이상 10000 이하의 정수만 허용
-  return Number.isInteger(score) && score >= 0 && score <= 10000;
+  // 점수는 0 이상 50000 이하의 정수만 허용
+  return Number.isInteger(score) && score >= 0 && score <= 50000;
 };
 
 // 플레이어명 유효성 검증 함수
@@ -200,7 +200,7 @@ export async function POST(request: Request) {
     // 점수 유효성 검증
     if (!validateScore(score)) {
       return NextResponse.json(
-        { error: "유효하지 않은 점수입니다. (0-10000 사이의 정수만 허용)" },
+        { error: "유효하지 않은 점수입니다. (0-50000 사이의 정수만 허용)" },
         { status: 400 }
       );
     }

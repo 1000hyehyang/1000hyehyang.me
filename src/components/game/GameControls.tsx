@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Play, Pause, RotateCcw, Trophy, Volume2, VolumeX } from "lucide-react";
 import { useTangerineGameStore } from "@/lib/tangerine-game";
 import { handleKeyDown } from "@/lib/utils";
@@ -222,82 +222,86 @@ export const GameControls = forwardRef<GameControlsRef, GameControlsProps>(({ bg
       </div>
 
       {/* 리더보드 모달 */}
-      {showLeaderboard && (
-        <motion.div
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
-        >
+      <AnimatePresence>
+        {showLeaderboard && (
           <motion.div
-            className="bg-card border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
           >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">🏆 명예의 전당</h2>
-              <motion.button
-                className="text-muted-foreground hover:text-foreground p-1 cursor-pointer"
-                onClick={() => setShowLeaderboard(false)}
-                aria-label="닫기"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <span className="text-lg">✕</span>
-              </motion.button>
-            </div>
-            
-            {isLoading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground mx-auto"></div>
-                <p className="text-sm text-muted-foreground mt-2">리더보드 불러오는 중...</p>
+            <motion.div
+              className="bg-card border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto"
+              initial={{ scale: 0.8, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 20 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">🏆 명예의 전당</h2>
+                <motion.button
+                  className="text-muted-foreground hover:text-foreground p-1 cursor-pointer"
+                  onClick={() => setShowLeaderboard(false)}
+                  aria-label="닫기"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <span className="text-lg">✕</span>
+                </motion.button>
               </div>
-            ) : leaderboardData && leaderboardData.scores.length > 0 ? (
-              <div className="space-y-3">
-                {leaderboardData.scores.map((entry, index) => (
-                  <motion.div
-                    key={`${entry.playerName}-${entry.timestamp}`}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-muted-foreground">
-                        #{index + 1}
-                      </span>
-                      <div>
-                        <p className="font-medium">
-                          {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''} {safeText(entry.playerName || '익명')}
-                        </p>
-                        <p className="text-xs text-muted-foreground">{formatDate(entry.timestamp)}</p>
+              
+              {isLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground mx-auto"></div>
+                  <p className="text-sm text-muted-foreground mt-2">리더보드 불러오는 중...</p>
+                </div>
+              ) : leaderboardData && leaderboardData.scores.length > 0 ? (
+                <div className="space-y-3">
+                  {leaderboardData.scores.map((entry, index) => (
+                    <motion.div
+                      key={`${entry.playerName}-${entry.timestamp}`}
+                      className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium text-muted-foreground">
+                          #{index + 1}
+                        </span>
+                        <div>
+                          <p className="font-medium">
+                            {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : ''} {safeText(entry.playerName || '익명')}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{formatDate(entry.timestamp)}</p>
+                        </div>
                       </div>
-                    </div>
-                    <span className="text-lg font-bold text-foreground">{entry.score}</span>
-                  </motion.div>
-                ))}
+                      <span className="text-lg font-bold text-foreground">{entry.score}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Trophy className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">아직 기록이 없습니다</p>
+                  <p className="text-xs text-muted-foreground mt-2">첫 번째 기록을 만들어보세요!</p>
+                </div>
+              )}
+              
+              <div className="mt-6 text-center">
+                <button
+                  onClick={fetchLeaderboard}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  disabled={isLoading}
+                >
+                  {isLoading ? '새로고침 중...' : '새로고침'}
+                </button>
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <Trophy className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">아직 기록이 없습니다</p>
-                <p className="text-xs text-muted-foreground mt-2">첫 번째 기록을 만들어보세요!</p>
-              </div>
-            )}
-            
-            <div className="mt-6 text-center">
-              <button
-                onClick={fetchLeaderboard}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                disabled={isLoading}
-              >
-                {isLoading ? '새로고침 중...' : '새로고침'}
-              </button>
-            </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 });
