@@ -6,6 +6,7 @@ import { containerVariants } from "@/lib/animations";
 import { ProfileSection } from "./ProfileSection";
 import { IntroSection } from "./IntroSection";
 import { ContactSection } from "./ContactSection";
+import { VisitorCounter } from "./VisitorCounter";
 
 export const HomeContent = () => {
   const ref = useRef(null);
@@ -19,7 +20,8 @@ export const HomeContent = () => {
       variants={containerVariants}
       className="flex flex-col min-h-screen items-center justify-between pt-12"
     >
-      <main className="w-full flex flex-col items-center gap-8">
+      <main className="w-full flex flex-col items-center gap-12">
+        <VisitorCounter />
         <ProfileSection />
         <IntroSection />
         <ContactSection />
