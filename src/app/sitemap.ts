@@ -12,7 +12,7 @@ export default async function sitemap() {
     { url: `${baseUrl}/about`, lastModified: new Date().toISOString() },
     ...portfolios.map(p => ({
       url: `${baseUrl}/portfolio/projects/${p.slug}`,
-      lastModified: p.period,
+      lastModified: new Date().toISOString(),
     })),
   ];
 
