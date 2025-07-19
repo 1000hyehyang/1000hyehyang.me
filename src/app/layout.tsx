@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { SITE_CONFIG } from "@/lib/config";
 
 const geistMono = Geist_Mono({
@@ -55,15 +56,17 @@ export default function RootLayout({
       </head>
       <body className={`${geistMono.variable} antialiased bg-background text-foreground`}>
         <ThemeProvider>
-          <header className="w-full px-6 py-4">
-            <div className="w-full max-w-[768px] mx-auto flex justify-end">
-              <ThemeToggle />
-            </div>
-          </header>
-          <main className="min-h-[80vh] container mx-auto px-4 py-8 pb-24">
-            <div className="w-full max-w-[768px] mx-auto px-0">{children}</div>
-          </main>
-          <BottomNav />
+          <TooltipProvider>
+            <header className="w-full px-6 py-4">
+              <div className="w-full max-w-[768px] mx-auto flex justify-end">
+                <ThemeToggle />
+              </div>
+            </header>
+            <main className="min-h-[80vh] container mx-auto px-4 py-8 pb-24">
+              <div className="w-full max-w-[768px] mx-auto px-0">{children}</div>
+            </main>
+            <BottomNav />
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>
