@@ -12,6 +12,7 @@ interface BlogCardProps extends BlogFrontmatter {
 
 export const BlogCard = ({ title, date, category, tags, thumbnail, summary, slug, variants }: BlogCardProps) => {
   const [imageError, setImageError] = useState(false);
+  const [useOriginalUrl, setUseOriginalUrl] = useState(false);
   
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -20,6 +21,20 @@ export const BlogCard = ({ title, date, category, tags, thumbnail, summary, slug
       link.click();
     }
   };
+
+  const handleImageError = () => {
+    if (!useOriginalUrl && thumbnail?.includes('github.com/user-attachments/assets/')) {
+      setUseOriginalUrl(true);
+    } else {
+      setImageError(true);
+    }
+  };
+
+  const imageSrc = useOriginalUrl && thumbnail?.includes('github.com/user-attachments/assets/') 
+    ? thumbnail 
+    : thumbnail;
+
+  const showImage = imageSrc && !imageError;
 
   return (
     <motion.article
@@ -41,14 +56,14 @@ export const BlogCard = ({ title, date, category, tags, thumbnail, summary, slug
       >
         <div className="w-full h-56 p-2">
           <div className="w-full h-full aspect-square">
-            {thumbnail && !imageError ? (
+            {showImage ? (
               <Image 
-                src={thumbnail} 
+                src={imageSrc} 
                 alt={`${title} 썸네일`} 
                 width={400} 
                 height={400} 
                 className="w-full h-full object-cover rounded-md" 
-                onError={() => setImageError(true)}
+                onError={handleImageError}
               />
             ) : (
               <div className="w-full h-full bg-muted rounded-md" />
@@ -65,11 +80,13 @@ export const BlogCard = ({ title, date, category, tags, thumbnail, summary, slug
           {summary && (
             <p className="text-sm text-muted-foreground line-clamp-2 mb-3 leading-relaxed">{summary}</p>
           )}
-          <div className="flex flex-wrap gap-1 mt-auto">
-            {tags.map((tag) => (
-              <span key={tag} className="bg-accent text-accent-foreground rounded px-2 py-0.5 text-xs">#{tag}</span>
-            ))}
-          </div>
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-auto">
+              {tags.map((tag) => (
+                <span key={tag} className="bg-accent text-accent-foreground rounded px-2 py-0.5 text-xs">#{tag}</span>
+              ))}
+            </div>
+          )}
         </div>
       </Link>
     </motion.article>

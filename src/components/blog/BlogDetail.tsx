@@ -12,24 +12,39 @@ interface BlogDetailProps {
 
 export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
   const [imageError, setImageError] = useState(false);
+  const [useOriginalUrl, setUseOriginalUrl] = useState(false);
+
+  const handleImageError = () => {
+    if (!useOriginalUrl && frontmatter.thumbnail?.includes('github.com/user-attachments/assets/')) {
+      setUseOriginalUrl(true);
+    } else {
+      setImageError(true);
+    }
+  };
+
+  const imageSrc = useOriginalUrl && frontmatter.thumbnail?.includes('github.com/user-attachments/assets/') 
+    ? frontmatter.thumbnail 
+    : frontmatter.thumbnail;
+
+  const showImage = imageSrc && !imageError;
 
   return (
     <article className="prose prose-neutral dark:prose-invert max-w-none">
       <div className="w-full aspect-[16/9] rounded-lg mb-6">
-        {frontmatter.thumbnail && !imageError ? (
+        {showImage ? (
           <Image 
-            src={frontmatter.thumbnail} 
+            src={imageSrc} 
             alt={`${frontmatter.title} 썸네일`} 
             width={1200} 
             height={630} 
             className="w-full h-full object-cover rounded-lg" 
-            onError={() => setImageError(true)}
+            onError={handleImageError}
           />
         ) : (
           <div className="w-full h-full bg-muted rounded-lg" />
         )}
       </div>
-      {frontmatter.tags && (
+      {frontmatter.tags && frontmatter.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
           {frontmatter.tags.map((tag) => (
             <span key={tag} className="bg-accent text-accent-foreground rounded px-2 py-0.5 text-xs">#{tag}</span>

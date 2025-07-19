@@ -15,6 +15,7 @@ const ALLOWED_IMAGE_DOMAINS = [
   "user-images.githubusercontent.com",
   "user-attachments.githubusercontent.com",
   "private-user-images.githubusercontent.com",
+  "www.github.com", // GitHub Discussions 원본 URL
 ];
 
 const nextConfig: NextConfig = {
