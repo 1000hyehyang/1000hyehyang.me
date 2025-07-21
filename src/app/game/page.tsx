@@ -49,10 +49,10 @@ export default function GamePage() {
                   whileTap={{ scale: 0.98 }}
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="p-3 rounded-lg bg-muted">
-                      <IconComponent className="w-6 h-6 text-foreground" />
+                    <div className="p-2 rounded-lg bg-muted">
+                      <IconComponent className="w-4 h-4 text-foreground" />
                     </div>
-                    <h3 className="text-xl font-semibold">{game.title}</h3>
+                    <h3 className="text-base font-semibold">{game.title}</h3>
                   </div>
                   <p className="text-muted-foreground text-sm leading-relaxed">
                     {game.description}
