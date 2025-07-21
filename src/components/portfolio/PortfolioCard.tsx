@@ -6,10 +6,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { handleKeyDown } from "@/lib/utils";
 
-export const PortfolioCard = ({ title, period, images, summary, slug, variants }: PortfolioCardProps) => {
+export const PortfolioCard = ({ title, period, images, summary, slug, category, variants }: PortfolioCardProps) => {
   const handleClick = () => {
     // 클릭 핸들러 로직이 필요한 경우 여기에 추가
   };
+
+  // category에 따라 링크 경로 결정
+  const linkHref = `/portfolio/${category}/${slug}`;
 
   return (
     <motion.article
@@ -19,7 +22,7 @@ export const PortfolioCard = ({ title, period, images, summary, slug, variants }
       className="bg-card border border-border overflow-hidden cursor-pointer rounded-lg hover:bg-accent/10 dark:hover:bg-accent/60 transition-colors"
     >
       <Link 
-        href={`/portfolio/projects/${slug}`} 
+        href={linkHref} 
         tabIndex={0} 
         aria-label={`${title} 상세 보기`} 
         className="flex flex-col h-full p-4 focus:outline-none"
