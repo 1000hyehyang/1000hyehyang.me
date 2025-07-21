@@ -204,3 +204,236 @@
 .grid-cols-20 {
   grid-template-columns: repeat(20, minmax(0, 1fr));
 }
+
+/* 마크다운 본문 스타일 */
+.markdown-body {
+  color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.8;
+  word-break: break-word;
+  font-family: 'Pretendard', 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+}
+
+.markdown-body,
+.markdown-body * {
+  font-family: 'Pretendard', 'Segoe UI', 'Apple SD Gothic Neo', sans-serif !important;
+}
+
+/* --------------------
+   마크다운 헤딩
+--------------------- */
+.markdown-body h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.18rem;
+  letter-spacing: -0.01em;
+}
+.markdown-body h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.3;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.13rem;
+  letter-spacing: -0.01em;
+}
+.markdown-body h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1.2rem;
+  margin-bottom: 0.6rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+/* --------------------
+   본문, 리스트, 링크
+--------------------- */
+.markdown-body p {
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 1.1rem;
+  line-height: 1.8;
+}
+.markdown-body ul,
+.markdown-body ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1.1rem;
+  padding-left: 1.1rem;
+}
+.markdown-body ul {
+  list-style-type: disc;
+}
+.markdown-body ol {
+  list-style-type: decimal;
+}
+.markdown-body li {
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 0.4rem;
+  line-height: 1.7;
+}
+
+/* 체크박스 스타일 */
+.markdown-body input[type="checkbox"] {
+  accent-color: #fb923c;
+  width: 1.1em;
+  height: 1.1em;
+  margin-right: 0.5em;
+  vertical-align: middle;
+  border-radius: 0.2em;
+  border: 1.5px solid var(--border);
+  background: var(--background);
+  cursor: pointer;
+}
+.markdown-body ul.contains-task-list,
+.markdown-body ol.contains-task-list {
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+.markdown-body li.task-list-item {
+  list-style: none;
+  margin-left: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.markdown-body a {
+  color: #fdba74; /* orange-300 */
+  text-decoration: underline;
+  transition: color 0.2s;
+  word-break: break-all;
+}
+.markdown-body a:hover {
+  color: #fb923c; /* orange-400 */
+}
+
+/* --------------------
+   코드(인라인/블록)
+--------------------- */
+.markdown-body pre {
+  background: #f3f4f6; /* Tailwind zinc-100 */
+  color: #1e293b;      /* Tailwind slate-800 */
+  border-radius: 0.5rem;
+  padding: 1.1em 1.3em;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  font-size: 0.98em;
+  font-family: var(--font-mono, 'Fira Mono', 'Menlo', monospace);
+  border: 1px solid var(--border);
+  transition: background 0.2s, color 0.2s;
+}
+.dark .markdown-body pre {
+  background: #18181b; /* Tailwind zinc-900 */
+  color: #f4f4f5;      /* Tailwind zinc-100 */
+}
+.markdown-body code {
+  background: #fff7ed;  /* orange-50 */
+  color: #fb923c;       /* orange-400 */
+  border-radius: 0.3rem;
+  padding: 0.2em 0.4em;
+  font-size: 0.97em;
+  font-family: var(--font-mono, 'Fira Mono', 'Menlo', monospace);
+  transition: background 0.2s, color 0.2s;
+}
+.dark .markdown-body code {
+  background: #2d2a2a;
+  color: #fdba74;       /* orange-300 */
+}
+/* pre 내부의 code는 배경/색상 상속  */
+.markdown-body pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* --------------------
+   테이블
+--------------------- */
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-size: 0.98em;
+  background: var(--background);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 1px 4px 0 rgb(0 0 0 / 3%);
+}
+.markdown-body th, .markdown-body td {
+  border: 1px solid var(--border);
+  padding: 0.7em 1em;
+  text-align: left;
+}
+.markdown-body th {
+  background: var(--muted);
+  font-weight: 600;
+  color: var(--foreground);
+}
+.markdown-body tr:nth-child(even) {
+  background: var(--muted);
+}
+.dark .markdown-body th {
+  background: var(--muted);
+  color: var(--foreground);
+}
+.dark .markdown-body tr:nth-child(even) {
+  background: var(--background);
+}
+
+/* --------------------
+   인용구, 구분선, 이미지
+--------------------- */
+.markdown-body blockquote {
+  border-left: 4px solid #fdba74; /* orange-300 */
+  background: var(--muted);
+  color: var(--muted-foreground);
+  padding: 1rem 1.5rem;
+  margin: 2rem 0;
+  border-radius: 0.5rem;
+  font-style: italic;
+}
+.markdown-body hr {
+  border: none;
+  border-top: 2px solid var(--border);
+  margin: 2.5rem 0;
+}
+.markdown-body img {
+  max-width: 100%;
+  border-radius: 0.7rem;
+  margin: 2rem 0;
+  box-shadow: 0 2px 16px 0 rgb(0 0 0 / 6%);
+  display: block;
+}
+
+/* --------------------
+   취소선
+--------------------- */
+.markdown-body s, .markdown-body del, .markdown-body strike {
+  color: var(--muted-foreground);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: var(--muted-foreground);
+  background: transparent;
+  opacity: 0.7;
+  font-style: normal;
+  margin: 0 0.1em;
+}
