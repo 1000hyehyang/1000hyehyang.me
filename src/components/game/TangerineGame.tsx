@@ -7,6 +7,8 @@ import { GameControls, type GameControlsRef } from "./GameControls";
 import { GameStats } from "./GameStats";
 import { RotateCcw } from "lucide-react";
 import { useAudio } from "@/hooks/useAudio";
+import { GiscusComments } from "@/components/common/GiscusComments";
+import { GISCUS_GAME_CONFIG } from "@/lib/config";
 
 export const TangerineGame = () => {
   const { 
@@ -334,6 +336,14 @@ export const TangerineGame = () => {
           <li>• 연속되지 않은 천혜향은 선택할 수 없습니다</li>
         </ul>
       </motion.div>
+
+      <GiscusComments
+        repo={GISCUS_GAME_CONFIG.repo as `${string}/${string}`}
+        repoId={GISCUS_GAME_CONFIG.repoId}
+        category={GISCUS_GAME_CONFIG.category}
+        categoryId={GISCUS_GAME_CONFIG.categoryId}
+        term="천혜향 게임"
+      />
     </div>
   );
 }; 

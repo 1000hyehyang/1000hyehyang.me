@@ -1,7 +1,8 @@
 "use client";
 
 import { BlogDetailProps } from "@/types";
-import { GiscusComments } from "./GiscusComments";
+import { GiscusComments } from "@/components/common/GiscusComments";
+import { GISCUS_BLOG_CONFIG } from "@/lib/config";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { containerVariants, itemVariants } from "@/lib/animations";
@@ -41,7 +42,13 @@ export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
         {children}
       </motion.div>
       <motion.div variants={itemVariants} className="mt-8">
-        <GiscusComments title={frontmatter.title} />
+        <GiscusComments
+          repo={GISCUS_BLOG_CONFIG.repo as `${string}/${string}`}
+          repoId={GISCUS_BLOG_CONFIG.repoId}
+          category={GISCUS_BLOG_CONFIG.category}
+          categoryId={GISCUS_BLOG_CONFIG.categoryId}
+          term={frontmatter.title}
+        />
       </motion.div>
     </motion.article>
   );
