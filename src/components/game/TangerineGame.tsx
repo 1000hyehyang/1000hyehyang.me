@@ -337,6 +337,7 @@ export const TangerineGame = () => {
         </ul>
       </motion.div>
 
+      {/* Giscus 댓글창 */}
       <GiscusComments
         repo={GISCUS_GAME_CONFIG.repo as `${string}/${string}`}
         repoId={GISCUS_GAME_CONFIG.repoId}

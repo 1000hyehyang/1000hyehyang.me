@@ -24,7 +24,7 @@ export const GiscusComments = ({
   const { theme } = useTheme();
 
   return (
-    <div className="mt-10">
+    <div className="mt-8">
       <Giscus
         id="comments"
         repo={repo}
