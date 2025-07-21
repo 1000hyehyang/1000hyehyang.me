@@ -23,9 +23,13 @@ export const GiscusComments = ({
 }) => {
   const { theme } = useTheme();
 
+  // theme가 확정될 때까지 Giscus 렌더링하지 않음
+  if (!theme) return null;
+
   return (
     <div className="mt-8">
       <Giscus
+        key={theme}
         id="comments"
         repo={repo}
         repoId={repoId}
