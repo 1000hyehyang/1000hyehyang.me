@@ -4,13 +4,8 @@ import { PortfolioCardProps } from "@/types";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { handleKeyDown } from "@/lib/utils";
 
 export const PortfolioCard = ({ title, period, images, summary, slug, category, variants }: PortfolioCardProps) => {
-  const handleClick = () => {
-    // 클릭 핸들러 로직이 필요한 경우 여기에 추가
-  };
-
   // category에 따라 링크 경로 결정
   const linkHref = `/portfolio/${category}/${slug}`;
 
@@ -26,7 +21,6 @@ export const PortfolioCard = ({ title, period, images, summary, slug, category, 
         tabIndex={0} 
         aria-label={`${title} 상세 보기`} 
         className="flex flex-col h-full p-4 focus:outline-none"
-        onKeyDown={(e) => handleKeyDown(e, handleClick)}
       >
         <div className="text-xs text-muted-foreground mb-2">
           {period}
@@ -39,6 +33,7 @@ export const PortfolioCard = ({ title, period, images, summary, slug, category, 
             height={300}
             className="w-full aspect-[3/1.5] object-cover rounded-lg mb-3"
             unoptimized
+            priority
           />
         )}
         <div className="flex-1 flex flex-col gap-1">

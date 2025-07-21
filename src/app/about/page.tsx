@@ -109,14 +109,18 @@ const TimelineItemComponent = ({ item, index }: { item: TimelineItem; index: num
       >
         <div className="text-xs text-muted-foreground mb-1">{item.period}</div>
         <div className="flex items-center gap-2 mb-1">
-          <Image
-            src={item.logo}
-            alt={item.logoAlt}
-            width={24}
-            height={24}
-            className="rounded-xs"
-            aria-hidden="true"
-          />
+          <div style={{ position: 'relative', width: 24, height: 24 }}>
+            <Image
+              src={item.logo}
+              alt={item.logoAlt}
+              fill
+              style={{ objectFit: 'contain' }}
+              className="rounded-xs"
+              aria-hidden="true"
+              unoptimized
+              priority
+            />
+          </div>
           <span className="text-sm font-semibold">{item.title}</span>
         </div>
         {item.description && (
