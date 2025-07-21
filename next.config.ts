@@ -1,19 +1,17 @@
-import createMDX from '@next/mdx';
 import type { NextConfig } from "next";
-
-const withMDX = createMDX({
-  options: {
-    remarkPlugins: [],
-    rehypePlugins: [],
-  },
-});
 
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "eaalkymxyfskjojh.public.blob.vercel-storage.com",
+        pathname: "/about/**",
+      },
+      {
+        protocol: "https",
         hostname: "avatars.githubusercontent.com",
+        pathname: "/**",
       },
     ],
   },
@@ -23,4 +21,4 @@ const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
 };
 
-export default withMDX(nextConfig);
+export default nextConfig;
