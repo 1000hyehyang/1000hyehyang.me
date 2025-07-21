@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTangerineGameStore, type Tangerine } from "@/lib/tangerine-game";
+import { useTangerineGameStore, type Tangerine, useSyncHighScoreWithLocalStorage } from "@/lib/tangerine-game";
 import { TangerineGrid } from "./TangerineGrid";
 import { GameControls, type GameControlsRef } from "./GameControls";
 import { GameStats } from "./GameStats";
@@ -11,6 +11,7 @@ import { GiscusComments } from "@/components/common/GiscusComments";
 import { GISCUS_GAME_CONFIG } from "@/lib/config";
 
 export const TangerineGame = () => {
+  useSyncHighScoreWithLocalStorage();
   const { 
     isPlaying, 
     isPaused, 

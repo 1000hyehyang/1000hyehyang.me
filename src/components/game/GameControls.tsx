@@ -26,11 +26,6 @@ interface LeaderboardEntry {
   playerName?: string;
 }
 
-interface LeaderboardData {
-  scores: LeaderboardEntry[];
-  lastUpdated: string;
-}
-
 export const GameControls = forwardRef<GameControlsRef, GameControlsProps>(({ bgMusic, sfxSound }, ref) => {
   const { 
     isPlaying, 
@@ -42,7 +37,7 @@ export const GameControls = forwardRef<GameControlsRef, GameControlsProps>(({ bg
   } = useTangerineGameStore();
 
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [leaderboardData, setLeaderboardData] = useState<LeaderboardData | null>(null);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchLeaderboard = async () => {
@@ -51,7 +46,7 @@ export const GameControls = forwardRef<GameControlsRef, GameControlsProps>(({ bg
       const response = await fetch('/api/tangerine-game');
       if (response.ok) {
         const data = await response.json();
-        setLeaderboardData(data.leaderboard);
+        setLeaderboard(data.leaderboard || []);
       }
     } catch (error) {
       console.error('리더보드 조회 실패:', error);
@@ -256,9 +251,9 @@ export const GameControls = forwardRef<GameControlsRef, GameControlsProps>(({ bg
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground mx-auto"></div>
                   <p className="text-sm text-muted-foreground mt-2">리더보드 불러오는 중...</p>
                 </div>
-              ) : leaderboardData && leaderboardData.scores.length > 0 ? (
+              ) : leaderboard.length > 0 ? (
                 <div className="space-y-3">
-                  {leaderboardData.scores.map((entry, index) => (
+                  {leaderboard.map((entry, index) => (
                     <motion.div
                       key={`${entry.playerName}-${entry.timestamp}`}
                       className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border"
