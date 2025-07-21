@@ -9,7 +9,7 @@ const Giscus = dynamic(() => import("@giscus/react"), {
   loading: () => <div className="mt-8 p-4 text-center text-muted-foreground">댓글 로딩 중...</div>
 });
 
-export const GiscusComments = () => {
+export const GiscusComments = ({ title }: { title: string }) => {
   const { theme } = useTheme();
 
   return (
@@ -20,7 +20,8 @@ export const GiscusComments = () => {
         repoId={GISCUS_CONFIG.repoId}
         category={GISCUS_CONFIG.category}
         categoryId={GISCUS_CONFIG.categoryId}
-        mapping="pathname"
+        mapping="title"
+        term={title}
         reactionsEnabled="1"
         emitMetadata="0"
         inputPosition="top"

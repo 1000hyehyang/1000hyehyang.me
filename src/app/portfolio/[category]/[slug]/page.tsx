@@ -10,7 +10,9 @@ export async function generateMetadata({ params }: { params: Promise<{ category:
   const item = getPortfolioBySlug(category as "project" | "hackathon", slug);
   if (!item) return {};
   return {
-    title: item.frontmatter.title,
+    title: {
+      absolute: item.frontmatter.title,
+    },
     description: item.frontmatter.summary,
     openGraph: {
       title: item.frontmatter.title,

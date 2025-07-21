@@ -41,7 +41,7 @@ export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
         {children}
       </motion.div>
       <motion.div variants={itemVariants} className="mt-8">
-        <GiscusComments />
+        <GiscusComments title={frontmatter.title} />
       </motion.div>
     </motion.article>
   );
