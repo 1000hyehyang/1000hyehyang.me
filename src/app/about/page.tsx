@@ -67,7 +67,7 @@ const CERTIFICATION_DATA: TimelineItem[] = [
     period: "2025.06",
     title: "GTQ-i 1급",
     description: "",
-    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/gtqi.png",
+    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/ai.png",
     logoAlt: "GTQ-i 로고"
   },
   {
@@ -81,7 +81,7 @@ const CERTIFICATION_DATA: TimelineItem[] = [
     period: "2025.08",
     title: "GTQ 1급",
     description: "",
-    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/gtq.png",
+    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/ps.png",
     logoAlt: "GTQ 로고"
   },
   {
