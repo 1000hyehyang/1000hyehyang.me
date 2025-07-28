@@ -58,7 +58,18 @@ export const getAllPortfolio = (): PortfolioFrontmatter[] => {
       };
     })
     .filter((project): project is PortfolioFrontmatter => project !== null)
-    .sort((a, b) => new Date(b.period.split(" - ")[0]).getTime() - new Date(a.period.split(" - ")[0]).getTime());
+    .sort((a, b) => {
+      // 먼저 카테고리로 정렬 (project가 hackathon보다 먼저)
+      const categoryOrder = { project: 0, hackathon: 1 };
+      const categoryDiff = categoryOrder[a.category as keyof typeof categoryOrder] - categoryOrder[b.category as keyof typeof categoryOrder];
+      
+      if (categoryDiff !== 0) {
+        return categoryDiff;
+      }
+      
+      // 같은 카테고리 내에서는 날짜 순으로 정렬 (최신순)
+      return new Date(b.period.split(" - ")[0]).getTime() - new Date(a.period.split(" - ")[0]).getTime();
+    });
 };
 
 export const getPortfolioBySlug = (

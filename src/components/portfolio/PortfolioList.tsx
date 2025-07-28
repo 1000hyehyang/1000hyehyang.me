@@ -76,7 +76,7 @@ export const PortfolioList = ({ projects }: PortfolioListProps) => {
               key={category}
               type="button"
               onClick={() => handleCategoryClick(category)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
                 selectedCategory === category
                   ? "bg-muted/50 text-foreground"
                   : "bg-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground"
