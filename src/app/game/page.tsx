@@ -17,19 +17,14 @@ export default function GamePage() {
   return (
     <div className="w-full">
       {/* 헤더 */}
-      <motion.div
-        className="mb-12"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
+      <div className="mb-12">
         <h1 className="text-xl font-semibold mb-2">
           Playground.
         </h1>
         <p className="text-muted-foreground">
           다양한 미니게임들을 즐겨보세요
         </p>
-      </motion.div>
+      </div>
 
       {/* 게임 목록 */}
       <div className="grid gap-6 md:grid-cols-2">
