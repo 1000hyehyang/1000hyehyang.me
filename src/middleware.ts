@@ -12,7 +12,7 @@ const GAME_API_PATHS = [
 // 허용된 Origin들
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
-  'https://www.1000hyehyang.me/',
+  'https://www.1000hyehyang.me',
 ];
 
 export async function middleware(request: NextRequest) {
