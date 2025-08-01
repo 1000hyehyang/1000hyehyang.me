@@ -18,12 +18,6 @@ interface VisitorsData {
   lastUpdated: string;
 }
 
-interface IPVisitorsData {
-  [ip: string]: {
-    lastVisited: string;
-  };
-}
-
 interface CookieVisitorsData {
   [visitorId: string]: {
     lastVisited: string;
@@ -59,8 +53,8 @@ const getClientIP = async (): Promise<string> => {
   return "localhost";
 };
 
+// 방문자 수 계산 데이터 관리
 const getVisitorsData = async (): Promise<VisitorsData> => {
-  // Redis가 설정되지 않은 경우 기본값 반환
   if (!redis) {
     return {
       today: 0,
@@ -78,7 +72,6 @@ const getVisitorsData = async (): Promise<VisitorsData> => {
     console.error("Redis에서 방문자 데이터 조회 실패:", error);
   }
   
-  // 기본값 반환
   return {
     today: 0,
     total: 0,
@@ -86,26 +79,7 @@ const getVisitorsData = async (): Promise<VisitorsData> => {
   };
 };
 
-const getIPVisitorsData = async (): Promise<IPVisitorsData> => {
-  // Redis가 설정되지 않은 경우 기본값 반환
-  if (!redis) {
-    return {};
-  }
-
-  try {
-    const data = await redis.get("ip_visitors");
-    if (data) {
-      return data as IPVisitorsData;
-    }
-  } catch (error) {
-    console.error("Redis에서 IP 방문자 데이터 조회 실패:", error);
-  }
-  
-  return {};
-};
-
 const setVisitorsData = async (data: VisitorsData): Promise<void> => {
-  // Redis가 설정되지 않은 경우 아무것도 하지 않음
   if (!redis) {
     return;
   }
@@ -117,47 +91,59 @@ const setVisitorsData = async (data: VisitorsData): Promise<void> => {
   }
 };
 
-const setIPVisitorsData = async (data: IPVisitorsData): Promise<void> => {
-  // Redis가 설정되지 않은 경우 아무것도 하지 않음
-  if (!redis) {
-    return;
-  }
-
-  try {
-    await redis.set("ip_visitors", data);
-  } catch (error) {
-    console.error("Redis에 IP 방문자 데이터 저장 실패:", error);
-  }
-};
-
+// Cookie 방문자 데이터를 Sorted Set으로 관리 (시간순 정렬)
 const getCookieVisitorsData = async (): Promise<CookieVisitorsData> => {
-  // Redis가 설정되지 않은 경우 기본값 반환
   if (!redis) {
     return {};
   }
 
   try {
-    const data = await redis.get("cookie_visitors");
-    if (data) {
-      return data as CookieVisitorsData;
+    const results = await redis.zrange("cookie_visitors", 0, -1, { withScores: true });
+    const visitorDetails = await redis.hgetall("cookie_visitors_details");
+    const visitorsData: CookieVisitorsData = {};
+    
+    for (let i = 0; i < results.length; i += 2) {
+      const visitorId = results[i] as string;
+      const score = results[i + 1] as number;
+      
+      const details = visitorDetails?.[visitorId];
+      if (details) {
+        try {
+          const parsedDetails = JSON.parse(details as string);
+          visitorsData[visitorId] = {
+            lastVisited: new Date(score).toISOString(),
+            ip: parsedDetails.ip
+          };
+        } catch (error) {
+          console.error(`방문자 ${visitorId} 상세 정보 파싱 실패:`, error);
+        }
+      }
     }
+    
+    return visitorsData;
   } catch (error) {
-    console.error("Redis에서 Cookie 방문자 데이터 조회 실패:", error);
+    console.error("Cookie 방문자 데이터 조회 실패:", error);
+    return {};
   }
-  
-  return {};
 };
 
-const setCookieVisitorsData = async (data: CookieVisitorsData): Promise<void> => {
-  // Redis가 설정되지 않은 경우 아무것도 하지 않음
+// 특정 방문자의 방문 시간 업데이트
+const updateVisitorVisitTime = async (visitorId: string, lastVisited: string, ip: string): Promise<void> => {
   if (!redis) {
     return;
   }
 
   try {
-    await redis.set("cookie_visitors", data);
+    const visitTime = new Date(lastVisited).getTime();
+    
+    await redis.zadd("cookie_visitors", { score: visitTime, member: visitorId });
+    
+    await redis.hset("cookie_visitors_details", { [visitorId]: JSON.stringify({
+      lastVisited,
+      ip
+    }) });
   } catch (error) {
-    console.error("Redis에 Cookie 방문자 데이터 저장 실패:", error);
+    console.error("방문자 방문 시간 업데이트 실패:", error);
   }
 };
 
@@ -191,10 +177,8 @@ export async function POST() {
     const clientIP = await getClientIP();
     const cookieStore = await cookies();
     
-    // Cookie에서 방문자 ID 가져오기
     let visitorId = cookieStore.get('visitor_id')?.value;
     
-    // 방문자 ID가 없으면 새로 생성
     if (!visitorId) {
       visitorId = randomUUID();
     }
@@ -212,10 +196,9 @@ export async function POST() {
         lastUpdated: data.lastUpdated
       });
       
-      // 방문자 ID가 없으면 쿠키 설정
       if (!cookieStore.get('visitor_id')) {
         response.cookies.set('visitor_id', visitorId, {
-          maxAge: 60 * 60 * 24 * 365, // 1년
+          maxAge: 60 * 60 * 24 * 365,
           path: '/',
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
@@ -239,14 +222,11 @@ export async function POST() {
     data.total += 1;
     data.lastUpdated = new Date().toISOString();
     
-    // Cookie 방문 기록 업데이트
-    cookieVisitorsData[visitorId] = {
-      lastVisited: new Date().toISOString(),
-      ip: clientIP
-    };
+    // 방문자 추적 데이터 업데이트
+    await updateVisitorVisitTime(visitorId, new Date().toISOString(), clientIP);
     
+    // 방문자 수 데이터 저장
     await setVisitorsData(data);
-    await setCookieVisitorsData(cookieVisitorsData);
     
     const response = NextResponse.json({
       today: data.today,
@@ -254,9 +234,8 @@ export async function POST() {
       lastUpdated: data.lastUpdated
     });
     
-    // 방문자 ID 쿠키 설정
     response.cookies.set('visitor_id', visitorId, {
-      maxAge: 60 * 60 * 24 * 365, // 1년
+      maxAge: 60 * 60 * 24 * 365,
       path: '/',
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
