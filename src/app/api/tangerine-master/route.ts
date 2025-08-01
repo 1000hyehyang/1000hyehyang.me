@@ -64,20 +64,40 @@ const validateGameState = (gameState: Record<string, unknown>): boolean => {
   if (!gameState || typeof gameState !== 'object') return false;
   
   // 필수 게임 상태 필드 확인
-  const requiredFields = ['isPlaying', 'survivalTime', 'player', 'tangerines'];
+  const requiredFields = ['isPlaying', 'survivalTime', 'player', 'tangerines', 'difficulty'];
   for (const field of requiredFields) {
     if (!(field in gameState)) return false;
   }
   
   // 게임이 실제로 진행되었는지 확인
   const survivalTime = gameState.survivalTime as number;
-  if (survivalTime <= 0) return false;
+  if (survivalTime <= 0 || survivalTime > 3600) return false; // 최대 1시간
   
   // 플레이어 정보가 유효한지 확인
   const player = gameState.player as Record<string, unknown>;
   if (!player || typeof (player.x as number) !== 'number' || typeof (player.y as number) !== 'number') {
     return false;
   }
+  
+  // 플레이어 위치가 게임 영역 내에 있는지 확인
+  const playerX = player.x as number;
+  const playerY = player.y as number;
+  if (playerX < 0 || playerX > 800 || playerY < 0 || playerY > 600) {
+    return false;
+  }
+  
+  // 난이도가 유효한지 확인
+  const difficulty = gameState.difficulty as number;
+  if (typeof difficulty !== 'number' || difficulty < 0 || difficulty > 720) { // 최대 12분 (720초 / 5초)
+    return false;
+  }
+  
+  // 귤 배열이 유효한지 확인
+  const tangerines = gameState.tangerines as unknown[];
+  if (!Array.isArray(tangerines)) return false;
+  
+  // 귤 개수가 합리적인 범위인지 확인 (너무 많으면 조작 의심)
+  if (tangerines.length > 100) return false;
   
   return true;
 };
@@ -165,6 +185,15 @@ export async function POST(request: Request) {
     if (!validateScore(score)) {
       return NextResponse.json(
         { error: "유효하지 않은 점수입니다. (0-3600 사이의 정수만 허용)" },
+        { status: 400 }
+      );
+    }
+    
+    // 점수와 게임 시간이 일치하는지 확인
+    const gameStateSurvivalTime = gameState.survivalTime as number;
+    if (Math.abs(score - gameStateSurvivalTime) > 1) { // 1초 차이까지 허용
+      return NextResponse.json(
+        { error: "점수와 게임 시간이 일치하지 않습니다." },
         { status: 400 }
       );
     }

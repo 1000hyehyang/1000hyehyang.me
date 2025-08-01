@@ -58,9 +58,17 @@ export const TangerineMasterGame = () => {
     if (!gameState.isPlaying) {
       // 게임이 시작되지 않은 상태: 게임 시작
       gameState.startGame();
-      // 게임 세션 토큰 생성
+      // 게임 세션 토큰 생성 (서버에 저장)
       const sessionId = `game_session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       setGameSessionId(sessionId);
+      
+      // 서버에 세션 토큰 저장
+      fetch('/api/tangerine-master/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId })
+      }).catch(console.error);
+      
       if (!bgMusic.isMuted) {
         bgMusic.play();
       }

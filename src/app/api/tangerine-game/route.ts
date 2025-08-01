@@ -71,7 +71,18 @@ const validateGameState = (gameState: Record<string, unknown>): boolean => {
   
   // 게임이 실제로 진행되었는지 확인
   const score = gameState.score as number;
-  if (score <= 0) return false;
+  if (score <= 0 || score > 50000) return false; // 최대 50000점
+  
+  // 남은 시간이 유효한지 확인
+  const timeLeft = gameState.timeLeft as number;
+  if (typeof timeLeft !== 'number' || timeLeft < 0 || timeLeft > 60) return false; // 0-60초
+  
+  // 귤 배열이 유효한지 확인
+  const tangerines = gameState.tangerines as unknown[];
+  if (!Array.isArray(tangerines)) return false;
+  
+  // 귤 개수가 합리적인 범위인지 확인 (10x20 격자 = 200개)
+  if (tangerines.length > 200) return false;
   
   return true;
 };
@@ -159,6 +170,15 @@ export async function POST(request: Request) {
     if (!validateScore(score)) {
       return NextResponse.json(
         { error: "유효하지 않은 점수입니다. (0-50000 사이의 정수만 허용)" },
+        { status: 400 }
+      );
+    }
+    
+    // 점수와 게임 상태의 점수가 일치하는지 확인
+    const gameStateScore = gameState.score as number;
+    if (Math.abs(score - gameStateScore) > 0) { // 정확히 일치해야 함
+      return NextResponse.json(
+        { error: "점수가 게임 상태와 일치하지 않습니다." },
         { status: 400 }
       );
     }
