@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 
 export interface Tangerine {
   id: string;
@@ -116,7 +116,10 @@ export function useTangerineMasterGame(): GameState {
   });
   const [difficulty, setDifficulty] = useState(0);
   
-  const gameArea = { width: GAME_AREA_WIDTH, height: GAME_AREA_HEIGHT };
+  const gameArea = useMemo(() => ({ 
+    width: GAME_AREA_WIDTH, 
+    height: GAME_AREA_HEIGHT 
+  }), []);
   const lastSpawnTime = useRef(0);
   const lastUpdateTime = useRef(0);
 
@@ -276,7 +279,11 @@ export function useTangerineMasterGame(): GameState {
       }
 
       // 게임이 진행 중이고 일시정지가 아닐 때만 이동 키 처리
+      // 게임 오버 상태에서도 키 입력을 처리하되, 실제 이동은 게임이 진행 중일 때만
       if (isPlaying && !isPaused) {
+        pressedKeys.add(event.key);
+      } else {
+        // 게임 오버 상태에서도 키 입력을 기록 (다시 게임 시작할 때를 위해)
         pressedKeys.add(event.key);
       }
     };

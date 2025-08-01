@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTangerineMasterGame, useSyncHighScoreWithLocalStorage } from "@/lib/tangerine-master";
 import { useAudio } from "@/hooks/useAudio";
@@ -70,7 +70,7 @@ export const TangerineMasterGame = () => {
   };
 
   // 게임 오버 처리
-  const handleGameOver = () => {
+  const handleGameOver = useCallback(() => {
     if (gameState.survivalTime > 0) {
       setShowGameOver(true);
       updateHighScore(gameState.survivalTime);
@@ -79,7 +79,7 @@ export const TangerineMasterGame = () => {
         sfxSound.play();
       }
     }
-  };
+  }, [gameState.survivalTime, updateHighScore, sfxSound]);
 
   // 게임 오버 모달 닫기
   const handleGameOverClose = () => {
@@ -128,15 +128,15 @@ export const TangerineMasterGame = () => {
 
   // 게임 오버 감지
   useEffect(() => {
-    if (!gameState.isPlaying && gameState.survivalTime > 0) {
+    if (!gameState.isPlaying && gameState.survivalTime > 0 && !showGameOver) {
       handleGameOver();
     }
-  }, [gameState.isPlaying, gameState.survivalTime]);
+  }, [gameState.isPlaying, gameState.survivalTime, handleGameOver, showGameOver]);
 
   // 하이스코어 동기화
   useEffect(() => {
     gameState.setHighScore(highScore);
-  }, [highScore]);
+  }, [highScore, gameState]);
 
   // 세로 모드일 때 가로 모드 안내
   if (isPortrait) {
@@ -278,6 +278,13 @@ export const TangerineMasterGame = () => {
                     placeholder="이름을 입력하세요"
                     className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/20 focus:bg-background"
                     maxLength={20}
+                    onKeyDown={(e) => {
+                      // WASD 키가 input 내부에서도 게임에 전달되도록 함
+                      const gameKeys = ['w', 'W', 'a', 'A', 's', 'S', 'd', 'D'];
+                      if (gameKeys.includes(e.key)) {
+                        e.stopPropagation();
+                      }
+                    }}
                   />
                 </div>
                 <div className="flex gap-3 justify-center">

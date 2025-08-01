@@ -106,7 +106,7 @@ export async function POST(request: Request) {
       sanitizedPlayerName = sanitizeInput(playerName);
     }
 
-    // 리더보드에 점수 추가 (동시성 안전)
+    // 리더보드에 점수 추가
     await redis.zadd("tangerine_master_leaderboard", {
       score,
       member: JSON.stringify({
