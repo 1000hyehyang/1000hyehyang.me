@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Citrus } from "lucide-react";
+import { Citrus, Shield } from "lucide-react";
 
 const games = [
   {
@@ -9,6 +9,12 @@ const games = [
     description: "연속된 천혜향들을 선택해서 합이 10이 되는 조합을 찾아보세요",
     href: "/game/orange-game",
     icon: Citrus
+  },
+  {
+    title: "귤림고수",
+    description: "날아오는 귤들을 피해서 최대한 오래 살아남아보세요",
+    href: "/game/tangerine-master",
+    icon: Shield
   }
   // 추후 다른 게임들 추가 가능
 ];
@@ -39,7 +45,7 @@ export default function GamePage() {
             >
               <Link href={game.href}>
                 <motion.div
-                  className="p-6 bg-card border border-border overflow-hidden cursor-pointer rounded-lg hover:bg-accent/10 dark:hover:bg-accent/60 transition-colors"
+                  className="p-6 bg-card border border-border overflow-hidden cursor-pointer rounded-lg hover:bg-accent/10 dark:hover:bg-accent/60 transition-colors h-36 flex flex-col"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -49,7 +55,7 @@ export default function GamePage() {
                     </div>
                     <h3 className="text-base font-semibold">{game.title}</h3>
                   </div>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
+                  <p className="text-muted-foreground text-sm leading-relaxed flex-1">
                     {game.description}
                   </p>
                 </motion.div>

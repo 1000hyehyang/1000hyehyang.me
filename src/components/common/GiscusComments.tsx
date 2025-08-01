@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 const Giscus = dynamic(() => import("@giscus/react"), {
   ssr: false,
@@ -22,9 +23,20 @@ export const GiscusComments = ({
   term: string;
 }) => {
   const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  // theme가 확정될 때까지 Giscus 렌더링하지 않음
-  if (!theme) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // 클라이언트에서 마운트된 후에만 렌더링
+  if (!mounted || !theme) {
+    return (
+      <div className="mt-8 p-4 text-center text-muted-foreground">
+        댓글 로딩 중...
+      </div>
+    );
+  }
 
   return (
     <div className="mt-8">
