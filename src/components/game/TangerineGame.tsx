@@ -29,6 +29,7 @@ export const TangerineGame = () => {
   const [isPortrait, setIsPortrait] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [hasSaved, setHasSaved] = useState(false);
+  const [originalHighScore, setOriginalHighScore] = useState(0); // 게임 오버 시점의 원래 최고 기록
 
   const gameControlsRef = useRef<GameControlsRef>(null);
 
@@ -88,9 +89,10 @@ export const TangerineGame = () => {
   useEffect(() => {
     if (timeLeft <= 0) {
       endGameFromStore();
+      setOriginalHighScore(highScore); // 게임 오버 시점의 원래 최고 기록 저장
       setShowGameOver(true);
     }
-  }, [timeLeft, endGameFromStore]);
+  }, [timeLeft, endGameFromStore, highScore]);
 
   // 게임 시작 시 배경음악 재생
   useEffect(() => {
@@ -109,6 +111,7 @@ export const TangerineGame = () => {
     setShowGameOver(false);
     setPlayerName("");
     setHasSaved(false);
+    setOriginalHighScore(0); // 원래 최고 기록 초기화
   };
 
   const handleSaveScore = async () => {
@@ -283,7 +286,7 @@ export const TangerineGame = () => {
               </div>
 
               {/* 플레이어명 입력 */}
-              {score > highScore && score > 0 && (
+              {score > originalHighScore && score > 0 && (
                 <div className="mb-6">
                   <label htmlFor="playerName" className="block text-sm font-medium text-muted-foreground mb-2">
                     플레이어명
@@ -301,9 +304,9 @@ export const TangerineGame = () => {
               )}
                           
               <div className="flex gap-3 justify-center">
-                {score > highScore && score > 0 && (
+                {score > originalHighScore && score > 0 && (
                   <button
-                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                    className={`px-4 py-2 rounded text-sm font-medium transition-colors cursor-pointer ${
                       isSaving || hasSaved
                         ? 'bg-muted text-muted-foreground cursor-not-allowed' 
                         : 'bg-foreground text-background hover:bg-foreground/90'
@@ -315,7 +318,7 @@ export const TangerineGame = () => {
                   </button>
                 )}
                 <button
-                  className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded text-sm font-medium transition-colors"
+                  className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded text-sm font-medium transition-colors cursor-pointer"
                   onClick={handleGameOverClose}
                 >
                   닫기
