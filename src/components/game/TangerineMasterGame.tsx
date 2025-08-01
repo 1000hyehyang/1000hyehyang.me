@@ -51,12 +51,16 @@ export const TangerineMasterGame = () => {
   const [showGameOver, setShowGameOver] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [gameSessionId, setGameSessionId] = useState("");
 
   // 게임 시작/일시정지/재개 처리
   const handleStartGame = () => {
     if (!gameState.isPlaying) {
       // 게임이 시작되지 않은 상태: 게임 시작
       gameState.startGame();
+      // 게임 세션 토큰 생성
+      const sessionId = `game_session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      setGameSessionId(sessionId);
       if (!bgMusic.isMuted) {
         bgMusic.play();
       }
@@ -106,7 +110,15 @@ export const TangerineMasterGame = () => {
         },
         body: JSON.stringify({
           score: currentScore,
-          playerName: playerName.trim()
+          playerName: playerName.trim(),
+          gameSessionId: gameSessionId,
+          gameState: {
+            isPlaying: gameState.isPlaying,
+            survivalTime: gameState.survivalTime,
+            player: gameState.player,
+            tangerines: gameState.tangerines,
+            difficulty: gameState.difficulty
+          }
         }),
       });
 

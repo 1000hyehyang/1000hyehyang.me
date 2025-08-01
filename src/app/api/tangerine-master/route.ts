@@ -38,6 +38,52 @@ const getClientIP = async (): Promise<string> => {
   return "localhost";
 };
 
+const validateGameSession = async (sessionId: string, ip: string): Promise<boolean> => {
+  if (!redis || !sessionId) return false;
+  
+  try {
+    const session = await redis.get(`session:${sessionId}`);
+    if (!session) return false;
+    
+    const sessionData = session as { ip: string; createdAt: number; isValid: boolean };
+    const timeDiff = Date.now() - sessionData.createdAt;
+    
+    // 세션이 유효하고 IP가 일치하며 1시간 이내인지 확인
+    return sessionData.isValid && 
+           sessionData.ip === ip && 
+           timeDiff < 3600000; // 1시간
+  } catch (error) {
+    console.error("게임 세션 검증 실패:", error);
+    return false;
+  }
+};
+
+// 게임 상태 검증 (실제 게임에서 온 요청인지 확인)
+const validateGameState = (gameState: Record<string, unknown>): boolean => {
+  // 게임 상태가 유효한지 확인
+  if (!gameState || typeof gameState !== 'object') return false;
+  
+  // 필수 게임 상태 필드 확인
+  const requiredFields = ['isPlaying', 'survivalTime', 'player', 'tangerines'];
+  for (const field of requiredFields) {
+    if (!(field in gameState)) return false;
+  }
+  
+  // 게임이 실제로 진행되었는지 확인
+  const survivalTime = gameState.survivalTime as number;
+  if (survivalTime <= 0) return false;
+  
+  // 플레이어 정보가 유효한지 확인
+  const player = gameState.player as Record<string, unknown>;
+  if (!player || typeof (player.x as number) !== 'number' || typeof (player.y as number) !== 'number') {
+    return false;
+  }
+  
+  return true;
+};
+
+
+
 // GET: 리더보드 상위 10개만 반환
 export async function GET() {
   try {
@@ -80,12 +126,39 @@ export async function POST(request: Request) {
     if (!redis) {
       return NextResponse.json({ error: "Redis 미설정" }, { status: 500 });
     }
-    const body = await request.json();
-    const { score, playerName } = body;
+    
     const clientIP = await getClientIP();
+    
+    const body = await request.json();
+    const { score, playerName, gameSessionId, gameState } = body;
+    
     if (!body || typeof body !== 'object') {
       return NextResponse.json(
         { error: "유효하지 않은 요청입니다." },
+        { status: 400 }
+      );
+    }
+    
+    // 게임 세션 검증 (실제 게임에서 온 요청인지 확인)
+    if (!gameSessionId || typeof gameSessionId !== 'string') {
+      return NextResponse.json(
+        { error: "유효하지 않은 게임 세션입니다." },
+        { status: 401 }
+      );
+    }
+    
+    const isValidSession = await validateGameSession(gameSessionId, clientIP);
+    if (!isValidSession) {
+      return NextResponse.json(
+        { error: "게임 세션이 유효하지 않습니다." },
+        { status: 401 }
+      );
+    }
+    
+    // 게임 상태 검증 (실제 게임에서 온 요청인지 확인)
+    if (!gameState || !validateGameState(gameState)) {
+      return NextResponse.json(
+        { error: "유효하지 않은 게임 상태입니다." },
         { status: 400 }
       );
     }
@@ -95,6 +168,8 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+    
+
     let sanitizedPlayerName = '';
     if (playerName && typeof playerName === 'string') {
       if (!validatePlayerName(playerName)) {
