@@ -6,6 +6,7 @@ import { useAudio } from "@/hooks/useAudio";
 import { TangerineMasterCanvas } from "./TangerineMasterCanvas";
 import { TangerineMasterControls, TangerineMasterControlsRef } from "./TangerineMasterControls";
 import { TangerineMasterStats } from "./TangerineMasterStats";
+import { RotateCcw } from "lucide-react";
 import { GiscusComments } from "@/components/common/GiscusComments";
 import { GISCUS_GAME_CONFIG } from "@/lib/config";
 
@@ -13,6 +14,9 @@ export const TangerineMasterGame = () => {
   const gameState = useTangerineMasterGame();
   const { highScore, updateHighScore } = useSyncHighScoreWithLocalStorage();
   const controlsRef = useRef<TangerineMasterControlsRef>(null);
+  
+  // 화면 방향 감지
+  const [isPortrait, setIsPortrait] = useState(false);
   
   // 오디오 설정
   const bgMusic = useAudio({
@@ -26,6 +30,22 @@ export const TangerineMasterGame = () => {
     loop: false,
     volume: 0.5
   });
+
+  // 화면 방향 감지
+  useEffect(() => {
+    const checkOrientation = () => {
+      setIsPortrait(window.innerHeight > window.innerWidth);
+    };
+
+    checkOrientation();
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+
+    return () => {
+      window.removeEventListener('resize', checkOrientation);
+      window.removeEventListener('orientationchange', checkOrientation);
+    };
+  }, []);
 
   // 게임 오버 상태
   const [showGameOver, setShowGameOver] = useState(false);
@@ -117,6 +137,47 @@ export const TangerineMasterGame = () => {
   useEffect(() => {
     gameState.setHighScore(highScore);
   }, [highScore]);
+
+  // 세로 모드일 때 가로 모드 안내
+  if (isPortrait) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <motion.div
+          className="text-center max-w-md mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="mb-8">
+            <motion.div
+              className="w-16 h-16 mx-auto mb-6 bg-foreground rounded-full flex items-center justify-center"
+              animate={{ rotate: [0, 90, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <RotateCcw className="w-8 h-8 text-background" />
+            </motion.div>
+            <h1 className="text-2xl font-semibold mb-2">
+              귤림고수
+            </h1>
+            <p className="text-muted-foreground">
+              화면을 가로로 돌려주세요
+            </p>
+          </div>
+          
+          <div className="bg-card border rounded-lg p-6">
+            <p className="text-sm text-muted-foreground mb-4">
+              귤림고수는 가로 모드에서 더 편리하게 즐길 수 있어요.
+            </p>
+            <div className="space-y-2 text-xs text-muted-foreground">
+              <p>• 세로 모드: 화면이 좁아서 게임하기 어려워요</p>
+              <p>• 가로 모드: 넓은 화면으로 편리하게 게임할 수 있어요</p>
+              <p>• 방향키로 캐릭터를 조작하는 게임이므로 가로 모드가 최적화되어 있어요</p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
