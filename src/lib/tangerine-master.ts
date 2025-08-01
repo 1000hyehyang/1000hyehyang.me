@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { safeLocalStorage } from './utils';
 
 export interface Tangerine {
   id: string;
@@ -372,16 +373,16 @@ export function useSyncHighScoreWithLocalStorage() {
   const [highScore, setHighScore] = useState(0);
 
   useEffect(() => {
-    const saved = localStorage.getItem('tangerine_master_high_score');
-    if (saved) {
-      setHighScore(parseInt(saved, 10));
+    const saved = safeLocalStorage.getNumber('tangerine_master_high_score');
+    if (saved > 0) {
+      setHighScore(saved);
     }
   }, []);
 
   const updateHighScore = useCallback((score: number) => {
     if (score > highScore) {
       setHighScore(score);
-      localStorage.setItem('tangerine_master_high_score', score.toString());
+      safeLocalStorage.setNumber('tangerine_master_high_score', score);
     }
   }, [highScore]);
 

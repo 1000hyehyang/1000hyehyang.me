@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { useEffect } from 'react';
+import { safeLocalStorage, logger } from './utils';
 
 export interface Tangerine {
   id: string;
@@ -156,13 +157,11 @@ export const useTangerineGameStore = create<GameState>((set, get) => ({
     const sum = newSelectedTangerines.reduce((acc, t) => acc + t.value, 0);
     if (sum === 10) {
       get().removeTangerines(newSelectedTangerines, () => {
-        if (typeof window !== 'undefined') {
-          const sfxMuted = localStorage.getItem('sfx-muted') === 'true';
-          if (!sfxMuted) {
-            const audio = new Audio('/orange-game/success.mp3');
-            audio.volume = 0.5;
-            audio.play().catch(console.error);
-          }
+        const sfxMuted = safeLocalStorage.getBoolean('sfx-muted');
+        if (!sfxMuted) {
+          const audio = new Audio('/orange-game/success.mp3');
+          audio.volume = 0.5;
+          audio.play().catch((error) => logger.error('성공 사운드 재생 실패:', error));
         }
       });
     } else if (sum > 10) {
@@ -238,9 +237,7 @@ export const useTangerineGameStore = create<GameState>((set, get) => ({
     const { highScore } = get();
     if (score > highScore) {
       set({ highScore: score });
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('tangerine_high_score', String(score));
-      }
+      safeLocalStorage.setNumber('tangerine_high_score', score);
     }
   },
 
@@ -257,9 +254,7 @@ export const useTangerineGameStore = create<GameState>((set, get) => ({
 export function useSyncHighScoreWithLocalStorage() {
   const setHighScore = useTangerineGameStore((state) => state.setHighScore);
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('tangerine_high_score');
-      if (saved) setHighScore(Number(saved));
-    }
+    const saved = safeLocalStorage.getNumber('tangerine_high_score');
+    if (saved > 0) setHighScore(saved);
   }, [setHighScore]);
 } 

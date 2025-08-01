@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { safeLocalStorage, logger } from '@/lib/utils';
 
 interface UseAudioProps {
   src: string;
@@ -13,16 +14,8 @@ export const useAudio = ({ src, loop = true, volume = 0.3 }: UseAudioProps) => {
 
   // localStorage에서 음소거 상태 불러오기
   useEffect(() => {
-    try {
-      if (typeof window !== 'undefined') {
-        const savedMuted = localStorage.getItem('sfx-muted');
-        if (savedMuted !== null) {
-          setIsMuted(savedMuted === 'true');
-        }
-      }
-    } catch (error) {
-      console.warn('localStorage 접근 실패:', error);
-    }
+    const savedMuted = safeLocalStorage.getBoolean('sfx-muted');
+    setIsMuted(savedMuted);
   }, []);
 
   useEffect(() => {
@@ -41,7 +34,7 @@ export const useAudio = ({ src, loop = true, volume = 0.3 }: UseAudioProps) => {
 
   const play = () => {
     if (audioRef.current && !isMuted) {
-      audioRef.current.play().catch(console.error);
+      audioRef.current.play().catch((error) => logger.error('오디오 재생 실패:', error));
       setIsPlaying(true);
     }
   };
@@ -66,13 +59,7 @@ export const useAudio = ({ src, loop = true, volume = 0.3 }: UseAudioProps) => {
       audioRef.current.muted = !isMuted;
       setIsMuted(!isMuted);
       // localStorage에 음소거 상태 저장
-      try {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('sfx-muted', String(!isMuted));
-        }
-      } catch (error) {
-        console.warn('localStorage 저장 실패:', error);
-      }
+      safeLocalStorage.setBoolean('sfx-muted', !isMuted);
     }
   };
 
