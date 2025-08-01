@@ -19,7 +19,7 @@ const readMdxFilesRecursively = (directoryPath: string): string[] => {
       }
     }
   } catch (error) {
-    console.error(`Error reading directory ${directoryPath}:`, error);
+    console.warn(`디렉토리 읽기 실패 ${directoryPath}:`, error);
   }
   return files;
 };
@@ -30,7 +30,7 @@ const parseMdxFile = (filePath: string) => {
     const { data, content } = matter(source);
     return { data, content };
   } catch (error) {
-    console.error(`Error parsing file ${filePath}:`, error);
+    console.warn(`파일 파싱 실패 ${filePath}:`, error);
     return null;
   }
 };

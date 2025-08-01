@@ -13,11 +13,15 @@ export const useAudio = ({ src, loop = true, volume = 0.3 }: UseAudioProps) => {
 
   // localStorage에서 음소거 상태 불러오기
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedMuted = localStorage.getItem('sfx-muted');
-      if (savedMuted !== null) {
-        setIsMuted(savedMuted === 'true');
+    try {
+      if (typeof window !== 'undefined') {
+        const savedMuted = localStorage.getItem('sfx-muted');
+        if (savedMuted !== null) {
+          setIsMuted(savedMuted === 'true');
+        }
       }
+    } catch (error) {
+      console.warn('localStorage 접근 실패:', error);
     }
   }, []);
 
@@ -62,8 +66,12 @@ export const useAudio = ({ src, loop = true, volume = 0.3 }: UseAudioProps) => {
       audioRef.current.muted = !isMuted;
       setIsMuted(!isMuted);
       // localStorage에 음소거 상태 저장
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('sfx-muted', String(!isMuted));
+      try {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('sfx-muted', String(!isMuted));
+        }
+      } catch (error) {
+        console.warn('localStorage 저장 실패:', error);
       }
     }
   };

@@ -94,17 +94,20 @@ const fetchDiscussions = async (): Promise<GitHubDiscussion[]> => {
     });
 
     if (!response.ok) {
+      console.warn('GitHub API 응답 실패:', response.status, response.statusText);
       return [];
     }
 
     const data: GitHubResponse = await response.json();
     
     if (!data.data?.repository) {
+      console.warn('GitHub 저장소를 찾을 수 없습니다.');
       return [];
     }
     
     return data.data.repository.discussions.nodes;
-  } catch {
+  } catch (error) {
+    console.warn('GitHub API 요청 실패:', error);
     return [];
   }
 };

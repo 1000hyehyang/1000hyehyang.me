@@ -21,17 +21,17 @@ export const SITE_CONFIG = {
 } as const;
 
 export const GISCUS_BLOG_CONFIG = {
-  repo: process.env.NEXT_PUBLIC_GISCUS_REPO!,
-  repoId: process.env.NEXT_PUBLIC_GISCUS_REPO_ID!,
-  category: process.env.NEXT_PUBLIC_GISCUS_BLOG_CATEGORY!,
-  categoryId: process.env.NEXT_PUBLIC_GISCUS_BLOG_CATEGORY_ID!,
+  repo: process.env.NEXT_PUBLIC_GISCUS_REPO || "",
+  repoId: process.env.NEXT_PUBLIC_GISCUS_REPO_ID || "",
+  category: process.env.NEXT_PUBLIC_GISCUS_BLOG_CATEGORY || "",
+  categoryId: process.env.NEXT_PUBLIC_GISCUS_BLOG_CATEGORY_ID || "",
 };
 
 export const GISCUS_GAME_CONFIG = {
-  repo: process.env.NEXT_PUBLIC_GISCUS_REPO!,
-  repoId: process.env.NEXT_PUBLIC_GISCUS_REPO_ID!,
-  category: process.env.NEXT_PUBLIC_GISCUS_GAME_CATEGORY!,
-  categoryId: process.env.NEXT_PUBLIC_GISCUS_GAME_CATEGORY_ID!,
+  repo: process.env.NEXT_PUBLIC_GISCUS_REPO || "",
+  repoId: process.env.NEXT_PUBLIC_GISCUS_REPO_ID || "",
+  category: process.env.NEXT_PUBLIC_GISCUS_GAME_CATEGORY || "",
+  categoryId: process.env.NEXT_PUBLIC_GISCUS_GAME_CATEGORY_ID || "",
 };
 
 export const getValidatedGitHubConfig = () => {

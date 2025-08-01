@@ -123,8 +123,6 @@ export const TangerineGame = () => {
       return;
     }
 
-
-
     // 플레이어명 정제
     const sanitizedPlayerName = playerName
       .replace(/[<>]/g, '')
@@ -135,6 +133,16 @@ export const TangerineGame = () => {
 
     setIsSaving(true);
     try {
+      // 점수 저장 시에만 세션 생성
+      const sessionId = `game_session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // 세션 토큰을 서버에 저장
+      await fetch('/api/tangerine-game/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId })
+      });
+
       const response = await fetch('/api/tangerine-game', {
         method: 'POST',
         headers: {
@@ -142,7 +150,14 @@ export const TangerineGame = () => {
         },
         body: JSON.stringify({
           score,
-          playerName: sanitizedPlayerName || `Player_${Math.random().toString(36).substr(2, 4)}`
+          playerName: sanitizedPlayerName || `Player_${Math.random().toString(36).substr(2, 4)}`,
+          gameSessionId: sessionId,
+          gameState: {
+            isPlaying,
+            score,
+            timeLeft,
+            tangerines: useTangerineGameStore.getState().tangerines
+          }
         }),
       });
 
