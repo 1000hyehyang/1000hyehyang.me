@@ -109,7 +109,14 @@ const getCookieVisitorsData = async (): Promise<CookieVisitorsData> => {
       const details = visitorDetails?.[visitorId];
       if (details) {
         try {
-          const parsedDetails = JSON.parse(details as string);
+          // details가 이미 객체인지 문자열인지 확인
+          let parsedDetails;
+          if (typeof details === 'string') {
+            parsedDetails = JSON.parse(details);
+          } else {
+            parsedDetails = details;
+          }
+          
           visitorsData[visitorId] = {
             lastVisited: new Date(score).toISOString(),
             ip: parsedDetails.ip
@@ -138,10 +145,11 @@ const updateVisitorVisitTime = async (visitorId: string, lastVisited: string, ip
     
     await redis.zadd("cookie_visitors", { score: visitTime, member: visitorId });
     
-    await redis.hset("cookie_visitors_details", { [visitorId]: JSON.stringify({
+    // Hash에는 객체 형태로 저장 (JSON.stringify 하지 않음)
+    await redis.hset("cookie_visitors_details", { [visitorId]: {
       lastVisited,
       ip
-    }) });
+    } });
   } catch (error) {
     console.error("방문자 방문 시간 업데이트 실패:", error);
   }
