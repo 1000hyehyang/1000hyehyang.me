@@ -52,6 +52,7 @@ export const TangerineMasterGame = () => {
   const [playerName, setPlayerName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [gameSessionId, setGameSessionId] = useState("");
+  const [originalHighScore, setOriginalHighScore] = useState(0); // 게임 오버 시점의 원래 최고 기록
 
   // 게임 시작/일시정지/재개 처리
   const handleStartGame = () => {
@@ -85,18 +86,20 @@ export const TangerineMasterGame = () => {
   const handleGameOver = useCallback(() => {
     if (gameState.survivalTime > 0) {
       setShowGameOver(true);
+      setOriginalHighScore(highScore); // 게임 오버 시점의 원래 최고 기록 저장
       updateHighScore(gameState.survivalTime);
       // 게임 오버 효과음 재생
       if (!sfxSound.isMuted) {
         sfxSound.play();
       }
     }
-  }, [gameState.survivalTime, updateHighScore, sfxSound]);
+  }, [gameState.survivalTime, updateHighScore, sfxSound, highScore]);
 
   // 게임 오버 모달 닫기
   const handleGameOverClose = () => {
     setShowGameOver(false);
     setPlayerName("");
+    setOriginalHighScore(0); // 원래 최고 기록 초기화
     gameState.resetGame();
   };
 
@@ -286,7 +289,7 @@ export const TangerineMasterGame = () => {
               </div>
 
               <div className="space-y-4">
-                {Math.floor(gameState.survivalTime) > highScore && Math.floor(gameState.survivalTime) > 0 && (
+                {Math.floor(gameState.survivalTime) > originalHighScore && Math.floor(gameState.survivalTime) > 0 && (
                   <div>
                     <label htmlFor="playerName" className="block text-sm font-medium text-muted-foreground mb-2">
                       플레이어명
@@ -310,7 +313,7 @@ export const TangerineMasterGame = () => {
                   </div>
                 )}
                 <div className="flex gap-3 justify-center">
-                  {Math.floor(gameState.survivalTime) > highScore && Math.floor(gameState.survivalTime) > 0 && (
+                  {Math.floor(gameState.survivalTime) > originalHighScore && Math.floor(gameState.survivalTime) > 0 && (
                     <button
                       onClick={handleSaveScore}
                       disabled={isSaving}
