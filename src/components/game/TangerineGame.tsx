@@ -20,7 +20,8 @@ export const TangerineGame = () => {
     selectTangerine, 
     updateTime,
     endGame: endGameFromStore,
-    generateNewGrid
+    generateNewGrid,
+    highScore
   } = useTangerineGameStore();
 
   const [showGameOver, setShowGameOver] = useState(false);
@@ -282,33 +283,37 @@ export const TangerineGame = () => {
               </div>
 
               {/* 플레이어명 입력 */}
-              <div className="mb-6">
-                <label htmlFor="playerName" className="block text-sm font-medium text-muted-foreground mb-2">
-                  플레이어명
-                </label>
-                <input
-                  id="playerName"
-                  type="text"
-                  value={playerName}
-                  onChange={(e) => setPlayerName(e.target.value)}
-                  placeholder="이름을 입력하세요"
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/20 focus:bg-background"
-                  maxLength={20}
-                />
-              </div>
+              {score > highScore && score > 0 && (
+                <div className="mb-6">
+                  <label htmlFor="playerName" className="block text-sm font-medium text-muted-foreground mb-2">
+                    플레이어명
+                  </label>
+                  <input
+                    id="playerName"
+                    type="text"
+                    value={playerName}
+                    onChange={(e) => setPlayerName(e.target.value)}
+                    placeholder="이름을 입력하세요"
+                    className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/20 focus:bg-background"
+                    maxLength={20}
+                  />
+                </div>
+              )}
                           
               <div className="flex gap-3 justify-center">
-                <button
-                  className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-                    isSaving || hasSaved
-                      ? 'bg-muted text-muted-foreground cursor-not-allowed' 
-                      : 'bg-foreground text-background hover:bg-foreground/90'
-                  }`}
-                  onClick={handleSaveScore}
-                  disabled={isSaving || hasSaved}
-                >
-                  {isSaving ? '저장 중...' : hasSaved ? '저장 완료' : '점수 저장'}
-                </button>
+                {score > highScore && score > 0 && (
+                  <button
+                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                      isSaving || hasSaved
+                        ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                        : 'bg-foreground text-background hover:bg-foreground/90'
+                    }`}
+                    onClick={handleSaveScore}
+                    disabled={isSaving || hasSaved}
+                  >
+                    {isSaving ? '저장 중...' : hasSaved ? '저장 완료' : '점수 저장'}
+                  </button>
+                )}
                 <button
                   className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded text-sm font-medium transition-colors"
                   onClick={handleGameOverClose}

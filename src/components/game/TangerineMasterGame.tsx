@@ -286,39 +286,43 @@ export const TangerineMasterGame = () => {
               </div>
 
               <div className="space-y-4">
-                <div>
-                  <label htmlFor="playerName" className="block text-sm font-medium text-muted-foreground mb-2">
-                    플레이어명
-                  </label>
-                  <input
-                    id="playerName"
-                    type="text"
-                    value={playerName}
-                    onChange={(e) => setPlayerName(e.target.value)}
-                    placeholder="이름을 입력하세요"
-                    className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/20 focus:bg-background"
-                    maxLength={20}
-                    onKeyDown={(e) => {
-                      // WASD 키가 input 내부에서도 게임에 전달되도록 함
-                      const gameKeys = ['w', 'W', 'a', 'A', 's', 'S', 'd', 'D'];
-                      if (gameKeys.includes(e.key)) {
-                        e.stopPropagation();
-                      }
-                    }}
-                  />
-                </div>
+                {Math.floor(gameState.survivalTime) > highScore && Math.floor(gameState.survivalTime) > 0 && (
+                  <div>
+                    <label htmlFor="playerName" className="block text-sm font-medium text-muted-foreground mb-2">
+                      플레이어명
+                    </label>
+                    <input
+                      id="playerName"
+                      type="text"
+                      value={playerName}
+                      onChange={(e) => setPlayerName(e.target.value)}
+                      placeholder="이름을 입력하세요"
+                      className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/20 focus:bg-background"
+                      maxLength={20}
+                      onKeyDown={(e) => {
+                        // WASD 키가 input 내부에서도 게임에 전달되도록 함
+                        const gameKeys = ['w', 'W', 'a', 'A', 's', 'S', 'd', 'D'];
+                        if (gameKeys.includes(e.key)) {
+                          e.stopPropagation();
+                        }
+                      }}
+                    />
+                  </div>
+                )}
                 <div className="flex gap-3 justify-center">
-                  <button
-                    onClick={handleSaveScore}
-                    disabled={isSaving}
-                    className={`px-4 py-2 rounded text-sm font-medium transition-colors cursor-pointer ${
-                      isSaving
-                        ? 'bg-muted text-muted-foreground cursor-not-allowed' 
-                        : 'bg-foreground text-background hover:bg-foreground/90'
-                    }`}
-                  >
-                    {isSaving ? '저장 중...' : '기록 저장'}
-                  </button>
+                  {Math.floor(gameState.survivalTime) > highScore && Math.floor(gameState.survivalTime) > 0 && (
+                    <button
+                      onClick={handleSaveScore}
+                      disabled={isSaving}
+                      className={`px-4 py-2 rounded text-sm font-medium transition-colors cursor-pointer ${
+                        isSaving
+                          ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                          : 'bg-foreground text-background hover:bg-foreground/90'
+                      }`}
+                    >
+                      {isSaving ? '저장 중...' : '기록 저장'}
+                    </button>
+                  )}
                   <button
                     onClick={handleGameOverClose}
                     className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded text-sm font-medium transition-colors cursor-pointer"
