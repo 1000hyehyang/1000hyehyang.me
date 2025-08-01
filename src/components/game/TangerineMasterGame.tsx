@@ -51,7 +51,6 @@ export const TangerineMasterGame = () => {
   const [showGameOver, setShowGameOver] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [gameSessionId, setGameSessionId] = useState("");
   const [originalHighScore, setOriginalHighScore] = useState(0); // 게임 오버 시점의 원래 최고 기록
 
   // 게임 시작/일시정지/재개 처리
@@ -59,16 +58,6 @@ export const TangerineMasterGame = () => {
     if (!gameState.isPlaying) {
       // 게임이 시작되지 않은 상태: 게임 시작
       gameState.startGame();
-      // 게임 세션 토큰 생성 (서버에 저장)
-      const sessionId = `game_session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      setGameSessionId(sessionId);
-      
-      // 서버에 세션 토큰 저장
-      fetch('/api/tangerine-master/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId })
-      }).catch(console.error);
       
       if (!bgMusic.isMuted) {
         bgMusic.play();
@@ -114,6 +103,16 @@ export const TangerineMasterGame = () => {
 
     setIsSaving(true);
     try {
+      // 점수 저장 시에만 세션 생성
+      const sessionId = `game_session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // 세션 토큰을 서버에 저장
+      await fetch('/api/tangerine-master/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId })
+      });
+
       const response = await fetch('/api/tangerine-master', {
         method: 'POST',
         headers: {
@@ -122,7 +121,7 @@ export const TangerineMasterGame = () => {
         body: JSON.stringify({
           score: currentScore,
           playerName: playerName.trim(),
-          gameSessionId: gameSessionId,
+          gameSessionId: sessionId, // Use the newly generated sessionId
           gameState: {
             isPlaying: gameState.isPlaying,
             survivalTime: gameState.survivalTime,
