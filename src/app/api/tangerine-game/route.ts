@@ -9,13 +9,6 @@ const redis = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
     })
   : null;
 
-interface RecentScores {
-  [ip: string]: {
-    lastSaved: string;
-    lastScore: number;
-  };
-}
-
 const sanitizeInput = (input: string): string => {
   return input
     .replace(/[<>]/g, '')
@@ -43,26 +36,6 @@ const getClientIP = async (): Promise<string> => {
   if (realIP) return realIP;
   if (cfConnectingIP) return cfConnectingIP;
   return "localhost";
-};
-
-const getRecentScores = async (): Promise<RecentScores> => {
-  if (!redis) return {};
-  try {
-    const data = await redis.get("tangerine_game_recent_scores");
-    if (data) return data as RecentScores;
-  } catch (error) {
-    console.error("Redis에서 최근 점수 조회 실패:", error);
-  }
-  return {};
-};
-
-const setRecentScores = async (recentScores: RecentScores): Promise<void> => {
-  if (!redis) return;
-  try {
-    await redis.set("tangerine_game_recent_scores", recentScores);
-  } catch (error) {
-    console.error("Redis에 최근 점수 저장 실패:", error);
-  }
 };
 
 // GET: 리더보드 상위 10개만 반환
@@ -132,27 +105,7 @@ export async function POST(request: Request) {
       }
       sanitizedPlayerName = sanitizeInput(playerName);
     }
-    // 중복 저장 방지: 같은 IP에서 30초 내에 같은 점수 저장 시도 시 차단
-    const recentScores = await getRecentScores();
-    const ipData = recentScores[clientIP];
-    const now = new Date().getTime();
-    if (ipData) {
-      const timeDiff = now - new Date(ipData.lastSaved).getTime();
-      const isRecent = timeDiff < 30000;
-      const isSameScore = ipData.lastScore === score;
-      if (isRecent && isSameScore) {
-        return NextResponse.json(
-          { error: "같은 점수는 30초 후에 다시 저장할 수 있습니다." },
-          { status: 429 }
-        );
-      }
-    }
-    // 최근 저장 기록 업데이트
-    recentScores[clientIP] = {
-      lastSaved: new Date().toISOString(),
-      lastScore: score
-    };
-    await setRecentScores(recentScores);
+
     // 리더보드에 점수 추가 (동시성 안전)
     await redis.zadd("tangerine_leaderboard", {
       score,

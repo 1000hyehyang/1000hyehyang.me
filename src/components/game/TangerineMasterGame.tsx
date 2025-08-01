@@ -75,6 +75,8 @@ export const TangerineMasterGame = () => {
       return;
     }
 
+    const currentScore = Math.floor(gameState.survivalTime);
+
     setIsSaving(true);
     try {
       const response = await fetch('/api/tangerine-master', {
@@ -83,7 +85,7 @@ export const TangerineMasterGame = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          score: Math.floor(gameState.survivalTime),
+          score: currentScore,
           playerName: playerName.trim()
         }),
       });

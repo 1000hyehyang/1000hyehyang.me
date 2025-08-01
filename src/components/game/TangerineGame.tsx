@@ -119,6 +119,8 @@ export const TangerineGame = () => {
       return;
     }
 
+
+
     // 플레이어명 정제
     const sanitizedPlayerName = playerName
       .replace(/[<>]/g, '')
