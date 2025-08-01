@@ -48,10 +48,10 @@ const validateGameSession = async (sessionId: string, ip: string): Promise<boole
     const sessionData = session as { ip: string; createdAt: number; isValid: boolean };
     const timeDiff = Date.now() - sessionData.createdAt;
     
-    // 세션이 유효하고 IP가 일치하며 1시간 이내인지 확인
+    // 세션이 유효하고 IP가 일치하며 10분 이내인지 확인
     return sessionData.isValid && 
            sessionData.ip === ip && 
-           timeDiff < 3600000; // 1시간
+           timeDiff < 600000; // 10분
   } catch (error) {
     console.error("게임 세션 검증 실패:", error);
     return false;

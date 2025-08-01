@@ -38,8 +38,8 @@ export async function POST(request: Request) {
       );
     }
     
-    // 세션 토큰을 Redis에 저장 (1시간 유효)
-    await redis.setex(`session:${sessionId}`, 3600, {
+    // 세션 토큰을 Redis에 저장 (10분 유효)
+    await redis.setex(`session:${sessionId}`, 600, {
       ip: clientIP,
       createdAt: Date.now(),
       isValid: true
