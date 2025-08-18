@@ -59,13 +59,73 @@ const TimelineSection = ({ title, items }: { title: string; items: TimelineItem[
   </>
 );
 
+const CertificationGrid = ({ items }: { items: TimelineItem[] }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <>
+      <h2 className="text-xl font-semibold mb-4">Certification.</h2>
+      <motion.div
+        ref={ref}
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1
+            }
+          }
+        }}
+                 className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+      >
+        {items.map((item, index) => (
+          <motion.div
+            key={`${item.title}-${index}`}
+                         variants={{
+               hidden: { opacity: 0 },
+               visible: { opacity: 1 }
+             }}
+            transition={{ duration: 0.6 }}
+            className="bg-muted/25 dark:bg-muted/40 p-4 rounded-lg hover:bg-muted/40 dark:hover:bg-muted/60 hover:scale-105 transition-all duration-200"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div style={{ position: 'relative', width: 32, height: 32 }}>
+                <Image
+                  src={item.logo}
+                  alt={item.logoAlt}
+                  fill
+                  style={{ objectFit: 'contain' }}
+                  className="rounded-sm"
+                  aria-hidden="true"
+                  unoptimized
+                  priority
+                />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-semibold">{item.title}</div>
+                <div className="text-xs text-muted-foreground">{item.period}</div>
+              </div>
+            </div>
+            {item.description && (
+              <div className="text-xs text-muted-foreground mt-2">{item.description}</div>
+            )}
+          </motion.div>
+        ))}
+      </motion.div>
+    </>
+  );
+};
+
 export default function AboutPage() {
   return (
     <section className="mx-auto">
       <TimelineSection title="Education." items={EDUCATION_DATA} />
       <TimelineSection title="Experience." items={EXPERIENCE_DATA} />
       <TimelineSection title="Awards." items={AWARDS_DATA} />
-      <TimelineSection title="Certification." items={CERTIFICATION_DATA} />
+      <CertificationGrid items={CERTIFICATION_DATA} />
     </section>
   );
 }
