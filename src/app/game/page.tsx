@@ -28,7 +28,7 @@ export default function GamePage() {
           Playground.
         </h1>
         <p className="text-muted-foreground">
-          다양한 미니게임들을 즐겨보세요
+          우리 함께 놀아요!
         </p>
       </div>
 
