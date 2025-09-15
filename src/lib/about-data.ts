@@ -12,20 +12,6 @@ export const EDUCATION_DATA: TimelineItem[] = [
 
 export const EXPERIENCE_DATA: TimelineItem[] = [
   {
-    period: "2024.03 - 2025.02",
-    title: "XREAL 6th Dev",
-    description: "Unity를 활용한 XR 콘텐츠 개발",
-    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/xreal.png",
-    logoAlt: "XREAL 로고"
-  },
-  {
-    period: "2024.10 - Now",
-    title: "UMC 7th, 8th Design - 9th Spring Boot",
-    description: "IT 연합 동아리 UMC 디자인 파트장 / 스프링부트 파트원",
-    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/umc.png",
-    logoAlt: "UMC 로고"
-  },
-  {
     period: "2024.12",
     title: "XR 디바이스 콘텐츠 메이커톤 | 본선 진출",
     description: "Open AI와 yolo v11을 활용한 AR 인공지능 요리 어시스턴트 | 클라이언트 개발",
@@ -41,10 +27,34 @@ export const EXPERIENCE_DATA: TimelineItem[] = [
   }
 ];
 
+export const ORGANIZATION_DATA: TimelineItem[] = [
+  {
+    period: "2024.03 - 2025.02",
+    title: "XR-AI 연합 학회 XREAL 6th Developer",
+    description: "Unity를 활용한 XR 콘텐츠 개발",
+    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/xreal.png",
+    logoAlt: "XREAL 로고"
+  },
+  {
+    period: "2024.10 - Now",
+    title: "UMC 7th, 8th Design - 9th Spring Boot",
+    description: "IT 연합 동아리 UMC 디자인 파트장 / 스프링부트 파트원",
+    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/umc.png",
+    logoAlt: "UMC 로고"
+  },
+  {
+    period: "2024.09 - Now",
+    title: "GDG on Campus HUFS Member",
+    description: "Google Developer Group on Campus 멤버",
+    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/gdgoc.png",
+    logoAlt: "GDG 로고"
+  }
+];
+
 export const AWARDS_DATA: TimelineItem[] = [
   {
     period: "2024.07",
-    title: "XREAL XR Hackathon 우수상",
+    title: "2024 XREAL XR Hackathon 우수상",
     description: "레시피 추천 VR 어시스턴트 | 클라이언트 개발",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/xreal.png",
     logoAlt: "XREAL 로고"

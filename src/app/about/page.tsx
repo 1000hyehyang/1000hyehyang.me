@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { 
   EDUCATION_DATA, 
   EXPERIENCE_DATA, 
+  ORGANIZATION_DATA,
   AWARDS_DATA, 
   CERTIFICATION_DATA 
 } from "@/lib/about-data";
@@ -124,6 +125,7 @@ export default function AboutPage() {
     <section className="mx-auto">
       <TimelineSection title="Education." items={EDUCATION_DATA} />
       <TimelineSection title="Experience." items={EXPERIENCE_DATA} />
+      <TimelineSection title="Organization." items={ORGANIZATION_DATA} />
       <TimelineSection title="Awards." items={AWARDS_DATA} />
       <CertificationGrid items={CERTIFICATION_DATA} />
     </section>
