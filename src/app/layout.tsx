@@ -51,8 +51,8 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fastly.jsdelivr.net" />
-        <link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
       </head>
       <body className={`${geistMono.variable} antialiased bg-background text-foreground`}>
         <ThemeProvider>
