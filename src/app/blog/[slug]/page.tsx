@@ -5,6 +5,21 @@ import type { Metadata } from "next";
 import { SITE_CONFIG } from "@/lib/config";
 import { markdownToHtml } from "@/lib/markdownToHtml";
 
+// 동적 라우팅을 위한 정적 경로 생성
+export async function generateStaticParams() {
+  try {
+    const { getAllBlogPosts } = await import("@/lib/github");
+    const posts = await getAllBlogPosts();
+    
+    return posts.map((post) => ({
+      slug: post.slug,
+    }));
+  } catch (error) {
+    console.error('정적 경로 생성 실패:', error);
+    return [];
+  }
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);

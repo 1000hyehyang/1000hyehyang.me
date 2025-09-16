@@ -48,8 +48,10 @@ const fetchDiscussions = async (): Promise<GitHubDiscussion[]> => {
   const validatedConfig = typeof window === 'undefined' ? getValidatedGitHubConfig() : GITHUB_CONFIG;
   
   if (!validatedConfig.token) {
+    console.warn('GitHub 토큰이 설정되지 않았습니다.');
     return [];
   }
+
 
   const query = `
     query {
@@ -91,6 +93,8 @@ const fetchDiscussions = async (): Promise<GitHubDiscussion[]> => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ query }),
+      // GitHub Webhook으로 실시간 동기화하므로 캐시 비활성화
+      cache: 'no-store'
     });
 
     if (!response.ok) {
@@ -116,15 +120,22 @@ const convertDiscussionToPost = (discussion: GitHubDiscussion): BlogFrontmatter 
   const labels = discussion.labels.nodes.map(label => label.name);
   const { category, tags } = separateCategoryAndTags(labels);
 
+  // HTML 태그 제거 및 텍스트 정리
   const cleanBody = discussion.body
     .replace(/<[^>]*>/g, '')
     .replace(/!\[.*?\]\(.*?\)/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 
+  // 안전한 날짜 변환
+  const date = new Date(discussion.createdAt);
+  const formattedDate = isNaN(date.getTime()) 
+    ? new Date().toISOString().split('T')[0] 
+    : date.toISOString().split('T')[0];
+
   return {
-    title: discussion.title,
-    date: new Date(discussion.createdAt).toISOString().split('T')[0],
+    title: discussion.title || '제목 없음',
+    date: formattedDate,
     category,
     tags,
     summary: cleanBody.substring(0, 150) + (cleanBody.length > 150 ? "..." : ""),
