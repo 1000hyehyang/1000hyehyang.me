@@ -124,9 +124,9 @@ export default function AboutPage() {
   return (
     <section className="mx-auto">
       <TimelineSection title="Education." items={EDUCATION_DATA} />
-      <TimelineSection title="Experience." items={EXPERIENCE_DATA} />
       <TimelineSection title="Organization." items={ORGANIZATION_DATA} />
       <TimelineSection title="Awards." items={AWARDS_DATA} />
+      <TimelineSection title="Experience." items={EXPERIENCE_DATA} />
       <CertificationGrid items={CERTIFICATION_DATA} />
     </section>
   );
