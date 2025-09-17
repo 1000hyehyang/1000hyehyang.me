@@ -93,8 +93,8 @@ const fetchDiscussions = async (): Promise<GitHubDiscussion[]> => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ query }),
-      // GitHub Webhook으로 실시간 동기화하므로 캐시 비활성화
-      cache: 'no-store'
+      // ISR: 1시간마다 재검증, Webhook으로 즉시 갱신
+      next: { revalidate: 3600, tags: ['github-discussions'] }
     });
 
     if (!response.ok) {

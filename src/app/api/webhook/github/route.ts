@@ -34,7 +34,8 @@ export async function POST(request: NextRequest) {
       await Promise.all([
         revalidatePath('/blog'),
         revalidatePath('/blog/[slug]', 'page'),
-        revalidateTag('github-discussions')
+        revalidateTag('github-discussions'),
+        revalidatePath('/sitemap.xml')
       ]);
       
       console.log(`GitHub 이벤트 (${payload.action || 'push'})로 캐시 갱신 완료`);
