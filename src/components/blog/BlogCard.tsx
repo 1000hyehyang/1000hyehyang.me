@@ -36,7 +36,7 @@ export const BlogCard = ({ title, date, category, tags, summary, slug, variants,
             <span>{date}</span>
           </div>
           <h2 
-            className="font-semibold text-xl line-clamp-2 mb-3 leading-tight"
+            className="font-semibold text-xl line-clamp-1 mb-3 leading-tight"
             dangerouslySetInnerHTML={{
               __html: searchQuery ? highlightSearchTerm(title, searchQuery) : title
             }}

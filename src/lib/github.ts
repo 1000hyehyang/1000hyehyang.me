@@ -40,9 +40,18 @@ const GITHUB_GRAPHQL_ENDPOINT = "https://api.github.com/graphql";
 
 const separateCategoryAndTags = (labels: string[]) => {
   const category = labels.find(label => BLOG_CATEGORIES.includes(label)) || "etc";
-  const tags = labels.filter(label => !BLOG_CATEGORIES.includes(label));
+  // 라벨은 고정글과 카테고리 구분 용도로만 사용하므로 태그는 빈 배열로 설정
+  const tags: string[] = [];
   return { category, tags };
 };
+
+// 고정 글 설정
+export const PINNED_POSTS_CONFIG = {
+  // 고정 글을 식별하는 라벨
+  pinnedLabel: "pinned",
+  // 고정 글 섹션 제목
+  sectionTitle: "Pinned Posts",
+} as const;
 
 const fetchDiscussions = async (): Promise<GitHubDiscussion[]> => {
   const validatedConfig = typeof window === 'undefined' ? getValidatedGitHubConfig() : GITHUB_CONFIG;
@@ -175,4 +184,48 @@ export const getBlogPostBySlug = async (slug: string): Promise<{ frontmatter: Bl
     frontmatter,
     content: discussion.body,
   };
+};
+
+// 고정 글 목록 가져오기
+export const getPinnedPosts = async (): Promise<BlogFrontmatter[]> => {
+  try {
+    const discussions = await fetchDiscussions();
+    const validatedConfig = typeof window === 'undefined' ? getValidatedGitHubConfig() : GITHUB_CONFIG;
+    
+    const pinnedDiscussions = discussions.filter(discussion => {
+      const isBlogCategory = discussion.category.name === validatedConfig.discussionCategory;
+      const isAuthorValid = discussion.author.login === validatedConfig.author;
+      const isPinned = discussion.labels.nodes.some(label => label.name === PINNED_POSTS_CONFIG.pinnedLabel);
+      return isBlogCategory && isAuthorValid && isPinned;
+    });
+    
+    return pinnedDiscussions.map(convertDiscussionToPost);
+  } catch (error) {
+    console.error('고정 글 목록 조회 실패:', error);
+    return [];
+  }
+};
+
+// 특정 고정 글 가져오기
+export const getPinnedPostBySlug = async (slug: string): Promise<{ frontmatter: BlogFrontmatter; content: string } | null> => {
+  try {
+    const discussions = await fetchDiscussions();
+    const validatedConfig = typeof window === 'undefined' ? getValidatedGitHubConfig() : GITHUB_CONFIG;
+    const discussion = discussions.find(d => {
+      const isPinned = d.labels.nodes.some(label => label.name === PINNED_POSTS_CONFIG.pinnedLabel);
+      return d.id === slug && isPinned && d.author.login === validatedConfig.author;
+    });
+    
+    if (!discussion) {
+      return null;
+    }
+
+    return {
+      frontmatter: convertDiscussionToPost(discussion),
+      content: discussion.body,
+    };
+  } catch (error) {
+    console.error('고정 글 조회 실패:', error);
+    return null;
+  }
 }; 

@@ -3,6 +3,25 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* 파스텔 배경 애니메이션 */
+@keyframes rotate {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes rotate-reverse {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

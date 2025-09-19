@@ -1,9 +1,10 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { PortfolioFrontmatter } from "@/types";
+import { PortfolioFrontmatter, BlogFrontmatter } from "@/types";
 
 const PORTFOLIO_PATH = path.join(process.cwd(), "src/content/portfolio");
+const PINNED_POSTS_PATH = path.join(process.cwd(), "src/content/pinned-posts");
 
 const readMdxFilesRecursively = (directoryPath: string): string[] => {
   const files: string[] = [];
@@ -89,4 +90,40 @@ export const getPortfolioBySlug = (
     }
   }
   return null;
+};
+
+// 고정 글 관련 함수들
+export const getAllPinnedPosts = (): BlogFrontmatter[] => {
+  try {
+    const files = fs.readdirSync(PINNED_POSTS_PATH).filter(f => f.endsWith('.mdx'));
+    return files
+      .map((fileName) => {
+        const filePath = path.join(PINNED_POSTS_PATH, fileName);
+        const parsed = parseMdxFile(filePath);
+        if (!parsed || !hasSlug(parsed.data)) return null;
+        return parsed.data as BlogFrontmatter;
+      })
+      .filter((post): post is BlogFrontmatter => post !== null)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  } catch (error) {
+    console.warn("고정 글 디렉토리를 읽을 수 없습니다:", error);
+    return [];
+  }
+};
+
+export const getPinnedPostBySlug = (slug: string): { frontmatter: BlogFrontmatter; content: string } | null => {
+  try {
+    const filePath = path.join(PINNED_POSTS_PATH, `${slug}.mdx`);
+    const parsed = parseMdxFile(filePath);
+    if (!parsed || !hasSlug(parsed.data) || parsed.data.slug !== slug) {
+      return null;
+    }
+    return {
+      frontmatter: parsed.data as BlogFrontmatter,
+      content: parsed.content,
+    };
+  } catch (error) {
+    console.warn(`고정 글 "${slug}"을 찾을 수 없습니다:`, error);
+    return null;
+  }
 }; 

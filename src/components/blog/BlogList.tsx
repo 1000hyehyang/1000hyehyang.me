@@ -6,16 +6,21 @@ import { motion } from "framer-motion";
 import { useState, useMemo, useCallback } from "react";
 import { listVariants, cardVariants } from "@/lib/animations";
 import { searchBlogPosts, getSearchResultCount, debounce } from "@/lib/search";
+import { PINNED_POSTS_CONFIG } from "@/lib/github";
+import { Pin, ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 interface BlogListProps {
   posts: BlogFrontmatter[];
+  pinnedPosts: BlogFrontmatter[];
 }
 
-export const BlogList = ({ posts }: BlogListProps) => {
+export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [currentSlide, setCurrentSlide] = useState<number>(0);
 
   const categories = useMemo(() => {
     const categorySet = new Set(posts.map(post => post.category));  
@@ -65,6 +70,162 @@ export const BlogList = ({ posts }: BlogListProps) => {
     setSelectedCategory(category);
   };
 
+  // 캐러셀 네비게이션
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % pinnedPosts.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + pinnedPosts.length) % pinnedPosts.length);
+  };
+
+  // 추천 글 카드 컴포넌트
+  const PinnedCard = ({ post, isActive }: { post: BlogFrontmatter; isActive: boolean }) => (
+    <div
+      className={`
+        overflow-hidden rounded-2xl transition-all duration-300 h-80 md:h-80 h-64 relative
+        ${isActive 
+          ? 'opacity-100 scale-100' 
+          : 'opacity-70 scale-95'
+        }
+      `}
+      style={{ 
+        background: 'rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+      }}
+    >
+      {/* 라이트모드 radial gradient */}
+      <div 
+        className="absolute inset-0 opacity-100 dark:opacity-0"
+        style={{
+          background: 'radial-gradient(circle, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.1))'
+        }}
+      />
+      
+      {/* 첫 번째 회전 그라데이션 (선명하게) */}
+      <div 
+        className="absolute top-1/2 left-1/2 w-[200%] h-[200%] opacity-100 dark:opacity-0"
+        style={{
+          background: `conic-gradient(
+            from 0deg,
+            rgba(255, 154, 162, 0.4),
+            rgba(255, 183, 178, 0.4),
+            rgba(255, 218, 193, 0.4),
+            rgba(226, 240, 203, 0.4),
+            rgba(162, 228, 255, 0.4),
+            rgba(201, 175, 255, 0.4),
+            rgba(255, 183, 178, 0.4),
+            rgba(255, 154, 162, 0.4)
+          )`,
+          transform: 'translate(-50%, -50%)',
+          filter: 'blur(50px)',
+          opacity: 0.6,
+          animation: 'rotate 8s linear infinite'
+        }}
+      />
+
+      {/* 두 번째 회전 그라데이션 (선명하게) */}
+      <div 
+        className="absolute top-1/2 left-1/2 w-[180%] h-[180%] opacity-100 dark:opacity-0"
+        style={{
+          background: `conic-gradient(
+            from 0deg,
+            rgba(255, 154, 162, 0.3),
+            rgba(255, 183, 178, 0.3),
+            rgba(255, 218, 193, 0.3),
+            rgba(226, 240, 203, 0.3),
+            rgba(162, 228, 255, 0.3),
+            rgba(201, 175, 255, 0.3),
+            rgba(255, 183, 178, 0.3),
+            rgba(255, 154, 162, 0.3)
+          )`,
+          transform: 'translate(-50%, -50%)',
+          filter: 'blur(50px)',
+          opacity: 0.4,
+          animation: 'rotate-reverse 10s linear infinite'
+        }}
+      />
+
+      {/* 다크모드용 배경 */}
+      <div 
+        className="absolute inset-0 hidden dark:block"
+        style={{
+          background: 'rgba(0, 0, 0, 0.1)'
+        }}
+      />
+      
+      {/* 다크모드 radial gradient */}
+      <div 
+        className="absolute inset-0 hidden dark:block"
+        style={{
+          background: 'radial-gradient(circle, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.2))'
+        }}
+      />
+      
+      {/* 다크모드 첫 번째 회전 그라데이션 (톤다운된 파스텔) */}
+      <div 
+        className="absolute top-1/2 left-1/2 w-[200%] h-[200%] hidden dark:block"
+        style={{
+          background: `conic-gradient(
+            from 0deg,
+            rgba(255, 154, 162, 0.3),
+            rgba(255, 183, 178, 0.3),
+            rgba(255, 218, 193, 0.3),
+            rgba(226, 240, 203, 0.3),
+            rgba(162, 228, 255, 0.3),
+            rgba(201, 175, 255, 0.3),
+            rgba(255, 183, 178, 0.3),
+            rgba(255, 154, 162, 0.3)
+          )`,
+          transform: 'translate(-50%, -50%)',
+          filter: 'blur(60px)',
+          opacity: 0.6,
+          animation: 'rotate 8s linear infinite'
+        }}
+      />
+
+      {/* 다크모드 두 번째 회전 그라데이션 (더 톤다운) */}
+      <div 
+        className="absolute top-1/2 left-1/2 w-[180%] h-[180%] hidden dark:block"
+        style={{
+          background: `conic-gradient(
+            from 0deg,
+            rgba(255, 154, 162, 0.2),
+            rgba(255, 183, 178, 0.2),
+            rgba(255, 218, 193, 0.2),
+            rgba(226, 240, 203, 0.2),
+            rgba(162, 228, 255, 0.2),
+            rgba(201, 175, 255, 0.2),
+            rgba(255, 183, 178, 0.2),
+            rgba(255, 154, 162, 0.2)
+          )`,
+          transform: 'translate(-50%, -50%)',
+          filter: 'blur(70px)',
+          opacity: 0.4,
+          animation: 'rotate-reverse 10s linear infinite'
+        }}
+      />
+
+      <div className="relative z-10 flex flex-col h-full p-8 justify-end">
+        <div className="flex flex-col">
+          <div className="text-xs text-gray-600 dark:text-gray-400 mb-3 flex gap-2 items-center">
+            <span>{post.category}</span>
+            <span>·</span>
+            <span>{post.date}</span>
+          </div>
+          <h2 className="font-semibold text-2xl line-clamp-2 mb-3 leading-tight text-gray-800 dark:text-gray-100">
+            {post.title}
+          </h2>
+          {post.summary && (
+            <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3 leading-relaxed">
+              {post.summary}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <section className="w-full">
       {/* 카테고리 필터 */}
@@ -91,6 +252,79 @@ export const BlogList = ({ posts }: BlogListProps) => {
 
       {/* 검색창 */}
       <SearchBar onSearch={handleSearch} />
+
+      {/* 추천 글 캐러셀 섹션 */}
+      {pinnedPosts.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <Pin className="w-5 h-5 text-orange-300" />
+              <h2 className="text-xl font-semibold">{PINNED_POSTS_CONFIG.sectionTitle}</h2>
+            </div>
+            
+            {pinnedPosts.length > 1 && (
+              <div className="flex gap-2">
+                <button
+                  onClick={prevSlide}
+                  className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors cursor-pointer"
+                  aria-label="이전 추천 글"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={nextSlide}
+                  className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors cursor-pointer"
+                  aria-label="다음 추천 글"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* 캐러셀 컨테이너 */}
+          <div className="relative overflow-hidden rounded-xl">
+            <motion.div
+              className="flex"
+              animate={{ x: `-${currentSlide * 100}%` }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              {pinnedPosts.map((post, index) => (
+                <div key={post.slug} className="w-full flex-shrink-0">
+                  <Link href={`/blog/${post.slug}`}>
+                    <PinnedCard post={post} isActive={index === currentSlide} />
+                  </Link>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* 캐러셀 인디케이터 */}
+          {pinnedPosts.length > 1 && (
+            <div className="flex justify-center gap-2 mt-6">
+              {pinnedPosts.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`
+                    w-2 h-2 rounded-full transition-all duration-300
+                    ${index === currentSlide 
+                      ? 'bg-orange-200 w-8' 
+                      : 'bg-muted hover:bg-muted/80'
+                    }
+                  `}
+                  aria-label={`${index + 1}번째 추천 글로 이동`}
+                />
+              ))}
+            </div>
+          )}
+        </motion.div>
+      )}
       
       {/* 검색 결과 개수 표시 */}
       {searchQuery && (
