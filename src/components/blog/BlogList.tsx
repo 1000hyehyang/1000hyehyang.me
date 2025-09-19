@@ -3,7 +3,7 @@ import { BlogFrontmatter } from "@/types";
 import { BlogCard } from "./BlogCard";
 import { SearchBar } from "./SearchBar";
 import { motion } from "framer-motion";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { listVariants, cardVariants } from "@/lib/animations";
 import { searchBlogPosts, getSearchResultCount, debounce } from "@/lib/search";
 import { PINNED_POSTS_CONFIG } from "@/lib/github";
@@ -21,6 +21,11 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [currentSlide, setCurrentSlide] = useState<number>(0);
+  
+  // 터치 스와이프를 위한 ref와 상태
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const categories = useMemo(() => {
     const categorySet = new Set(posts.map(post => post.category));  
@@ -77,6 +82,33 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + pinnedPosts.length) % pinnedPosts.length);
+  };
+
+  // 터치 스와이프 핸들러
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && pinnedPosts.length > 1) {
+      nextSlide();
+    }
+    if (isRightSwipe && pinnedPosts.length > 1) {
+      prevSlide();
+    }
   };
 
   // 추천 글 카드 컴포넌트
@@ -288,7 +320,13 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
           </div>
 
           {/* 캐러셀 컨테이너 */}
-          <div className="relative overflow-hidden rounded-xl">
+          <div 
+            ref={carouselRef}
+            className="relative overflow-hidden rounded-xl"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
             <motion.div
               className="flex"
               animate={{ x: `-${currentSlide * 100}%` }}
