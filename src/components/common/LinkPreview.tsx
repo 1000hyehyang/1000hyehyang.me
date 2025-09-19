@@ -82,13 +82,15 @@ export const LinkPreview = ({ url, children }: LinkPreviewProps) => {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="my-4 block rounded-lg border border-border bg-card p-6 hover:bg-accent/10 dark:hover:bg-accent/60 transition-colors"
+        className="my-4 block rounded-lg border border-border bg-card p-6 hover:bg-accent/10 dark:hover:bg-accent/60 transition-colors no-underline hover:no-underline [text-decoration:none]"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
         <div className="text-sm text-muted-foreground">링크 미리보기를 불러오지 못했어요</div>
-        <div className="mt-1 line-clamp-1 font-medium text-foreground">{children || url}</div>
+        <div className="mt-1 line-clamp-1 font-medium text-foreground">
+          <span className="no-underline">{children || url}</span>
+        </div>
       </motion.a>
     );
   }
@@ -100,7 +102,7 @@ export const LinkPreview = ({ url, children }: LinkPreviewProps) => {
       href={metadata.url}
       target="_blank"
       rel="noreferrer"
-      className="group my-4 flex w-full items-center gap-4 rounded-lg border border-border bg-card p-6 hover:bg-accent/10 dark:hover:bg-accent/60 transition-colors"
+      className="group my-4 flex w-full items-center gap-4 rounded-lg border border-border bg-card p-6 hover:bg-accent/10 dark:hover:bg-accent/60 transition-colors no-underline hover:no-underline [text-decoration:none]"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -109,11 +111,11 @@ export const LinkPreview = ({ url, children }: LinkPreviewProps) => {
       {/* 텍스트 영역 */}
       <div className="min-w-0 flex-1">
         <div className="line-clamp-1 text-[15px] font-medium text-foreground">
-          {title ?? metadata.url}
+          <span className="no-underline">{title ?? metadata.url}</span>
         </div>
         {description && (
           <div className="mt-1 line-clamp-1 text-sm text-muted-foreground">
-            {description}
+            <span className="no-underline">{description}</span>
           </div>
         )}
         <div className="mt-2 flex items-center gap-1 text-sm text-muted-foreground leading-tight">
@@ -133,7 +135,7 @@ export const LinkPreview = ({ url, children }: LinkPreviewProps) => {
               <Globe className="h-4 w-4" />
             )}
           </div>
-          <span className="truncate">{siteName ?? origin.replace(/^https?:\/\//, "")}</span>
+          <span className="truncate no-underline">{siteName ?? origin.replace(/^https?:\/\//, "")}</span>
         </div>
       </div>
     </motion.a>
