@@ -45,11 +45,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       absolute: post.frontmatter.title,
     },
     description: post.frontmatter.summary,
+    keywords: post.frontmatter.tags?.join(', '),
+    authors: [{ name: post.frontmatter.author || '천혜향' }],
     openGraph: {
       title: post.frontmatter.title,
       description: post.frontmatter.summary,
       type: "article",
       url: `${SITE_CONFIG.url}/blog/${slug}`,
+      publishedTime: post.frontmatter.date,
+      modifiedTime: post.frontmatter.updatedAt,
+      authors: [post.frontmatter.author || '천혜향'],
+      tags: post.frontmatter.tags,
       images: [
         {
           url: "/og/default.png",
@@ -64,6 +70,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: post.frontmatter.title,
       description: post.frontmatter.summary,
       images: ["/og/default.png"],
+    },
+    alternates: {
+      canonical: `${SITE_CONFIG.url}/blog/${slug}`,
     },
   };
 }
@@ -84,9 +93,38 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   // 마크다운을 HTML로 변환
   const htmlContent = await markdownToHtml(post.content);
 
+  // 구조화된 데이터 (JSON-LD)
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.frontmatter.title,
+    "description": post.frontmatter.summary,
+    "author": {
+      "@type": "Person",
+      "name": post.frontmatter.author || "천혜향"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": SITE_CONFIG.name,
+      "url": SITE_CONFIG.url
+    },
+    "datePublished": post.frontmatter.date,
+    "dateModified": post.frontmatter.updatedAt || post.frontmatter.date,
+    "url": `${SITE_CONFIG.url}/blog/${slug}`,
+    "keywords": post.frontmatter.tags?.join(', '),
+    "articleSection": post.frontmatter.category,
+    "wordCount": htmlContent.replace(/<[^>]*>/g, '').split(' ').length
+  };
+
   return (
-    <BlogDetail frontmatter={post.frontmatter}>
-      <div className="markdown-body" dangerouslySetInnerHTML={{ __html: htmlContent }} />
-    </BlogDetail>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <BlogDetail frontmatter={post.frontmatter}>
+        <div className="markdown-body" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      </BlogDetail>
+    </>
   );
 } 

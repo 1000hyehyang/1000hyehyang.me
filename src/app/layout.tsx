@@ -53,6 +53,23 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" />
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": SITE_CONFIG.name,
+              "url": SITE_CONFIG.url,
+              "description": SITE_CONFIG.description,
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": `${SITE_CONFIG.url}/blog?search={search_term_string}`,
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
       </head>
       <body className={`${geistMono.variable} antialiased bg-background text-foreground`}>
         <ThemeProvider>

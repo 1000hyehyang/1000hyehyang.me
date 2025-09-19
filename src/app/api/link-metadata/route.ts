@@ -64,11 +64,9 @@ const extractMetadata = async (url: string): Promise<LinkMetadata> => {
     const ogTitle = $("meta[property='og:title']").attr("content");
     const ogDesc = $("meta[property='og:description']").attr("content");
     const ogSite = $("meta[property='og:site_name']").attr("content");
-    const ogImage = $("meta[property='og:image']").attr("content");
 
     const twTitle = $("meta[name='twitter:title']").attr("content");
     const twDesc = $("meta[name='twitter:description']").attr("content");
-    const twImage = $("meta[name='twitter:image'], meta[name='twitter:image:src']").attr("content");
 
     const title = pick(
       ogTitle,
