@@ -2,14 +2,36 @@
 
 import { BlogDetailProps } from "@/types";
 import { GiscusComments } from "@/components/common/GiscusComments";
+import { LinkPreview } from "@/components/common/LinkPreview";
 import { GISCUS_BLOG_CONFIG } from "@/lib/config";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { containerVariants, itemVariants } from "@/lib/animations";
+import { createRoot } from "react-dom/client";
 
 export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  // LinkPreview 컴포넌트를 동적으로 렌더링
+  useEffect(() => {
+    const linkPreviewWrappers = document.querySelectorAll('.link-preview-wrapper');
+    
+    linkPreviewWrappers.forEach((wrapper) => {
+      const url = wrapper.getAttribute('data-url');
+      const linkText = wrapper.getAttribute('data-link-text');
+      
+      // 이미 렌더링된 요소인지 확인
+      if (url && !wrapper.hasAttribute('data-rendered')) {
+        // React 컴포넌트를 렌더링하기 위해 createRoot 사용
+        const root = createRoot(wrapper);
+        root.render(<LinkPreview url={url}>{linkText}</LinkPreview>);
+        
+        // 렌더링 완료 표시
+        wrapper.setAttribute('data-rendered', 'true');
+      }
+    });
+  }, []);
 
   return (
     <motion.article

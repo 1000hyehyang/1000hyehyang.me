@@ -14,5 +14,16 @@ export async function markdownToHtml(markdown: string): Promise<string> {
     .use(rehypeStringify)
     .process(markdown);
 
-  return String(file);
+  let html = String(file);
+
+  // 외부 링크를 LinkPreview로 변환
+  html = html.replace(
+    /<a\s+([^>]*?)href=["'](https?:\/\/[^"']+)["']([^>]*?)>([^<]*?)<\/a>/gi,
+    (match, beforeHref, url, afterHref, linkText) => {
+      // 외부 링크를 LinkPreview로 변환
+      return `<div class="link-preview-wrapper" data-url="${url}" data-link-text="${linkText}"></div>`;
+    }
+  );
+
+  return html;
 } 
