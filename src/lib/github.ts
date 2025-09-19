@@ -129,10 +129,32 @@ const convertDiscussionToPost = (discussion: GitHubDiscussion): BlogFrontmatter 
   const labels = discussion.labels.nodes.map(label => label.name);
   const { category, tags } = separateCategoryAndTags(labels);
 
-  // HTML 태그 제거 및 텍스트 정리
+  // 마크다운 및 HTML 태그 제거 및 텍스트 정리
   const cleanBody = discussion.body
+    // HTML 태그 제거
     .replace(/<[^>]*>/g, '')
+    // 마크다운 이미지 제거
     .replace(/!\[.*?\]\(.*?\)/g, '')
+    // 마크다운 링크 제거 (링크 텍스트만 남김)
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    // 마크다운 강조 제거
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/_([^_]+)_/g, '$1')
+    // 마크다운 코드 블록 제거
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/`([^`]+)`/g, '$1')
+    // 마크다운 헤더 제거
+    .replace(/^#{1,6}\s+/gm, '')
+    // 마크다운 리스트 제거
+    .replace(/^[\s]*[-*+]\s+/gm, '')
+    .replace(/^[\s]*\d+\.\s+/gm, '')
+    // 마크다운 인용구 제거
+    .replace(/^>\s+/gm, '')
+    // 마크다운 구분선 제거
+    .replace(/^[-*_]{3,}$/gm, '')
+    // 연속된 공백을 하나로
     .replace(/\s+/g, ' ')
     .trim();
 
