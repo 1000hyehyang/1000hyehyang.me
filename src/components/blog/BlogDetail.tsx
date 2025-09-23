@@ -3,6 +3,7 @@
 import { BlogDetailProps } from "@/types";
 import { GiscusComments } from "@/components/common/GiscusComments";
 import { LinkPreview } from "@/components/common/LinkPreview";
+import { CopyCodeButton } from "@/components/common/CopyCodeButton";
 import { GISCUS_BLOG_CONFIG } from "@/lib/config";
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect } from "react";
@@ -13,22 +14,37 @@ export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // LinkPreview 컴포넌트를 동적으로 렌더링
+  // LinkPreview와 CopyCodeButton 컴포넌트를 동적으로 렌더링
   useEffect(() => {
+    // LinkPreview 렌더링
     const linkPreviewWrappers = document.querySelectorAll('.link-preview-wrapper');
     
     linkPreviewWrappers.forEach((wrapper) => {
       const url = wrapper.getAttribute('data-url');
       const linkText = wrapper.getAttribute('data-link-text');
       
-      // 이미 렌더링된 요소인지 확인
       if (url && !wrapper.hasAttribute('data-rendered')) {
-        // React 컴포넌트를 렌더링하기 위해 createRoot 사용
         const root = createRoot(wrapper);
         root.render(<LinkPreview url={url}>{linkText}</LinkPreview>);
-        
-        // 렌더링 완료 표시
         wrapper.setAttribute('data-rendered', 'true');
+      }
+    });
+
+    // CopyCodeButton 렌더링
+    const copyButtonWrappers = document.querySelectorAll('.copy-code-button');
+    
+    copyButtonWrappers.forEach((wrapper) => {
+      const encodedCode = wrapper.getAttribute('data-code-encoded');
+      
+      if (encodedCode && !wrapper.hasAttribute('data-rendered')) {
+        try {
+          const decodedCode = decodeURIComponent(escape(atob(encodedCode)));
+          const root = createRoot(wrapper);
+          root.render(<CopyCodeButton code={decodedCode} />);
+          wrapper.setAttribute('data-rendered', 'true');
+        } catch (error) {
+          console.error('코드 디코딩 실패:', error);
+        }
       }
     });
   }, []);
