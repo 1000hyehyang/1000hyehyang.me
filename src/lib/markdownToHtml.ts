@@ -2,6 +2,7 @@ import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
+import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
 
@@ -10,22 +11,39 @@ export async function markdownToHtml(markdown: string): Promise<string> {
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype)
-    .use(rehypeSanitize, defaultSchema)
+    .use(rehypeSanitize, {
+      ...defaultSchema,
+      attributes: {
+        ...defaultSchema.attributes,
+        code: [
+          ...(defaultSchema.attributes?.code || []),
+          ['className', /^hljs/]
+        ]
+      }
+    })
+    .use(rehypeHighlight)
     .use(rehypeStringify)
     .process(markdown);
 
   let html = String(file);
 
-  // 코드 블록에 복사 버튼 추가
+  // 코드 블록에 복사 버튼 추가 (highlight.js 적용된 코드 블록 포함)
   html = html.replace(
-    /<pre><code([^>]*)>([\s\S]*?)<\/code><\/pre>/gi,
-    (match, attributes, code) => {
-      // HTML 엔티티 디코딩
-      let decodedCode = code;
+    /<pre><code([^>]*)>([\s\S]*?)<\/code><\/pre>|<pre><code class="hljs([^>]*)">([\s\S]*?)<\/code><\/pre>/gi,
+    (match, attributes, code, hljsAttributes, hljsCode) => {
+      // highlight.js가 적용된 코드 블록인지 확인
+      const isHighlighted = hljsAttributes !== undefined;
+      const finalAttributes = isHighlighted ? ` class="hljs${hljsAttributes}"` : attributes;
+      const finalCode = isHighlighted ? hljsCode : code;
+      // HTML 엔티티 디코딩 및 HTML 태그 제거
+      let decodedCode = finalCode;
       
       if (typeof window === 'undefined') {
-        // 서버 사이드: 수동 치환
-        decodedCode = code
+        // 서버 사이드: HTML 태그 제거 후 엔티티 디코딩
+        decodedCode = finalCode
+          // HTML 태그 제거
+          .replace(/<[^>]*>/g, '')
+          // HTML 엔티티 디코딩
           .replace(/&lt;/g, '<')
           .replace(/&gt;/g, '>')
           .replace(/&amp;/g, '&')
@@ -62,17 +80,17 @@ export async function markdownToHtml(markdown: string): Promise<string> {
           .replace(/&#x7C;/g, '|')
           .replace(/&#x7E;/g, '~');
       } else {
-        // 클라이언트 사이드: 브라우저 내장 함수 사용
+        // 클라이언트 사이드: HTML 태그 제거 후 브라우저 내장 함수 사용
         const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = code;
-        decodedCode = tempDiv.textContent || tempDiv.innerText || code;
+        tempDiv.innerHTML = finalCode;
+        decodedCode = tempDiv.textContent || tempDiv.innerText || finalCode;
       }
       
       // Base64 인코딩하여 data 속성에 저장
       const encodedCode = btoa(unescape(encodeURIComponent(decodedCode)));
       
       return `<div class="code-block-wrapper relative">
-        <pre><code${attributes}>${code}</code></pre>
+        <pre><code${finalAttributes}>${finalCode}</code></pre>
         <div class="copy-code-button" data-code-encoded="${encodedCode}"></div>
       </div>`;
     }

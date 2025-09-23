@@ -1,0 +1,369 @@
+/* Highlight.js 테마 - GitHub 스타일 */
+.hljs {
+  color: #24292f;
+  background: #f6f8fa;
+}
+
+.hljs-doctag,
+.hljs-keyword,
+.hljs-meta .hljs-keyword,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-variable.language_ {
+  color: #d73a49;
+}
+
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-title.function_ {
+  color: #6f42c1;
+}
+
+.hljs-attr,
+.hljs-attribute,
+.hljs-literal,
+.hljs-meta,
+.hljs-number,
+.hljs-operator,
+.hljs-variable,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-id {
+  color: #005cc5;
+}
+
+.hljs-regexp,
+.hljs-string,
+.hljs-meta .hljs-string {
+  color: #032f62;
+}
+
+.hljs-built_in,
+.hljs-symbol {
+  color: #e36209;
+}
+
+.hljs-comment,
+.hljs-code,
+.hljs-formula {
+  color: #6a737d;
+}
+
+.hljs-name,
+.hljs-quote,
+.hljs-selector-tag,
+.hljs-selector-pseudo {
+  color: #22863a;
+}
+
+.hljs-subst {
+  color: #24292f;
+}
+
+.hljs-section {
+  color: #005cc5;
+  font-weight: bold;
+}
+
+.hljs-bullet {
+  color: #735c0f;
+}
+
+.hljs-emphasis {
+  color: #24292f;
+  font-style: italic;
+}
+
+.hljs-strong {
+  color: #24292f;
+  font-weight: bold;
+}
+
+.hljs-addition {
+  color: #22863a;
+  background-color: #f0fff4;
+}
+
+.hljs-deletion {
+  color: #b31d28;
+  background-color: #ffeef0;
+}
+
+/* 다크 모드 */
+.dark .hljs {
+  color: #e6edf3;
+  background: #0d1117;
+}
+
+.dark .hljs-doctag,
+.dark .hljs-keyword,
+.dark .hljs-meta .hljs-keyword,
+.dark .hljs-template-tag,
+.dark .hljs-template-variable,
+.dark .hljs-type,
+.dark .hljs-variable.language_ {
+  color: #ff7b72;
+}
+
+.dark .hljs-title,
+.dark .hljs-title.class_,
+.dark .hljs-title.class_.inherited__,
+.dark .hljs-title.function_ {
+  color: #d2a8ff;
+}
+
+.dark .hljs-attr,
+.dark .hljs-attribute,
+.dark .hljs-literal,
+.dark .hljs-meta,
+.dark .hljs-number,
+.dark .hljs-operator,
+.dark .hljs-variable,
+.dark .hljs-selector-attr,
+.dark .hljs-selector-class,
+.dark .hljs-selector-id {
+  color: #79c0ff;
+}
+
+.dark .hljs-regexp,
+.dark .hljs-string,
+.dark .hljs-meta .hljs-string {
+  color: #a5d6ff;
+}
+
+.dark .hljs-built_in,
+.dark .hljs-symbol {
+  color: #ffa657;
+}
+
+.dark .hljs-comment,
+.dark .hljs-code,
+.dark .hljs-formula {
+  color: #8b949e;
+}
+
+.dark .hljs-name,
+.dark .hljs-quote,
+.dark .hljs-selector-tag,
+.dark .hljs-selector-pseudo {
+  color: #7ee787;
+}
+
+.dark .hljs-subst {
+  color: #e6edf3;
+}
+
+.dark .hljs-section {
+  color: #1f6feb;
+  font-weight: bold;
+}
+
+.dark .hljs-bullet {
+  color: #f2cc60;
+}
+
+.dark .hljs-emphasis {
+  color: #e6edf3;
+  font-style: italic;
+}
+
+.dark .hljs-strong {
+  color: #e6edf3;
+  font-weight: bold;
+}
+
+.dark .hljs-addition {
+  color: #aff5b4;
+  background-color: #033a16;
+}
+
+.dark .hljs-deletion {
+  color: #ffdcd7;
+  background-color: #67060c;
+}
+
+/* Highlight.js 스타일 오버라이드 */
+.markdown-body .hljs {
+  background: #f3f4f6 !important; /* Tailwind zinc-100 */
+  color: #1e293b !important;      /* Tailwind slate-800 */
+  border-radius: 0.5rem;
+  padding: 1.1em 1.3em;
+  margin: 0;
+  overflow-x: auto;
+  font-size: 0.98em;
+  font-family: var(--font-mono, 'Fira Mono', 'Menlo', monospace);
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+.dark .markdown-body .hljs {
+  background: #18181b !important; /* Tailwind zinc-900 */
+  color: #f4f4f5 !important;      /* Tailwind zinc-100 */
+}
+
+/* Highlight.js 코드 블록 래퍼 - 기존 스타일 제거 */
+.markdown-body .code-block-wrapper .hljs {
+  background: #f3f4f6 !important;
+  color: #1e293b !important;
+  border-radius: 0.5rem;
+  padding: 1.1em 1.3em;
+  margin: 0;
+  overflow-x: auto;
+  font-size: 0.98em;
+  font-family: var(--font-mono, 'Fira Mono', 'Menlo', monospace);
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+.dark .markdown-body .code-block-wrapper .hljs {
+  background: #18181b !important;
+  color: #f4f4f5 !important;
+}
+
+/* highlight.js가 적용된 코드 블록에서 기존 pre 스타일 제거 */
+.markdown-body .code-block-wrapper pre.hljs {
+  background: inherit !important;
+  color: inherit !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  font-size: inherit !important;
+  font-family: inherit !important;
+}
+
+/* highlight.js 내부 요소들의 배경색과 테두리 완전 제거 */
+.markdown-body .hljs *,
+.markdown-body .hljs *::before,
+.markdown-body .hljs *::after {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  /* display 관련 속성 제거 - 줄바꿈 보존을 위해 */
+}
+
+/* highlight.js span 요소들의 불필요한 스타일 완전 제거 */
+.markdown-body .hljs span,
+.markdown-body .hljs p {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  display: inline !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* pre와 code는 블록 성격 유지 */
+.markdown-body .hljs pre,
+.markdown-body .hljs div {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  display: block !important;
+  white-space: pre !important;
+  overflow-x: auto !important;
+}
+
+/* pre code에 줄바꿈 보존 속성 명시 */
+.markdown-body pre code {
+  white-space: pre !important;
+  display: block !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* highlight.js 라인별 박스 제거 */
+.markdown-body .hljs-line,
+.markdown-body .hljs-line-number,
+.markdown-body .hljs-line-numbers {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline !important;
+}
+
+/* highlight.js 모든 클래스의 배경색 강제 제거 */
+.markdown-body .hljs .hljs-keyword,
+.markdown-body .hljs .hljs-string,
+.markdown-body .hljs .hljs-comment,
+.markdown-body .hljs .hljs-title,
+.markdown-body .hljs .hljs-meta,
+.markdown-body .hljs .hljs-type,
+.markdown-body .hljs .hljs-variable,
+.markdown-body .hljs .hljs-attr,
+.markdown-body .hljs .hljs-attribute,
+.markdown-body .hljs .hljs-literal,
+.markdown-body .hljs .hljs-number,
+.markdown-body .hljs .hljs-operator,
+.markdown-body .hljs .hljs-built_in,
+.markdown-body .hljs .hljs-symbol,
+.markdown-body .hljs .hljs-name,
+.markdown-body .hljs .hljs-quote,
+.markdown-body .hljs .hljs-selector-tag,
+.markdown-body .hljs .hljs-selector-pseudo,
+.markdown-body .hljs .hljs-subst,
+.markdown-body .hljs .hljs-section,
+.markdown-body .hljs .hljs-bullet,
+.markdown-body .hljs .hljs-emphasis,
+.markdown-body .hljs .hljs-strong,
+.markdown-body .hljs .hljs-addition,
+.markdown-body .hljs .hljs-deletion {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+}
+
+/* 복사 버튼 스타일 */
+.markdown-body .copy-code-button {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 10;
+}
+
+/* 복사 버튼 기본 스타일 - 항상 표시 */
+.markdown-body .copy-code-button button {
+  opacity: 0.7;
+  transform: translateY(0);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* 코드 블록 호버 시 복사 버튼 강조 */
+.markdown-body .code-block-wrapper:hover .copy-code-button button {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 모바일에서는 항상 복사 버튼 표시 */
+@media (max-width: 768px) {
+  .markdown-body .copy-code-button button {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
