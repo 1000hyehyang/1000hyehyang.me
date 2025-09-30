@@ -53,19 +53,20 @@ export const PINNED_POSTS_CONFIG = {
   sectionTitle: "Pinned Posts",
 } as const;
 
-const fetchDiscussions = async (): Promise<GitHubDiscussion[]> => {
+// 단일 페이지 Discussion 가져오기
+const fetchDiscussionsPage = async (cursor: string | null = null): Promise<{ nodes: GitHubDiscussion[]; pageInfo: { hasNextPage: boolean; endCursor: string } }> => {
   const validatedConfig = typeof window === 'undefined' ? getValidatedGitHubConfig() : GITHUB_CONFIG;
   
   if (!validatedConfig.token) {
     console.warn('GitHub 토큰이 설정되지 않았습니다.');
-    return [];
+    return { nodes: [], pageInfo: { hasNextPage: false, endCursor: '' } };
   }
 
-
+  const afterClause = cursor ? `, after: "${cursor}"` : '';
   const query = `
     query {
       repository(owner: "${validatedConfig.repoOwner}", name: "${validatedConfig.repoName}") {
-        discussions(first: 100, orderBy: {field: CREATED_AT, direction: DESC}) {
+        discussions(first: 100, orderBy: {field: CREATED_AT, direction: DESC}${afterClause}) {
           nodes {
             id
             title
@@ -102,27 +103,59 @@ const fetchDiscussions = async (): Promise<GitHubDiscussion[]> => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ query }),
-      // ISR: 1시간마다 재검증, Webhook으로 즉시 갱신
-      next: { revalidate: 3600, tags: ['github-discussions'] }
+      // ISR: 10분마다 재검증, Webhook으로 즉시 갱신
+      next: { revalidate: 600, tags: ['github-discussions'] }
     });
 
     if (!response.ok) {
       console.warn('GitHub API 응답 실패:', response.status, response.statusText);
-      return [];
+      return { nodes: [], pageInfo: { hasNextPage: false, endCursor: '' } };
     }
 
     const data: GitHubResponse = await response.json();
     
     if (!data.data?.repository) {
       console.warn('GitHub 저장소를 찾을 수 없습니다.');
-      return [];
+      return { nodes: [], pageInfo: { hasNextPage: false, endCursor: '' } };
     }
     
-    return data.data.repository.discussions.nodes;
+    return {
+      nodes: data.data.repository.discussions.nodes,
+      pageInfo: data.data.repository.discussions.pageInfo
+    };
   } catch (error) {
     console.warn('GitHub API 요청 실패:', error);
-    return [];
+    return { nodes: [], pageInfo: { hasNextPage: false, endCursor: '' } };
   }
+};
+
+// 모든 Discussion 가져오기 (페이지네이션)
+const fetchAllDiscussions = async (): Promise<GitHubDiscussion[]> => {
+  const allDiscussions: GitHubDiscussion[] = [];
+  let hasNextPage = true;
+  let cursor: string | null = null;
+  let pageCount = 0;
+  const maxPages = 10; // 최대 1000개 (10페이지 * 100개)
+
+  while (hasNextPage && pageCount < maxPages) {
+    const result = await fetchDiscussionsPage(cursor);
+    allDiscussions.push(...result.nodes);
+    hasNextPage = result.pageInfo.hasNextPage;
+    cursor = result.pageInfo.endCursor;
+    pageCount++;
+    
+    // API 부하 방지를 위한 짧은 지연
+    if (hasNextPage && pageCount < maxPages) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+
+  return allDiscussions;
+};
+
+// 기존 함수는 모든 Discussion을 가져오도록 수정
+const fetchDiscussions = async (): Promise<GitHubDiscussion[]> => {
+  return await fetchAllDiscussions();
 };
 
 const convertDiscussionToPost = (discussion: GitHubDiscussion): BlogFrontmatter => {

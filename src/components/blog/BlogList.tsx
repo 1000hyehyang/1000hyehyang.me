@@ -9,6 +9,15 @@ import { searchBlogPosts, getSearchResultCount, debounce } from "@/lib/search";
 import { PINNED_POSTS_CONFIG } from "@/lib/github";
 import { Pin, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface BlogListProps {
   posts: BlogFrontmatter[];
@@ -21,6 +30,10 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [currentSlide, setCurrentSlide] = useState<number>(0);
+  
+  // 페이지네이션 상태
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const postsPerPage = 8; // 페이지당 10개 글
   
   // 터치 스와이프를 위한 ref와 상태
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -60,7 +73,7 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
     return searchBlogPosts(posts, debouncedSearchQuery);
   }, [posts, debouncedSearchQuery]);
 
-  // 카테고리 필터링
+  // 카테고리 필터링 (전체 글에서 필터링)
   const filteredPosts = useMemo(() => {
     let filtered = searchResults;
     
@@ -71,8 +84,23 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
     return filtered;
   }, [searchResults, selectedCategory]);
 
+  // 페이지네이션된 글들
+  const paginatedPosts = useMemo(() => {
+    const startIndex = (currentPage - 1) * postsPerPage;
+    return filteredPosts.slice(startIndex, startIndex + postsPerPage);
+  }, [filteredPosts, currentPage, postsPerPage]);
+
+  // 총 페이지 수
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
+    setCurrentPage(1); // 카테고리 변경 시 첫 페이지로
+  };
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   // 캐러셀 네비게이션
@@ -114,13 +142,13 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
   // 추천 글 카드 컴포넌트
   const PinnedCard = ({ post, isActive }: { post: BlogFrontmatter; isActive: boolean }) => (
     <div
-      className={`
-        overflow-hidden rounded-2xl transition-all duration-300 h-80 md:h-80 h-64 relative
-        ${isActive 
-          ? 'opacity-100 scale-100' 
-          : 'opacity-70 scale-95'
-        }
-      `}
+        className={`
+          overflow-hidden rounded-2xl transition-all duration-300 h-64 md:h-80 relative
+          ${isActive 
+            ? 'opacity-100 scale-100' 
+            : 'opacity-70 scale-95'
+          }
+        `}
       style={{ 
         background: 'rgba(255, 255, 255, 0.1)',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
@@ -388,7 +416,7 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
         animate="show"
         key={selectedCategory}
       >
-        {filteredPosts.length === 0 ? (
+        {paginatedPosts.length === 0 ? (
           <div className="col-span-2 text-center text-muted-foreground py-12">
             {debouncedSearchQuery ? (
               `"${debouncedSearchQuery}"에 대한 검색 결과가 없습니다.`
@@ -399,7 +427,7 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
             )}
           </div>
         ) : (
-          filteredPosts.map(result => (
+          paginatedPosts.map(result => (
             <BlogCard 
               key={result.post.slug} 
               {...result.post} 
@@ -409,6 +437,90 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
           ))
         )}
       </motion.div>
+
+      {/* 페이지네이션 */}
+      {totalPages > 1 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mt-12 flex justify-center"
+        >
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              
+              {/* 첫 페이지 */}
+              {currentPage > 3 && (
+                <>
+                  <PaginationItem>
+                    <PaginationLink 
+                      onClick={() => handlePageChange(1)}
+                      className="cursor-pointer"
+                    >
+                      1
+                    </PaginationLink>
+                  </PaginationItem>
+                  {currentPage > 4 && (
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )}
+                </>
+              )}
+
+              {/* 현재 페이지 주변 페이지들 */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((page) => {
+                  return page >= Math.max(1, currentPage - 2) && 
+                         page <= Math.min(totalPages, currentPage + 2);
+                })
+                .map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => handlePageChange(page)}
+                      isActive={currentPage === page}
+                      className="cursor-pointer"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+              {/* 마지막 페이지 */}
+              {currentPage < totalPages - 2 && (
+                <>
+                  {currentPage < totalPages - 3 && (
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )}
+                  <PaginationItem>
+                    <PaginationLink 
+                      onClick={() => handlePageChange(totalPages)}
+                      className="cursor-pointer"
+                    >
+                      {totalPages}
+                    </PaginationLink>
+                  </PaginationItem>
+                </>
+              )}
+
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </motion.div>
+      )}
     </section>
   );
 }; 
