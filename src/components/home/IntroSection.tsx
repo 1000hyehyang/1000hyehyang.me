@@ -6,7 +6,7 @@ import { itemVariants } from "@/lib/animations";
 export const IntroSection = () => {
   return (
     <motion.section variants={itemVariants} className="w-full max-w-2xl space-y-4">
-      <h1 className="text-xl font-semibold mb-4">안녕하세요, 백엔드 개발자 여채현입니다.</h1>
+      <h1 className="text-xl font-semibold mb-4">안녕하세요, 여채현입니다.</h1>
       
       <p className="text-muted-foreground leading-relaxed">
         다양한 분야에 끊임없이 도전하며 새로운 경험을 추구합니다. 깔끔하고 안정적인 코드 구조와 탄탄한 아키텍처 설계에 관심이 많으며, 특히 Spring Boot와 Java를 중심으로 체계적인 백엔드 시스템을 만드는 데 강점을 가지고 있습니다.

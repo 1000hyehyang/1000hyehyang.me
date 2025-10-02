@@ -39,6 +39,8 @@ export type TimelineItem = {
   description: string;
   logo: string;
   logoAlt: string;
+  activities?: string[]; // Organization에서 사용할 활동 목록
+  url?: string; // 링크 URL
 };
 
 export type GiscusConfig = {
