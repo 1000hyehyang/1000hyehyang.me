@@ -9,6 +9,7 @@ const redis = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
     })
   : null;
 
+// 입력값 정제
 const sanitizeInput = (input: string): string => {
   return input
     .replace(/[<>]/g, '')
@@ -18,15 +19,18 @@ const sanitizeInput = (input: string): string => {
     .slice(0, 20);
 };
 
+// 점수 유효성 검사
 const validateScore = (score: number): boolean => {
   return Number.isInteger(score) && score >= 0 && score <= 50000;
 };
 
+// 플레이어명 유효성 검사
 const validatePlayerName = (name: string): boolean => {
   const validPattern = /^[가-힣a-zA-Z0-9\s]{1,20}$/;
   return validPattern.test(name);
 };
 
+// 클라이언트 IP 주소 가져오기
 const getClientIP = async (): Promise<string> => {
   const headersList = await headers();
   const forwarded = headersList.get("x-forwarded-for");
@@ -38,6 +42,7 @@ const getClientIP = async (): Promise<string> => {
   return "localhost";
 };
 
+// 게임 세션 유효성 검사
 const validateGameSession = async (sessionId: string, ip: string): Promise<boolean> => {
   if (!redis || !sessionId) return false;
   
@@ -48,7 +53,7 @@ const validateGameSession = async (sessionId: string, ip: string): Promise<boole
     const sessionData = session as { ip: string; createdAt: number; isValid: boolean };
     const timeDiff = Date.now() - sessionData.createdAt;
     
-    // 세션이 유효하고 IP가 일치하며 10분 이내인지 확인
+    // 세션 유효성, IP 일치, 10분 이내 확인
     return sessionData.isValid && 
            sessionData.ip === ip && 
            timeDiff < 600000; // 10분
@@ -58,49 +63,48 @@ const validateGameSession = async (sessionId: string, ip: string): Promise<boole
   }
 };
 
-// 게임 상태 검증 (실제 게임에서 온 요청인지 확인)
+// 게임 상태 유효성 검사
 const validateGameState = (gameState: Record<string, unknown>): boolean => {
-  // 게임 상태가 유효한지 확인
   if (!gameState || typeof gameState !== 'object') return false;
   
-  // 필수 게임 상태 필드 확인
+  // 필수 필드 확인
   const requiredFields = ['isPlaying', 'score', 'timeLeft', 'tangerines'];
   for (const field of requiredFields) {
     if (!(field in gameState)) return false;
   }
   
-  // 게임이 실제로 진행되었는지 확인
+  // 점수 범위 확인 (0-50000)
   const score = gameState.score as number;
-  if (score <= 0 || score > 50000) return false; // 최대 50000점
+  if (score <= 0 || score > 50000) return false;
   
-  // 남은 시간이 유효한지 확인
+  // 시간 범위 확인 (0-60초)
   const timeLeft = gameState.timeLeft as number;
-  if (typeof timeLeft !== 'number' || timeLeft < 0 || timeLeft > 60) return false; // 0-60초
+  if (typeof timeLeft !== 'number' || timeLeft < 0 || timeLeft > 60) return false;
   
-  // 귤 배열이 유효한지 확인
+  // 귤 배열 유효성 확인 (최대 200개)
   const tangerines = gameState.tangerines as unknown[];
-  if (!Array.isArray(tangerines)) return false;
-  
-  // 귤 개수가 합리적인 범위인지 확인 (10x20 격자 = 200개)
-  if (tangerines.length > 200) return false;
+  if (!Array.isArray(tangerines) || tangerines.length > 200) return false;
   
   return true;
 };
 
 
 
-// GET: 리더보드 상위 10개만 반환
+// GET: 리더보드 조회
 export async function GET() {
   try {
     if (!redis) {
       return NextResponse.json({ leaderboard: [] });
     }
-    // Sorted Set에서 상위 10개(score 내림차순)
+    
+    // 상위 10개 점수 조회
     const results = await redis.zrange("tangerine_leaderboard", 0, 9, { rev: true, withScores: true });
     const leaderboard = [];
+    
     for (let i = 0; i < results.length; i += 2) {
       let parsed: Record<string, unknown> = {};
       const member = results[i];
+      
       if (typeof member === "string") {
         try {
           parsed = JSON.parse(member);
@@ -110,11 +114,13 @@ export async function GET() {
       } else if (typeof member === "object" && member !== null) {
         parsed = member as Record<string, unknown>;
       }
+      
       leaderboard.push({
         ...parsed,
         score: Number(results[i + 1])
       });
     }
+    
     return NextResponse.json({ leaderboard });
   } catch (error) {
     console.error("천혜향 게임 리더보드 조회 실패:", error);
@@ -125,7 +131,7 @@ export async function GET() {
   }
 }
 
-// POST: 점수 저장 (리더보드에만)
+// POST: 점수 저장
 export async function POST(request: Request) {
   try {
     if (!redis) {
@@ -133,7 +139,6 @@ export async function POST(request: Request) {
     }
     
     const clientIP = await getClientIP();
-    
     const body = await request.json();
     const { score, playerName, gameSessionId, gameState } = body;
     
@@ -144,7 +149,7 @@ export async function POST(request: Request) {
       );
     }
     
-    // 게임 세션 검증 (실제 게임에서 온 요청인지 확인)
+    // 세션 유효성 검사
     if (!gameSessionId || typeof gameSessionId !== 'string') {
       return NextResponse.json(
         { error: "유효하지 않은 게임 세션입니다." },
@@ -160,13 +165,14 @@ export async function POST(request: Request) {
       );
     }
     
-    // 게임 상태 검증 (실제 게임에서 온 요청인지 확인)
+    // 게임 상태 및 점수 유효성 검사
     if (!gameState || !validateGameState(gameState)) {
       return NextResponse.json(
         { error: "유효하지 않은 게임 상태입니다." },
         { status: 400 }
       );
     }
+    
     if (!validateScore(score)) {
       return NextResponse.json(
         { error: "유효하지 않은 점수입니다. (0-50000 사이의 정수만 허용)" },
@@ -174,15 +180,16 @@ export async function POST(request: Request) {
       );
     }
     
-    // 점수와 게임 상태의 점수가 일치하는지 확인
+    // 점수 일치 확인
     const gameStateScore = gameState.score as number;
-    if (Math.abs(score - gameStateScore) > 0) { // 정확히 일치해야 함
+    if (Math.abs(score - gameStateScore) > 0) {
       return NextResponse.json(
         { error: "점수가 게임 상태와 일치하지 않습니다." },
         { status: 400 }
       );
     }
 
+    // 플레이어명 처리
     let sanitizedPlayerName = '';
     if (playerName && typeof playerName === 'string') {
       if (!validatePlayerName(playerName)) {
@@ -194,7 +201,7 @@ export async function POST(request: Request) {
       sanitizedPlayerName = sanitizeInput(playerName);
     }
 
-    // 리더보드에 점수 추가 (동시성 안전)
+    // 리더보드에 점수 추가
     await redis.zadd("tangerine_leaderboard", {
       score,
       member: JSON.stringify({
@@ -202,7 +209,8 @@ export async function POST(request: Request) {
         timestamp: new Date().toISOString()
       })
     });
-    // 상위 10개만 반환
+    
+    // 업데이트된 리더보드 반환
     const results = await redis.zrange("tangerine_leaderboard", 0, 9, { rev: true, withScores: true });
     const leaderboard = [];
     for (let i = 0; i < results.length; i += 2) {
@@ -211,6 +219,7 @@ export async function POST(request: Request) {
         score: Number(results[i + 1])
       });
     }
+    
     return NextResponse.json({ success: true, leaderboard });
   } catch (error) {
     console.error("천혜향 게임 점수 저장 실패:", error);

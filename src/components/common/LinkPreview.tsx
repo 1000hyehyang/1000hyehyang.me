@@ -41,7 +41,7 @@ export const LinkPreview = ({ url, children }: LinkPreviewProps) => {
         
         const data = await response.json();
         setMetadata(data);
-        setFaviconError(false); // 새로운 메타데이터 로드 시 파비콘 에러 상태 리셋
+        setFaviconError(false);
       } catch (err) {
         setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
       } finally {

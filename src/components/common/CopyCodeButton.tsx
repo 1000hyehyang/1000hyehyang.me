@@ -11,6 +11,7 @@ interface CopyCodeButtonProps {
 export const CopyCodeButton = ({ code, className = "" }: CopyCodeButtonProps) => {
   const [copied, setCopied] = useState(false);
 
+  // 코드 복사
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(code);

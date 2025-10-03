@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// 키보드 이벤트 핸들러
+// 키보드 이벤트 처리
 export const handleKeyDown = (event: React.KeyboardEvent, callback: () => void) => {
   if (event.key === 'Enter' || event.key === ' ') {
     event.preventDefault();
@@ -13,7 +13,7 @@ export const handleKeyDown = (event: React.KeyboardEvent, callback: () => void) 
   }
 };
 
-// 안전한 localStorage 유틸리티 함수들
+// 안전한 localStorage 유틸리티
 export const safeLocalStorage = {
   getItem: (key: string): string | null => {
     try {

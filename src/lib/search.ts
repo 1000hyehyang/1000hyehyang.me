@@ -1,11 +1,6 @@
 import { BlogFrontmatter } from "@/types";
 
-/**
- * 디바운싱 함수
- * @param func 실행할 함수
- * @param delay 지연 시간 (ms)
- * @returns 디바운싱된 함수
- */
+// 디바운스 함수
 export function debounce<T extends (...args: never[]) => void>(
   func: T,
   delay: number
@@ -24,12 +19,7 @@ export interface SearchResult {
   matchedFields: string[];
 }
 
-/**
- * 블로그 포스트를 검색하는 함수
- * @param posts 검색할 포스트 배열
- * @param query 검색어
- * @returns 검색 결과 배열 (점수 순으로 정렬)
- */
+// 블로그 포스트 검색
 export const searchBlogPosts = (posts: BlogFrontmatter[], query: string): SearchResult[] => {
   if (!query.trim()) {
     return posts.map(post => ({ post, score: 0, matchedFields: [] }));
@@ -42,19 +32,19 @@ export const searchBlogPosts = (posts: BlogFrontmatter[], query: string): Search
     let score = 0;
     const matchedFields: string[] = [];
 
-    // 제목 검색 (가장 높은 가중치)
+    // 제목 검색 (가중치 10)
     const titleMatch = post.title.toLowerCase().includes(normalizedQuery);
     if (titleMatch) {
       score += 10;
       matchedFields.push('title');
       
-      // 제목 시작 부분에 검색어가 있으면 추가 점수
+      // 제목 시작 부분 매치 시 추가 점수
       if (post.title.toLowerCase().startsWith(normalizedQuery)) {
         score += 5;
       }
     }
 
-    // 요약 검색
+    // 요약 검색 (가중치 5)
     if (post.summary) {
       const summaryMatch = post.summary.toLowerCase().includes(normalizedQuery);
       if (summaryMatch) {
@@ -63,7 +53,7 @@ export const searchBlogPosts = (posts: BlogFrontmatter[], query: string): Search
       }
     }
 
-    // 태그 검색
+    // 태그 검색 (가중치 3)
     const tagMatches = post.tags.filter(tag => 
       tag.toLowerCase().includes(normalizedQuery)
     );

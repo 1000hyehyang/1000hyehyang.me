@@ -14,9 +14,9 @@ export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // LinkPreview와 CopyCodeButton 컴포넌트를 동적으로 렌더링
+  // 동적 컴포넌트 렌더링
   useEffect(() => {
-    // LinkPreview 렌더링
+    // 링크 미리보기 렌더링
     const linkPreviewWrappers = document.querySelectorAll('.link-preview-wrapper');
     
     linkPreviewWrappers.forEach((wrapper) => {
@@ -30,7 +30,7 @@ export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
       }
     });
 
-    // CopyCodeButton 렌더링
+    // 코드 복사 버튼 렌더링
     const copyButtonWrappers = document.querySelectorAll('.copy-code-button');
     
     copyButtonWrappers.forEach((wrapper) => {

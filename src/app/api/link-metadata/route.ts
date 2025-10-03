@@ -11,6 +11,7 @@ interface LinkMetadata {
   favicon?: string;
 }
 
+// 상대 URL을 절대 URL로 변환
 function absolutize(base: string, maybeRelative?: string | null): string | undefined {
   if (!maybeRelative) return undefined;
   try {
@@ -20,10 +21,12 @@ function absolutize(base: string, maybeRelative?: string | null): string | undef
   }
 }
 
+// 유효한 값 중 첫 번째 반환
 function pick<T>(...vals: (T | undefined)[]): T | undefined {
   return vals.find(Boolean) as T | undefined;
 }
 
+// HTML 가져오기
 async function fetchHTML(url: string): Promise<string> {
   const res = await fetch(url, {
     headers: {
@@ -37,21 +40,22 @@ async function fetchHTML(url: string): Promise<string> {
   return await res.text();
 }
 
+// 파비콘 추출
 function extractFavicon($: cheerio.CheerioAPI, origin: string): string | undefined {
-  // 우선순위: <link rel="icon"> / <link rel="shortcut icon"> / <link rel="apple-touch-icon">
   const rels = ["icon", "shortcut icon", "apple-touch-icon"];
   for (const rel of rels) {
     const href = $(`link[rel='${rel}']`).attr("href");
     const abs = absolutize(origin, href);
     if (abs) return abs;
   }
-  // 기본값: /favicon.ico 또는 구글 파비콘 서비스 (fallback)
+  // 기본 파비콘 또는 구글 파비콘 서비스
   return pick(
     absolutize(origin, "/favicon.ico"),
     `https://www.google.com/s2/favicons?domain=${encodeURIComponent(origin)}&sz=64`
   );
 }
 
+// 메타데이터 추출
 const extractMetadata = async (url: string): Promise<LinkMetadata> => {
   try {
     const target = new URL(url);
@@ -60,7 +64,7 @@ const extractMetadata = async (url: string): Promise<LinkMetadata> => {
     const html = await fetchHTML(target.toString());
     const $ = cheerio.load(html);
 
-    // Open Graph 우선, 그 다음 일반 meta/title
+    // Open Graph 및 Twitter 메타데이터 추출
     const ogTitle = $("meta[property='og:title']").attr("content");
     const ogDesc = $("meta[property='og:description']").attr("content");
     const ogSite = $("meta[property='og:site_name']").attr("content");
@@ -80,9 +84,6 @@ const extractMetadata = async (url: string): Promise<LinkMetadata> => {
       $("meta[name='description']").attr("content")
     );
 
-    // 이미지는 가져오지 않음
-    const image = undefined;
-
     const siteName = pick(
       ogSite,
       target.hostname.replace(/^www\./, "")
@@ -96,7 +97,7 @@ const extractMetadata = async (url: string): Promise<LinkMetadata> => {
       siteName,
       title,
       description,
-      image,
+      image: undefined, // 이미지는 가져오지 않음
       favicon,
     };
   } catch (error) {
@@ -110,6 +111,7 @@ const extractMetadata = async (url: string): Promise<LinkMetadata> => {
   }
 };
 
+// GET: 링크 메타데이터 조회
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -132,7 +134,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 허용된 프로토콜만 허용
+    // HTTP/HTTPS 프로토콜만 허용
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       return NextResponse.json(
         { error: 'HTTP 또는 HTTPS URL만 허용됩니다.' },

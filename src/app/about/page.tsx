@@ -10,8 +10,8 @@ import {
   CERTIFICATION_DATA 
 } from "@/lib/about-data";
 
-// Education 섹션용 컴포넌트 (이미지와 같은 디자인)
-const EducationItemComponent = ({ item, index }: { item: TimelineItem; index: number }) => {
+// 공통 아이템 컴포넌트
+const ItemComponent = ({ item, index, className = "mb-6" }: { item: TimelineItem; index: number; className?: string }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -21,9 +21,9 @@ const EducationItemComponent = ({ item, index }: { item: TimelineItem; index: nu
       initial={{ opacity: 0, y: -50 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -50 }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
-      className="flex gap-4 items-start mb-6"
+      className={`flex gap-4 items-start ${className}`}
     >
-      {/* 로고 컨테이너 */}
+      {/* 로고 */}
       <div className="w-16 h-16 rounded-lg overflow-hidden bg-white border border-gray-200 flex-shrink-0">
         <Image
           src={item.logo}
@@ -38,7 +38,7 @@ const EducationItemComponent = ({ item, index }: { item: TimelineItem; index: nu
         />
       </div>
       
-      {/* 텍스트 정보 */}
+      {/* 정보 */}
       <div className="flex-1">
         {item.url ? (
           <a 
@@ -55,7 +55,7 @@ const EducationItemComponent = ({ item, index }: { item: TimelineItem; index: nu
         <div className="text-xs text-muted-foreground mb-2">{item.description}</div>
         <div className="text-xs text-muted-foreground mb-3">{item.period}</div>
         
-        {/* 활동 내용 */}
+        {/* 활동 목록 */}
         {item.activities && item.activities.length > 0 && (
           <div className="space-y-1">
             {item.activities.map((activity, activityIndex) => (
@@ -71,145 +71,82 @@ const EducationItemComponent = ({ item, index }: { item: TimelineItem; index: nu
   );
 };
 
-// Organization 섹션용 컴포넌트 (활동 내용 포함)
-const OrganizationItemComponent = ({ item, index }: { item: TimelineItem; index: number }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: -50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -50 }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      className="flex gap-4 items-start mb-8"
-    >
-      {/* 로고 컨테이너 */}
-      <div className="w-16 h-16 rounded-lg overflow-hidden bg-white border border-gray-200 flex-shrink-0">
-        <Image
-          src={item.logo}
-          alt={item.logoAlt}
-          width={64}
-          height={64}
-          style={{ objectFit: 'contain' }}
-          className="w-full h-full"
-          aria-hidden="true"
-          unoptimized
-          priority
-        />
-      </div>
-      
-      {/* 텍스트 정보 */}
-      <div className="flex-1">
-        {item.url ? (
-          <a 
-            href={item.url} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-sm font-semibold text-foreground mb-1 hover:text-orange-300 transition-colors cursor-pointer"
-          >
-            {item.title}
-          </a>
-        ) : (
-          <div className="text-sm font-semibold text-foreground mb-1">{item.title}</div>
-        )}
-        <div className="text-xs text-muted-foreground mb-2">{item.description}</div>
-        <div className="text-xs text-muted-foreground mb-3">{item.period}</div>
-        
-        {/* 활동 내용 */}
-        {item.activities && item.activities.length > 0 && (
-          <div className="space-y-1">
-            {item.activities.map((activity, activityIndex) => (
-              <div key={activityIndex} className="text-xs text-muted-foreground flex items-start">
-                <span className="text-orange-300 mr-2">•</span>
-                <span>{activity}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </motion.div>
-  );
-};
-
-// 기존 Timeline 컴포넌트 (Awards용)
+// 타임라인 아이템 컴포넌트 (수상 내역용)
 const TimelineItemComponent = ({ item, index }: { item: TimelineItem; index: number }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <li className="flex gap-4 items-start">
-      <span className="absolute -left-1.5 w-3 h-3 rounded-full bg-orange-300" aria-hidden="true" />
-      <motion.div
-        ref={ref}
-        initial={{ opacity: 0, y: -50 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -50 }}
-        transition={{ duration: 0.6, delay: index * 0.1 }}
-        className="w-full bg-muted/25 dark:bg-muted/40 p-4 rounded-lg"
-      >
-        <div className="text-xs text-muted-foreground mb-1">{item.period}</div>
-        <div className="flex items-center gap-2 mb-1">
-          <div style={{ position: 'relative', width: 24, height: 24 }}>
-            <Image
-              src={item.logo}
-              alt={item.logoAlt}
-              fill
-              style={{ objectFit: 'contain' }}
-              className="rounded-xs"
-              aria-hidden="true"
-              unoptimized
-              priority
-            />
-          </div>
-          <span className="text-sm font-semibold">{item.title}</span>
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: -50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -50 }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      className="w-full bg-muted/25 dark:bg-muted/40 p-4 rounded-lg mb-6"
+    >
+      <div className="text-xs text-muted-foreground mb-1">{item.period}</div>
+      <div className="flex items-center gap-2 mb-1">
+        <div style={{ position: 'relative', width: 24, height: 24 }}>
+          <Image
+            src={item.logo}
+            alt={item.logoAlt}
+            fill
+            style={{ objectFit: 'contain' }}
+            className="rounded-xs"
+            aria-hidden="true"
+            unoptimized
+            priority
+          />
         </div>
-        {item.description && (
-          <div className="text-xs text-muted-foreground">{item.description}</div>
-        )}
-      </motion.div>
-    </li>
+        <span className="text-sm font-semibold">{item.title}</span>
+      </div>
+      {item.description && (
+        <div className="text-xs text-muted-foreground">{item.description}</div>
+      )}
+    </motion.div>
   );
 };
 
-// Education 섹션
+// 학력 섹션
 const EducationSection = ({ title, items }: { title: string; items: TimelineItem[] }) => (
   <>
     <h2 className="text-xl font-semibold mb-4">{title}</h2>
     <div className="mb-16">
       {items.map((item, index) => (
-        <EducationItemComponent key={`${item.title}-${index}`} item={item} index={index} />
+        <ItemComponent key={`${item.title}-${index}`} item={item} index={index} className="mb-6" />
       ))}
     </div>
     <hr className="border-t border-border/50 mb-16" />
   </>
 );
 
-// Organization 섹션
+// 조직 활동 섹션
 const OrganizationSection = ({ title, items }: { title: string; items: TimelineItem[] }) => (
   <>
     <h2 className="text-xl font-semibold mb-4">{title}</h2>
     <div className="mb-16">
       {items.map((item, index) => (
-        <OrganizationItemComponent key={`${item.title}-${index}`} item={item} index={index} />
+        <ItemComponent key={`${item.title}-${index}`} item={item} index={index} className="mb-8" />
       ))}
     </div>
     <hr className="border-t border-border/50 mb-16" />
   </>
 );
 
-// Awards 섹션 (기존 Timeline 유지)
+// 수상 내역 섹션
 const TimelineSection = ({ title, items }: { title: string; items: TimelineItem[] }) => (
   <>
     <h2 className="text-xl font-semibold mb-4">{title}</h2>
-    <ol className="relative border-l-2 border-orange-200 pl-6 space-y-6 mb-16">
+    <div className="mb-16">
       {items.map((item, index) => (
         <TimelineItemComponent key={`${item.title}-${index}`} item={item} index={index} />
       ))}
-    </ol>
+    </div>
     <hr className="border-t border-border/50 mb-16" />
   </>
 );
 
+// 자격증 그리드 컴포넌트
 const CertificationGrid = ({ items }: { items: TimelineItem[] }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -230,15 +167,15 @@ const CertificationGrid = ({ items }: { items: TimelineItem[] }) => {
             }
           }
         }}
-                 className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
       >
         {items.map((item, index) => (
           <motion.div
             key={`${item.title}-${index}`}
-                         variants={{
-               hidden: { opacity: 0 },
-               visible: { opacity: 1 }
-             }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: { opacity: 1 }
+            }}
             transition={{ duration: 0.6 }}
             className="bg-muted/25 dark:bg-muted/40 p-4 rounded-lg hover:bg-muted/40 dark:hover:bg-muted/60 hover:scale-105 transition-all duration-200"
           >

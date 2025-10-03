@@ -45,7 +45,7 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
     return ["ALL", ...Array.from(categorySet).sort()];
   }, [posts]);
 
-  // 디바운싱된 검색 쿼리 업데이트
+  // 검색 디바운싱
   const debouncedSearch = useCallback(
     (query: string) => {
       const debouncedFn = debounce((q: string) => {
@@ -57,7 +57,7 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
     [setDebouncedSearchQuery, setIsSearching]
   );
 
-  // 검색 쿼리 변경 시 디바운싱 적용
+  // 검색 처리
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
     if (query.trim()) {
@@ -68,12 +68,12 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
     debouncedSearch(query);
   }, [debouncedSearch]);
 
-  // 디바운싱된 검색 결과
+  // 검색 결과
   const searchResults = useMemo(() => {
     return searchBlogPosts(posts, debouncedSearchQuery);
   }, [posts, debouncedSearchQuery]);
 
-  // 카테고리 필터링 (전체 글에서 필터링)
+  // 카테고리 필터링
   const filteredPosts = useMemo(() => {
     let filtered = searchResults;
     
@@ -84,7 +84,7 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
     return filtered;
   }, [searchResults, selectedCategory]);
 
-  // 페이지네이션된 글들
+  // 페이지네이션
   const paginatedPosts = useMemo(() => {
     const startIndex = (currentPage - 1) * postsPerPage;
     return filteredPosts.slice(startIndex, startIndex + postsPerPage);
@@ -98,7 +98,7 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
     setCurrentPage(1); // 카테고리 변경 시 첫 페이지로
   };
 
-  // 페이지 변경 핸들러
+  // 페이지 변경
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -112,7 +112,7 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
     setCurrentSlide((prev) => (prev - 1 + pinnedPosts.length) % pinnedPosts.length);
   };
 
-  // 터치 스와이프 핸들러
+  // 터치 스와이프
   const minSwipeDistance = 50;
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -139,7 +139,7 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
     }
   };
 
-  // 추천 글 카드 컴포넌트
+  // 추천 글 카드
   const PinnedCard = ({ post, isActive }: { post: BlogFrontmatter; isActive: boolean }) => (
     <div
         className={`

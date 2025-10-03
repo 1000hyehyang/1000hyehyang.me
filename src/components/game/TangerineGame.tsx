@@ -47,7 +47,7 @@ export const TangerineGame = () => {
     volume: 0.5
   });
 
-  // 화면 방향 감지
+  // 화면 방향 확인
   useEffect(() => {
     const checkOrientation = () => {
       setIsPortrait(window.innerHeight > window.innerWidth);
@@ -63,7 +63,7 @@ export const TangerineGame = () => {
     };
   }, []);
 
-  // 타이머 효과
+  // 게임 타이머
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -80,7 +80,7 @@ export const TangerineGame = () => {
     };
   }, [isPlaying, isPaused, timeLeft, updateTime]);
 
-  // 초기 격자 생성 (클라이언트 사이드에서만)
+  // 초기 격자 생성
   useEffect(() => {
     generateNewGrid();
   }, [generateNewGrid]);
@@ -89,12 +89,12 @@ export const TangerineGame = () => {
   useEffect(() => {
     if (timeLeft <= 0) {
       endGameFromStore();
-      setOriginalHighScore(highScore); // 게임 오버 시점의 원래 최고 기록 저장
+      setOriginalHighScore(highScore);
       setShowGameOver(true);
     }
   }, [timeLeft, endGameFromStore, highScore]);
 
-  // 게임 시작 시 배경음악 재생
+  // 배경음악 재생
   useEffect(() => {
     if (isPlaying && !isPaused) {
       bgMusic.play();
@@ -111,7 +111,7 @@ export const TangerineGame = () => {
     setShowGameOver(false);
     setPlayerName("");
     setHasSaved(false);
-    setOriginalHighScore(0); // 원래 최고 기록 초기화
+    setOriginalHighScore(0);
   };
 
   const handleSaveScore = async () => {

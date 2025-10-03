@@ -9,6 +9,7 @@ const redis = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
     })
   : null;
 
+// 클라이언트 IP 주소 가져오기
 const getClientIP = async (): Promise<string> => {
   const headersList = await headers();
   const forwarded = headersList.get("x-forwarded-for");
@@ -20,7 +21,7 @@ const getClientIP = async (): Promise<string> => {
   return "localhost";
 };
 
-// POST: 게임 세션 토큰 생성
+// POST: 게임 세션 생성
 export async function POST(request: Request) {
   try {
     if (!redis) {
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
       );
     }
     
-    // 세션 토큰을 Redis에 저장 (10분 유효)
+    // 세션 토큰 저장 (10분 유효)
     await redis.setex(`session:${sessionId}`, 600, {
       ip: clientIP,
       createdAt: Date.now(),

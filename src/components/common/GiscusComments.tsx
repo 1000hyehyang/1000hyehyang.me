@@ -29,7 +29,7 @@ export const GiscusComments = ({
     setMounted(true);
   }, []);
 
-  // 클라이언트에서 마운트된 후에만 렌더링
+  // 클라이언트 마운트 후 렌더링
   if (!mounted || !theme) {
     return (
       <div className="mt-8 p-4 text-center text-muted-foreground">
