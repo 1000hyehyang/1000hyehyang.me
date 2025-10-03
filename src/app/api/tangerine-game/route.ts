@@ -1,92 +1,16 @@
 import { NextResponse } from "next/server";
-import { Redis } from "@upstash/redis";
-import { headers } from "next/headers";
+import { 
+  getRedisClient, 
+  getClientIP, 
+  sanitizeInput, 
+  validateTangerineScore, 
+  validatePlayerName, 
+  validateGameSession, 
+  validateTangerineGameState,
+  parseLeaderboardData
+} from "@/lib/api-utils";
 
-const redis = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
-  ? new Redis({
-      url: process.env.KV_REST_API_URL,
-      token: process.env.KV_REST_API_TOKEN,
-    })
-  : null;
-
-// 입력값 정제
-const sanitizeInput = (input: string): string => {
-  return input
-    .replace(/[<>]/g, '')
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+=/gi, '')
-    .trim()
-    .slice(0, 20);
-};
-
-// 점수 유효성 검사
-const validateScore = (score: number): boolean => {
-  return Number.isInteger(score) && score >= 0 && score <= 50000;
-};
-
-// 플레이어명 유효성 검사
-const validatePlayerName = (name: string): boolean => {
-  const validPattern = /^[가-힣a-zA-Z0-9\s]{1,20}$/;
-  return validPattern.test(name);
-};
-
-// 클라이언트 IP 주소 가져오기
-const getClientIP = async (): Promise<string> => {
-  const headersList = await headers();
-  const forwarded = headersList.get("x-forwarded-for");
-  const realIP = headersList.get("x-real-ip");
-  const cfConnectingIP = headersList.get("cf-connecting-ip");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  if (realIP) return realIP;
-  if (cfConnectingIP) return cfConnectingIP;
-  return "localhost";
-};
-
-// 게임 세션 유효성 검사
-const validateGameSession = async (sessionId: string, ip: string): Promise<boolean> => {
-  if (!redis || !sessionId) return false;
-  
-  try {
-    const session = await redis.get(`session:${sessionId}`);
-    if (!session) return false;
-    
-    const sessionData = session as { ip: string; createdAt: number; isValid: boolean };
-    const timeDiff = Date.now() - sessionData.createdAt;
-    
-    // 세션 유효성, IP 일치, 10분 이내 확인
-    return sessionData.isValid && 
-           sessionData.ip === ip && 
-           timeDiff < 600000; // 10분
-  } catch (error) {
-    console.error("게임 세션 검증 실패:", error);
-    return false;
-  }
-};
-
-// 게임 상태 유효성 검사
-const validateGameState = (gameState: Record<string, unknown>): boolean => {
-  if (!gameState || typeof gameState !== 'object') return false;
-  
-  // 필수 필드 확인
-  const requiredFields = ['isPlaying', 'score', 'timeLeft', 'tangerines'];
-  for (const field of requiredFields) {
-    if (!(field in gameState)) return false;
-  }
-  
-  // 점수 범위 확인 (0-50000)
-  const score = gameState.score as number;
-  if (score <= 0 || score > 50000) return false;
-  
-  // 시간 범위 확인 (0-60초)
-  const timeLeft = gameState.timeLeft as number;
-  if (typeof timeLeft !== 'number' || timeLeft < 0 || timeLeft > 60) return false;
-  
-  // 귤 배열 유효성 확인 (최대 200개)
-  const tangerines = gameState.tangerines as unknown[];
-  if (!Array.isArray(tangerines) || tangerines.length > 200) return false;
-  
-  return true;
-};
+const redis = getRedisClient();
 
 
 
@@ -97,29 +21,9 @@ export async function GET() {
       return NextResponse.json({ leaderboard: [] });
     }
     
-    // 상위 10개 점수 조회
-    const results = await redis.zrange("tangerine_leaderboard", 0, 9, { rev: true, withScores: true });
-    const leaderboard = [];
-    
-    for (let i = 0; i < results.length; i += 2) {
-      let parsed: Record<string, unknown> = {};
-      const member = results[i];
-      
-      if (typeof member === "string") {
-        try {
-          parsed = JSON.parse(member);
-        } catch {
-          parsed = {};
-        }
-      } else if (typeof member === "object" && member !== null) {
-        parsed = member as Record<string, unknown>;
-      }
-      
-      leaderboard.push({
-        ...parsed,
-        score: Number(results[i + 1])
-      });
-    }
+    // 상위 5개 점수 조회
+    const results = await redis.zrange("tangerine_leaderboard", 0, 4, { rev: true, withScores: true });
+    const leaderboard = parseLeaderboardData(results);
     
     return NextResponse.json({ leaderboard });
   } catch (error) {
@@ -166,14 +70,14 @@ export async function POST(request: Request) {
     }
     
     // 게임 상태 및 점수 유효성 검사
-    if (!gameState || !validateGameState(gameState)) {
+    if (!gameState || !validateTangerineGameState(gameState)) {
       return NextResponse.json(
         { error: "유효하지 않은 게임 상태입니다." },
         { status: 400 }
       );
     }
     
-    if (!validateScore(score)) {
+    if (!validateTangerineScore(score)) {
       return NextResponse.json(
         { error: "유효하지 않은 점수입니다. (0-50000 사이의 정수만 허용)" },
         { status: 400 }
@@ -211,14 +115,8 @@ export async function POST(request: Request) {
     });
     
     // 업데이트된 리더보드 반환
-    const results = await redis.zrange("tangerine_leaderboard", 0, 9, { rev: true, withScores: true });
-    const leaderboard = [];
-    for (let i = 0; i < results.length; i += 2) {
-      leaderboard.push({
-        ...JSON.parse(results[i] as string),
-        score: Number(results[i + 1])
-      });
-    }
+    const results = await redis.zrange("tangerine_leaderboard", 0, 4, { rev: true, withScores: true });
+    const leaderboard = parseLeaderboardData(results);
     
     return NextResponse.json({ success: true, leaderboard });
   } catch (error) {

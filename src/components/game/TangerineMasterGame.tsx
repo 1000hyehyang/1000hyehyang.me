@@ -1,57 +1,28 @@
 "use client";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTangerineMasterGame, useSyncHighScoreWithLocalStorage } from "@/lib/tangerine-master";
-import { useAudio } from "@/hooks/useAudio";
 import { TangerineMasterCanvas } from "./TangerineMasterCanvas";
 import { TangerineMasterControls, TangerineMasterControlsRef } from "./TangerineMasterControls";
 import { TangerineMasterStats } from "./TangerineMasterStats";
 import { RotateCcw } from "lucide-react";
 import { GiscusComments } from "@/components/common/GiscusComments";
 import { GISCUS_GAME_CONFIG } from "@/lib/config";
+import { useOrientation, useGameOver, useGameAudio, useScoreSave } from "@/hooks/useGameCommon";
 
 export const TangerineMasterGame = () => {
   const gameState = useTangerineMasterGame();
   const { highScore, updateHighScore } = useSyncHighScoreWithLocalStorage();
   const controlsRef = useRef<TangerineMasterControlsRef>(null);
   
-  // 화면 방향 감지
-  const [isPortrait, setIsPortrait] = useState(false);
-  
-  // 오디오 설정
-  const bgMusic = useAudio({
-    src: "/tangerine-master/tangerine-master-bgm.mp3",
-    loop: true,
-    volume: 0.3
-  });
-
-  const sfxSound = useAudio({
-    src: "/tangerine-master/fail.mp3",
-    loop: false,
-    volume: 0.5
-  });
-
-  // 화면 방향 감지
-  useEffect(() => {
-    const checkOrientation = () => {
-      setIsPortrait(window.innerHeight > window.innerWidth);
-    };
-
-    checkOrientation();
-    window.addEventListener('resize', checkOrientation);
-    window.addEventListener('orientationchange', checkOrientation);
-
-    return () => {
-      window.removeEventListener('resize', checkOrientation);
-      window.removeEventListener('orientationchange', checkOrientation);
-    };
-  }, []);
-
-  // 게임 오버 상태
-  const [showGameOver, setShowGameOver] = useState(false);
-  const [playerName, setPlayerName] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
-  const [originalHighScore, setOriginalHighScore] = useState(0); // 게임 오버 시점의 원래 최고 기록
+  // 공통 훅 사용
+  const isPortrait = useOrientation();
+  const gameOverState = useGameOver();
+  const { bgMusic, sfxSound } = useGameAudio(
+    "/tangerine-master/tangerine-master-bgm.mp3",
+    "/tangerine-master/fail.mp3"
+  );
+  const { saveScore } = useScoreSave(); // 게임 오버 시점의 원래 최고 기록
 
   // 게임 시작/일시정지/재개 처리
   const handleStartGame = () => {
@@ -74,86 +45,50 @@ export const TangerineMasterGame = () => {
   // 게임 오버 처리
   const handleGameOver = useCallback(() => {
     if (gameState.survivalTime > 0) {
-      setShowGameOver(true);
-      setOriginalHighScore(highScore); // 게임 오버 시점의 원래 최고 기록 저장
+      gameOverState.setShowGameOver(true);
+      gameOverState.setOriginalHighScore(highScore); // 게임 오버 시점의 원래 최고 기록 저장
       updateHighScore(gameState.survivalTime);
       // 게임 오버 효과음 재생
       if (!sfxSound.isMuted) {
         sfxSound.play();
       }
     }
-  }, [gameState.survivalTime, updateHighScore, sfxSound, highScore]);
-
-  // 게임 오버 모달 닫기
-  const handleGameOverClose = () => {
-    setShowGameOver(false);
-    setPlayerName("");
-    setOriginalHighScore(0); // 원래 최고 기록 초기화
-    gameState.resetGame();
-  };
+  }, [gameState.survivalTime, updateHighScore, sfxSound, highScore, gameOverState]);
 
   // 점수 저장
   const handleSaveScore = async () => {
-    if (!playerName.trim()) {
+    if (!gameOverState.playerName.trim()) {
       alert("플레이어명을 입력해주세요.");
       return;
     }
 
-    const currentScore = Math.floor(gameState.survivalTime);
+    const success = await saveScore(
+      Math.floor(gameState.survivalTime),
+      gameOverState.playerName,
+      {
+        isPlaying: gameState.isPlaying,
+        survivalTime: gameState.survivalTime,
+        player: gameState.player,
+        tangerines: gameState.tangerines,
+        difficulty: gameState.difficulty
+      },
+      '/api/tangerine-master',
+      '/api/tangerine-master/session'
+    );
 
-    setIsSaving(true);
-    try {
-      // 점수 저장 시에만 세션 생성
-      const sessionId = `game_session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      // 세션 토큰을 서버에 저장
-      await fetch('/api/tangerine-master/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId })
-      });
-
-      const response = await fetch('/api/tangerine-master', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          score: currentScore,
-          playerName: playerName.trim(),
-          gameSessionId: sessionId, // Use the newly generated sessionId
-          gameState: {
-            isPlaying: gameState.isPlaying,
-            survivalTime: gameState.survivalTime,
-            player: gameState.player,
-            tangerines: gameState.tangerines,
-            difficulty: gameState.difficulty
-          }
-        }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        alert("점수가 저장되었습니다!");
-        setShowGameOver(false);
-        gameState.resetGame();
-      } else {
-        alert(data.error || "점수 저장에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error('점수 저장 실패:', error);
-      alert("점수 저장에 실패했습니다.");
-    } finally {
-      setIsSaving(false);
+    if (success) {
+      alert("점수가 저장되었습니다!");
+      gameOverState.setShowGameOver(false);
+      gameState.resetGame();
     }
   };
 
   // 게임 오버 감지
   useEffect(() => {
-    if (!gameState.isPlaying && gameState.survivalTime > 0 && !showGameOver) {
+    if (!gameState.isPlaying && gameState.survivalTime > 0 && !gameOverState.showGameOver) {
       handleGameOver();
     }
-  }, [gameState.isPlaying, gameState.survivalTime, handleGameOver, showGameOver]);
+  }, [gameState.isPlaying, gameState.survivalTime, handleGameOver, gameOverState.showGameOver]);
 
   // 하이스코어 동기화
   useEffect(() => {
@@ -263,7 +198,7 @@ export const TangerineMasterGame = () => {
 
       {/* 게임 오버 모달 */}
       <AnimatePresence>
-        {showGameOver && (
+        {gameOverState.showGameOver && (
           <motion.div
             className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
             initial={{ opacity: 0 }}
@@ -288,7 +223,7 @@ export const TangerineMasterGame = () => {
               </div>
 
               <div className="space-y-4">
-                {Math.floor(gameState.survivalTime) > originalHighScore && Math.floor(gameState.survivalTime) > 0 && (
+                {Math.floor(gameState.survivalTime) > gameOverState.originalHighScore && Math.floor(gameState.survivalTime) > 0 && (
                   <div>
                     <label htmlFor="playerName" className="block text-sm font-medium text-muted-foreground mb-2">
                       플레이어명
@@ -296,8 +231,8 @@ export const TangerineMasterGame = () => {
                     <input
                       id="playerName"
                       type="text"
-                      value={playerName}
-                      onChange={(e) => setPlayerName(e.target.value)}
+                      value={gameOverState.playerName}
+                      onChange={(e) => gameOverState.setPlayerName(e.target.value)}
                       placeholder="이름을 입력하세요"
                       className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/20 focus:bg-background"
                       maxLength={20}
@@ -312,21 +247,24 @@ export const TangerineMasterGame = () => {
                   </div>
                 )}
                 <div className="flex gap-3 justify-center">
-                  {Math.floor(gameState.survivalTime) > originalHighScore && Math.floor(gameState.survivalTime) > 0 && (
+                  {Math.floor(gameState.survivalTime) > gameOverState.originalHighScore && Math.floor(gameState.survivalTime) > 0 && (
                     <button
                       onClick={handleSaveScore}
-                      disabled={isSaving}
+                      disabled={gameOverState.isSaving}
                       className={`px-4 py-2 rounded text-sm font-medium transition-colors cursor-pointer ${
-                        isSaving
+                        gameOverState.isSaving
                           ? 'bg-muted text-muted-foreground cursor-not-allowed' 
                           : 'bg-foreground text-background hover:bg-foreground/90'
                       }`}
                     >
-                      {isSaving ? '저장 중...' : '기록 저장'}
+                      {gameOverState.isSaving ? '저장 중...' : '기록 저장'}
                     </button>
                   )}
                   <button
-                    onClick={handleGameOverClose}
+                    onClick={() => {
+                      gameOverState.handleGameOverClose();
+                      gameState.resetGame();
+                    }}
                     className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded text-sm font-medium transition-colors cursor-pointer"
                   >
                     닫기

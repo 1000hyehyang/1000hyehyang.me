@@ -1,24 +1,7 @@
 import { NextResponse } from "next/server";
-import { Redis } from "@upstash/redis";
-import { headers } from "next/headers";
+import { getRedisClient, getClientIP } from "@/lib/api-utils";
 
-const redis = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
-  ? new Redis({
-      url: process.env.KV_REST_API_URL,
-      token: process.env.KV_REST_API_TOKEN,
-    })
-  : null;
-
-const getClientIP = async (): Promise<string> => {
-  const headersList = await headers();
-  const forwarded = headersList.get("x-forwarded-for");
-  const realIP = headersList.get("x-real-ip");
-  const cfConnectingIP = headersList.get("cf-connecting-ip");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  if (realIP) return realIP;
-  if (cfConnectingIP) return cfConnectingIP;
-  return "localhost";
-};
+const redis = getRedisClient();
 
 // POST: 게임 세션 토큰 생성
 export async function POST(request: Request) {

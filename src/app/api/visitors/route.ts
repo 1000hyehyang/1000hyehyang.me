@@ -1,16 +1,9 @@
 import { NextResponse } from "next/server";
-import { Redis } from "@upstash/redis";
-import { headers } from "next/headers";
+import { getRedisClient, getClientIP } from "@/lib/api-utils";
 import { cookies } from "next/headers";
 import { randomUUID } from "crypto";
 
-// 환경 변수가 없으면 null로 설정
-const redis = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
-  ? new Redis({
-      url: process.env.KV_REST_API_URL,
-      token: process.env.KV_REST_API_TOKEN,
-    })
-  : null;
+const redis = getRedisClient();
 
 interface VisitorsData {
   today: number;
@@ -31,27 +24,6 @@ const isToday = (dateString: string): boolean => {
   return today === date;
 };
 
-const getClientIP = async (): Promise<string> => {
-  const headersList = await headers();
-  
-  // 다양한 헤더에서 IP 확인
-  const forwarded = headersList.get("x-forwarded-for");
-  const realIP = headersList.get("x-real-ip");
-  const cfConnectingIP = headersList.get("cf-connecting-ip");
-  
-  if (forwarded) {
-    return forwarded.split(",")[0].trim();
-  }
-  if (realIP) {
-    return realIP;
-  }
-  if (cfConnectingIP) {
-    return cfConnectingIP;
-  }
-  
-  // IPv6 루프백 주소도 localhost로 처리
-  return "localhost";
-};
 
 // 방문자 수 계산 데이터 관리
 const getVisitorsData = async (): Promise<VisitorsData> => {

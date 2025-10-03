@@ -1,14 +1,14 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTangerineGameStore, type Tangerine, useSyncHighScoreWithLocalStorage } from "@/lib/tangerine-game";
 import { TangerineGrid } from "./TangerineGrid";
 import { GameControls, type GameControlsRef } from "./GameControls";
 import { GameStats } from "./GameStats";
 import { RotateCcw } from "lucide-react";
-import { useAudio } from "@/hooks/useAudio";
 import { GiscusComments } from "@/components/common/GiscusComments";
 import { GISCUS_GAME_CONFIG } from "@/lib/config";
+import { useOrientation, useGameOver, useGameAudio, useScoreSave } from "@/hooks/useGameCommon";
 
 export const TangerineGame = () => {
   useSyncHighScoreWithLocalStorage();
@@ -24,44 +24,16 @@ export const TangerineGame = () => {
     highScore
   } = useTangerineGameStore();
 
-  const [showGameOver, setShowGameOver] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isPortrait, setIsPortrait] = useState(false);
-  const [playerName, setPlayerName] = useState("");
-  const [hasSaved, setHasSaved] = useState(false);
-  const [originalHighScore, setOriginalHighScore] = useState(0); // 게임 오버 시점의 원래 최고 기록
+  // 공통 훅 사용
+  const isPortrait = useOrientation();
+  const gameOverState = useGameOver();
+  const { bgMusic, sfxSound } = useGameAudio(
+    "/orange-game/orange-game-bgm.mp3",
+    "/orange-game/success.mp3"
+  );
+  const { saveScore } = useScoreSave();
 
   const gameControlsRef = useRef<GameControlsRef>(null);
-
-  // 배경 음악 관리
-  const bgMusic = useAudio({
-    src: "/orange-game/orange-game-bgm.mp3",
-    loop: true,
-    volume: 0.3
-  });
-
-  // 효과음 관리
-  const sfxSound = useAudio({
-    src: "/orange-game/success.mp3",
-    loop: false,
-    volume: 0.5
-  });
-
-  // 화면 방향 확인
-  useEffect(() => {
-    const checkOrientation = () => {
-      setIsPortrait(window.innerHeight > window.innerWidth);
-    };
-
-    checkOrientation();
-    window.addEventListener('resize', checkOrientation);
-    window.addEventListener('orientationchange', checkOrientation);
-
-    return () => {
-      window.removeEventListener('resize', checkOrientation);
-      window.removeEventListener('orientationchange', checkOrientation);
-    };
-  }, []);
 
   // 게임 타이머
   useEffect(() => {
@@ -89,10 +61,10 @@ export const TangerineGame = () => {
   useEffect(() => {
     if (timeLeft <= 0) {
       endGameFromStore();
-      setOriginalHighScore(highScore);
-      setShowGameOver(true);
+      gameOverState.setOriginalHighScore(highScore);
+      gameOverState.setShowGameOver(true);
     }
-  }, [timeLeft, endGameFromStore, highScore]);
+  }, [timeLeft, endGameFromStore, highScore, gameOverState]);
 
   // 배경음악 재생
   useEffect(() => {
@@ -107,78 +79,26 @@ export const TangerineGame = () => {
     }
   };
 
-  const handleGameOverClose = () => {
-    setShowGameOver(false);
-    setPlayerName("");
-    setHasSaved(false);
-    setOriginalHighScore(0);
-  };
-
   const handleSaveScore = async () => {
-    if (isSaving || hasSaved) return;
-    
-    // 클라이언트 측 점수 검증
-    if (!Number.isInteger(score) || score < 0 || score > 50000) {
-      console.error('유효하지 않은 점수입니다.');
-      return;
-    }
+    const success = await saveScore(
+      score,
+      gameOverState.playerName,
+      {
+        isPlaying,
+        score,
+        timeLeft,
+        tangerines: useTangerineGameStore.getState().tangerines
+      },
+      '/api/tangerine-game',
+      '/api/tangerine-game/session'
+    );
 
-    // 플레이어명 정제
-    const sanitizedPlayerName = playerName
-      .replace(/[<>]/g, '')
-      .replace(/javascript:/gi, '')
-      .replace(/on\w+=/gi, '')
-      .trim()
-      .slice(0, 20);
-
-    setIsSaving(true);
-    try {
-      // 점수 저장 시에만 세션 생성
-      const sessionId = `game_session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      // 세션 토큰을 서버에 저장
-      await fetch('/api/tangerine-game/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId })
-      });
-
-      const response = await fetch('/api/tangerine-game', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          score,
-          playerName: sanitizedPlayerName || `Player_${Math.random().toString(36).substr(2, 4)}`,
-          gameSessionId: sessionId,
-          gameState: {
-            isPlaying,
-            score,
-            timeLeft,
-            tangerines: useTangerineGameStore.getState().tangerines
-          }
-        }),
-      });
-
-      if (response.ok) {
-        setHasSaved(true);
-        // 점수 저장 성공 시 리더보드 새로고침
-        if (gameControlsRef.current) {
-          gameControlsRef.current.refreshLeaderboard();
-        }
-        // 1초 후 모달창 닫기
-        setTimeout(() => {
-          handleGameOverClose();
-        }, 1000);
-      } else {
-        const errorData = await response.json();
-        console.error('점수 저장 실패:', errorData.error);
-      }
-    } catch (error) {
-      console.error('점수 저장 실패:', error);
-    } finally {
-      setIsSaving(false);
+    if (success && gameControlsRef.current) {
+      gameControlsRef.current.refreshLeaderboard();
+      // 1초 후 모달창 닫기
+      setTimeout(() => {
+        gameOverState.handleGameOverClose();
+      }, 1000);
     }
   };
 
@@ -278,7 +198,7 @@ export const TangerineGame = () => {
 
       {/* 게임 오버 모달 */}
       <AnimatePresence>
-        {showGameOver && (
+        {gameOverState.showGameOver && (
           <motion.div
             className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
             initial={{ opacity: 0 }}
@@ -301,7 +221,7 @@ export const TangerineGame = () => {
               </div>
 
               {/* 플레이어명 입력 */}
-              {score > originalHighScore && score > 0 && (
+              {score > gameOverState.originalHighScore && score > 0 && (
                 <div className="mb-6">
                   <label htmlFor="playerName" className="block text-sm font-medium text-muted-foreground mb-2">
                     플레이어명
@@ -309,8 +229,8 @@ export const TangerineGame = () => {
                   <input
                     id="playerName"
                     type="text"
-                    value={playerName}
-                    onChange={(e) => setPlayerName(e.target.value)}
+                    value={gameOverState.playerName}
+                    onChange={(e) => gameOverState.setPlayerName(e.target.value)}
                     placeholder="이름을 입력하세요"
                     className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/20 focus:bg-background"
                     maxLength={20}
@@ -319,22 +239,22 @@ export const TangerineGame = () => {
               )}
                           
               <div className="flex gap-3 justify-center">
-                {score > originalHighScore && score > 0 && (
+                {score > gameOverState.originalHighScore && score > 0 && (
                   <button
                     className={`px-4 py-2 rounded text-sm font-medium transition-colors cursor-pointer ${
-                      isSaving || hasSaved
+                      gameOverState.isSaving || gameOverState.hasSaved
                         ? 'bg-muted text-muted-foreground cursor-not-allowed' 
                         : 'bg-foreground text-background hover:bg-foreground/90'
                     }`}
                     onClick={handleSaveScore}
-                    disabled={isSaving || hasSaved}
+                    disabled={gameOverState.isSaving || gameOverState.hasSaved}
                   >
-                    {isSaving ? '저장 중...' : hasSaved ? '저장 완료' : '점수 저장'}
+                    {gameOverState.isSaving ? '저장 중...' : gameOverState.hasSaved ? '저장 완료' : '점수 저장'}
                   </button>
                 )}
                 <button
                   className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded text-sm font-medium transition-colors cursor-pointer"
-                  onClick={handleGameOverClose}
+                  onClick={gameOverState.handleGameOverClose}
                 >
                   닫기
                 </button>
