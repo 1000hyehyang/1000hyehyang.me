@@ -18,6 +18,10 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_CONFIG.name}`
   },
   description: SITE_CONFIG.description,
+  metadataBase: new URL(SITE_CONFIG.url),
+  alternates: {
+    canonical: '/'
+  },
   openGraph: {
     title: SITE_CONFIG.name,
     description: SITE_CONFIG.description,
@@ -39,8 +43,7 @@ export const metadata: Metadata = {
     title: SITE_CONFIG.name,
     description: SITE_CONFIG.description,
     images: ["/og/default.png"]
-  },
-  metadataBase: new URL(SITE_CONFIG.url)
+  }
 };
 
 export default function RootLayout({

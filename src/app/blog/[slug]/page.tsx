@@ -72,7 +72,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       images: ["/og/default.png"],
     },
     alternates: {
-      canonical: `${SITE_CONFIG.url}/blog/${slug}`,
+      canonical: `/blog/${slug}`,
     },
   };
 }
