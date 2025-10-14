@@ -1,16 +1,4 @@
 {
-  "redirects": [
-    {
-      "source": "http://1000hyehyang.me/:path*",
-      "destination": "https://www.1000hyehyang.me/:path*",
-      "permanent": true
-    },
-    {
-      "source": "https://1000hyehyang.me/:path*",
-      "destination": "https://www.1000hyehyang.me/:path*",
-      "permanent": true
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
