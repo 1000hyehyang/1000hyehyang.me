@@ -29,7 +29,7 @@ export const ORGANIZATION_DATA: TimelineItem[] = [
     ]
   },
   {
-    period: "2024.09 - Now",
+    period: "2025.09 - Now",
     title: "GDG on Campus HUFS 7th Member",
     description: "Google Developer Group on Campus 7기 멤버",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/gdgoc.png",
