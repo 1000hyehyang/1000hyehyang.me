@@ -9,6 +9,7 @@ import { containerVariants, itemVariants } from "@/lib/animations";
 import { LinkPreview } from "@/components/common/LinkPreview";
 import { CopyCodeButton } from "@/components/common/CopyCodeButton";
 import { createRoot } from "react-dom/client";
+import { TechBadge } from "@/components/portfolio/TechBadge";
 
 export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps) => {
   const ref = useRef(null);
@@ -123,12 +124,7 @@ export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps)
           <h2 className="text-lg font-semibold mb-4">사용 기술</h2>
           <div className="flex flex-wrap gap-2">
             {frontmatter.tech.map((tech) => (
-              <span
-                key={tech}
-                className="px-3 py-1 bg-accent text-accent-foreground rounded-full text-sm"
-              >
-                {tech}
-              </span>
+              <TechBadge key={tech} tech={tech} />
             ))}
           </div>
         </motion.div>
