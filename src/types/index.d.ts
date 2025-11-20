@@ -23,6 +23,8 @@ export type PortfolioFrontmatter = {
   category: "project" | "hackathon";
 };
 
+export type PortfolioCategory = "all" | "project" | "hackathon";
+
 // 공통 타입들
 export type Tag = string;
 export type Category = string;

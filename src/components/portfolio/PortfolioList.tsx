@@ -1,6 +1,6 @@
 "use client";
 
-import { PortfolioFrontmatter } from "@/types";
+import { PortfolioFrontmatter, PortfolioCategory } from "@/types";
 import { PortfolioCard } from "./PortfolioCard";
 import { motion } from "framer-motion";
 import { useMemo, useState, useEffect } from "react";
@@ -17,18 +17,21 @@ export const PortfolioList = ({ projects }: PortfolioListProps) => {
     return Array.from(categories) as ("project" | "hackathon")[];
   }, [projects]);
 
-  // 기본 카테고리를 사용 가능한 카테고리 중 첫 번째로 설정
-  const [selectedCategory, setSelectedCategory] = useState<"project" | "hackathon">("project");
+  // 기본 카테고리를 '전체'로 설정
+  const [selectedCategory, setSelectedCategory] = useState<PortfolioCategory>("all");
 
   // availableCategories가 변경될 때 기본 카테고리 업데이트
   useEffect(() => {
-    if (availableCategories.length > 0 && !availableCategories.includes(selectedCategory)) {
-      setSelectedCategory(availableCategories[0]);
+    if (availableCategories.length > 0 && selectedCategory !== "all" && !availableCategories.includes(selectedCategory as "project" | "hackathon")) {
+      setSelectedCategory("all");
     }
   }, [availableCategories, selectedCategory]);
 
   // 선택된 카테고리로 필터링된 프로젝트들
   const filteredProjects = useMemo(() => {
+    if (selectedCategory === "all") {
+      return projects;
+    }
     return projects.filter(project => project.category === selectedCategory);
   }, [projects, selectedCategory]);
 
@@ -56,12 +59,13 @@ export const PortfolioList = ({ projects }: PortfolioListProps) => {
       }));
   }, [filteredProjects]);
 
-  const handleCategoryClick = (category: "project" | "hackathon") => {
+  const handleCategoryClick = (category: PortfolioCategory) => {
     setSelectedCategory(category);
   };
 
   // 카테고리 라벨 매핑
   const categoryLabels = {
+    all: "전체",
     project: "프로젝트",
     hackathon: "해커톤"
   };
@@ -71,6 +75,22 @@ export const PortfolioList = ({ projects }: PortfolioListProps) => {
       {/* 상단 탭 */}
       <div className="mb-6">
         <div className="flex flex-wrap gap-2">
+          {/* 전체 탭 */}
+          <button
+            key="all"
+            type="button"
+            onClick={() => handleCategoryClick("all")}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+              selectedCategory === "all"
+                ? "bg-muted/50 text-foreground"
+                : "bg-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground"
+            }`}
+            aria-label="전체 탭"
+            tabIndex={0}
+          >
+            전체
+          </button>
+          {/* 개별 카테고리 탭들 */}
           {availableCategories.map((category) => (
             <button
               key={category}
@@ -98,7 +118,10 @@ export const PortfolioList = ({ projects }: PortfolioListProps) => {
       >
         {groupedProjects.length === 0 ? (
           <div className="text-center text-muted-foreground py-12">
-            {`${categoryLabels[selectedCategory]} 카테고리의 프로젝트가 없습니다.`}
+            {selectedCategory === "all" 
+              ? "프로젝트가 없습니다."
+              : `${categoryLabels[selectedCategory]} 카테고리의 프로젝트가 없습니다.`
+            }
           </div>
         ) : (
           groupedProjects.map(({ year, projects }) => (
