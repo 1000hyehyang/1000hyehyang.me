@@ -29,9 +29,9 @@ export const PortfolioCard = ({ title, period, images, summary, slug, category, 
           <Image
             src={images[0]}
             alt={`${title} 썸네일`}
-            width={600}
-            height={300}
-            className="w-full aspect-[3/1.5] object-cover rounded-lg mb-3"
+            width={1920}
+            height={1080}
+            className="w-full aspect-[16/9] object-cover rounded-lg mb-3"
             unoptimized
             priority
           />
