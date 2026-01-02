@@ -72,6 +72,13 @@ export const ORGANIZATION_DATA: TimelineItem[] = [
 
 export const AWARDS_DATA: TimelineItem[] = [
   {
+    period: "2026.01",
+    title: "2025 HUFS Better World 아이디어 공모전 우수상",
+    description: "Slow Is OK! 시니어를 위한 슬로우 키오스크",
+    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/college.png",
+    logoAlt: "HUFS 로고"
+  },
+  {
     period: "2024.10",
     title: "2024 메타버스 개발자 경진대회 우수상",
     description: "APOC을 활용한 KBO 구단 브랜딩 XR 웹 서비스 | 팀장",
