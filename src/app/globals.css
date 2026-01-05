@@ -315,6 +315,14 @@
   color: #fb923c; /* orange-400 */
 }
 
+/* LinkPreview 컴포넌트 내부의 링크는 밑줄 제거 */
+.markdown-body .link-preview-wrapper a {
+  text-decoration: none !important;
+}
+.markdown-body .link-preview-wrapper a:hover {
+  text-decoration: none !important;
+}
+
 /* --------------------
    코드(인라인/블록)
 --------------------- */
