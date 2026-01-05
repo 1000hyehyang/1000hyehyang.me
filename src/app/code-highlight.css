@@ -342,8 +342,8 @@
 /* 복사 버튼 스타일 */
 .markdown-body .copy-code-button {
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
+  top: 0.25rem;
+  right: 0.5rem;
   z-index: 10;
 }
 
