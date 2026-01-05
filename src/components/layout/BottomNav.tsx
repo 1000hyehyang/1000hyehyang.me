@@ -36,7 +36,11 @@ export const BottomNav = () => {
       aria-label="하단 네비게이션"
     >
       {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
-        const isActive = pathname === href || focusedItem === href;
+        // 홈 경로는 정확히 일치해야 하고, 다른 경로는 해당 경로로 시작하면 활성화
+        const isActive = 
+          href === "/" 
+            ? pathname === href || focusedItem === href
+            : (pathname.startsWith(href) || focusedItem === href);
         
         return (
           <Tooltip key={href}>
