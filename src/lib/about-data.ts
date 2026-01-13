@@ -74,7 +74,7 @@ export const AWARDS_DATA: TimelineItem[] = [
   {
     period: "2026.01",
     title: "2025 HUFS Better World 아이디어 공모전 우수상",
-    description: "Slow Is OK! 시니어를 위한 슬로우 키오스크",
+    description: "Slow Is OK! 시니어를 위한 슬로우 키오스크 | 팀장",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/college.png",
     logoAlt: "HUFS 로고"
   },
