@@ -8,6 +8,7 @@ import { IntroSection } from "./IntroSection";
 import { ContactSection } from "./ContactSection";
 import { VisitorCounter } from "./VisitorCounter";
 import { DevelopmentPrinciplesSection } from "./DevelopmentPrinciplesSection";
+import { TechStackSection } from "./TechStackSection";
 
 export const HomeContent = () => {
   const ref = useRef(null);
@@ -26,6 +27,7 @@ export const HomeContent = () => {
         <ProfileSection />
         <IntroSection />
         <DevelopmentPrinciplesSection />
+        <TechStackSection />
         <ContactSection />
       </main>
     </motion.div>

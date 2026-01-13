@@ -1,23 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Citrus, Shield } from "lucide-react";
-
-const games = [
-  {
-    title: "천혜향 게임",
-    description: "연속된 천혜향들을 선택해서 합이 10이 되는 조합을 찾아보세요",
-    href: "/game/orange-game",
-    icon: Citrus
-  },
-  {
-    title: "귤림고수",
-    description: "날아오는 귤들을 피해서 최대한 오래 살아남아보세요",
-    href: "/game/tangerine-master",
-    icon: Shield
-  }
-  // 추후 다른 게임들 추가 가능
-];
+import { GAMES } from "@/lib/game-data";
 
 export default function GamePage() {
   return (
@@ -34,7 +18,7 @@ export default function GamePage() {
 
       {/* 게임 목록 */}
       <div className="grid gap-6 md:grid-cols-2">
-        {games.map((game, index) => {
+        {GAMES.map((game, index) => {
           const IconComponent = game.icon;
           return (
             <motion.div
