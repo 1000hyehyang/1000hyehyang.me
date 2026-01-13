@@ -20,7 +20,7 @@ export const ContactSection = () => {
             <Mail className="w-5 h-5 text-muted-foreground flex-shrink-0" />
             <div className="min-w-0">
               <div className="text-sm font-medium">Email</div>
-              <div className="text-sm text-muted-foreground underline truncate">ducogus12@gmail.com</div>
+              <div className="text-sm text-muted-foreground truncate">ducogus12@gmail.com</div>
             </div>
           </div>
         </a>
@@ -38,7 +38,7 @@ export const ContactSection = () => {
             <Github className="w-5 h-5 text-muted-foreground flex-shrink-0" />
             <div className="min-w-0">
               <div className="text-sm font-medium">GitHub</div>
-              <div className="text-sm text-muted-foreground underline truncate">github.com/1000hyehyang</div>
+              <div className="text-sm text-muted-foreground truncate">github.com/1000hyehyang</div>
             </div>
           </div>
         </a>
@@ -56,7 +56,7 @@ export const ContactSection = () => {
             <Linkedin className="w-5 h-5 text-muted-foreground flex-shrink-0" />
             <div className="min-w-0">
               <div className="text-sm font-medium">LinkedIn</div>
-              <div className="text-sm text-muted-foreground underline truncate">linkedin.com/in/1000hyehyang</div>
+              <div className="text-sm text-muted-foreground truncate">linkedin.com/in/1000hyehyang</div>
             </div>
           </div>
         </a>
@@ -74,7 +74,7 @@ export const ContactSection = () => {
             <Instagram className="w-5 h-5 text-muted-foreground flex-shrink-0" />
             <div className="min-w-0">
               <div className="text-sm font-medium">Instagram</div>
-              <div className="text-sm text-muted-foreground underline truncate">instagram.com/thousandhyehyang</div>
+              <div className="text-sm text-muted-foreground truncate">instagram.com/thousandhyehyang</div>
             </div>
           </div>
         </a>
