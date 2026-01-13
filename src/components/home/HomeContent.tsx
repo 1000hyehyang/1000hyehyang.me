@@ -7,6 +7,7 @@ import { ProfileSection } from "./ProfileSection";
 import { IntroSection } from "./IntroSection";
 import { ContactSection } from "./ContactSection";
 import { VisitorCounter } from "./VisitorCounter";
+import { DevelopmentPrinciplesSection } from "./DevelopmentPrinciplesSection";
 
 export const HomeContent = () => {
   const ref = useRef(null);
@@ -24,6 +25,7 @@ export const HomeContent = () => {
         <VisitorCounter />
         <ProfileSection />
         <IntroSection />
+        <DevelopmentPrinciplesSection />
         <ContactSection />
       </main>
     </motion.div>
