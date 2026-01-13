@@ -39,6 +39,7 @@ const ICON_NAMES = [
   "JSON",
   "JUnit",
   "Java",
+  "JPA",
   "JavaScript",
   "Jenkins",
   "Kotlin",
@@ -66,6 +67,7 @@ const ICON_NAMES = [
   "PostCSS",
   "PostgresSQL",
   "Postman",
+  "PM",
   "Prometheus",
   "PyTorch",
   "Python",
@@ -99,6 +101,8 @@ const ICON_NAME_LOOKUP = ICON_NAMES.reduce<Record<string, string>>((acc, name) =
 const CUSTOM_ICON_NAME_ENTRIES: Array<[string, string]> = [
   ["spring boot", "Spring"],
   ["arfoundation", "ARCore"],
+  ["idea", "PM"],
+  ["unity xr interaction toolkit", "Unity"],
 ];
 
 const CUSTOM_ICON_NAME_MAP = CUSTOM_ICON_NAME_ENTRIES.reduce<Record<string, string>>((acc, [alias, target]) => {

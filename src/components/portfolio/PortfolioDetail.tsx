@@ -123,8 +123,8 @@ export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps)
         <motion.div variants={itemVariants} className="mb-8">
           <h2 className="text-lg font-semibold mb-4">사용 기술</h2>
           <div className="flex flex-wrap gap-2">
-            {frontmatter.tech.map((tech) => (
-              <TechBadge key={tech} tech={tech} />
+            {frontmatter.tech.map((tech, index) => (
+              <TechBadge key={tech} tech={tech} index={index} />
             ))}
           </div>
         </motion.div>
