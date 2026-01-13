@@ -10,6 +10,7 @@ import { LinkPreview } from "@/components/common/LinkPreview";
 import { CopyCodeButton } from "@/components/common/CopyCodeButton";
 import { createRoot } from "react-dom/client";
 import { TechBadge } from "@/components/portfolio/TechBadge";
+import { groupProjectTechByCategory } from "@/lib/tech-stack-data";
 
 export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps) => {
   const ref = useRef(null);
@@ -122,11 +123,39 @@ export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps)
       {frontmatter.tech && frontmatter.tech.length > 0 && (
         <motion.div variants={itemVariants} className="mb-8">
           <h2 className="text-lg font-semibold mb-4">사용 기술</h2>
-          <div className="flex flex-wrap gap-2">
-            {frontmatter.tech.map((tech, index) => (
-              <TechBadge key={tech} tech={tech} index={index} />
-            ))}
-          </div>
+          {frontmatter.categorizedTech ? (
+            // 카테고리별로 표시
+            (() => {
+              const groupedTech = groupProjectTechByCategory(frontmatter.tech);
+              const categories = Object.keys(groupedTech).sort();
+              let globalIndex = 0;
+              
+              return (
+                <div className="space-y-4">
+                  {categories.map((category) => (
+                    <div key={category} className="space-y-2">
+                      <h3 className="text-sm font-medium text-muted-foreground">
+                        {category}
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {groupedTech[category].map((tech) => {
+                          const index = globalIndex++;
+                          return <TechBadge key={tech} tech={tech} index={index} />;
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()
+          ) : (
+            // 기존 방식: 모든 기술을 나열
+            <div className="flex flex-wrap gap-2">
+              {frontmatter.tech.map((tech, index) => (
+                <TechBadge key={tech} tech={tech} index={index} />
+              ))}
+            </div>
+          )}
         </motion.div>
       )}
 

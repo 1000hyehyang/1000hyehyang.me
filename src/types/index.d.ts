@@ -21,6 +21,7 @@ export type PortfolioFrontmatter = {
   githubUrl?: string;
   siteUrl?: string;
   category: "project" | "hackathon";
+  categorizedTech?: boolean; // 사용 기술을 카테고리별로 표시할지 여부
 };
 
 export type PortfolioCategory = "all" | "project" | "hackathon";
