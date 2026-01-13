@@ -60,7 +60,7 @@ export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps)
       className="w-full"
     >
       {/* 프로젝트 헤더 */}
-      <motion.div variants={itemVariants} className="mb-8">
+      <motion.div variants={itemVariants} className="mb-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           {/* 프로젝트 정보 */}
           <div className="flex-1">
@@ -105,6 +105,33 @@ export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps)
         </div>
       </motion.div>
 
+      {/* 구분선 */}
+      {(frontmatter.teamMembers || frontmatter.myRole) && (
+        <motion.div variants={itemVariants} className="mb-6">
+          <hr className="border-border" />
+        </motion.div>
+      )}
+
+      {/* 팀 구성 및 내 역할 */}
+      {(frontmatter.teamMembers || frontmatter.myRole) && (
+        <motion.div variants={itemVariants} className="mb-8">
+          <div className="space-y-3 text-sm">
+            {frontmatter.teamMembers && (
+              <div>
+                <span className="font-medium text-foreground">팀 구성: </span>
+                <span className="text-muted-foreground">{frontmatter.teamMembers}</span>
+              </div>
+            )}
+            {frontmatter.myRole && (
+              <div>
+                <span className="font-medium text-foreground">내 역할: </span>
+                <span className="text-muted-foreground">{frontmatter.myRole}</span>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )}
+
       {/* 썸네일 이미지 */}
       {frontmatter.images && frontmatter.images[0] && (
         <motion.div variants={itemVariants} className="mb-8">
@@ -121,7 +148,7 @@ export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps)
 
       {/* 기술 스택 */}
       {frontmatter.tech && frontmatter.tech.length > 0 && (
-        <motion.div variants={itemVariants} className="mb-8">
+        <motion.div variants={itemVariants} className="mb-12">
           <h2 className="text-lg font-semibold mb-4">사용 기술</h2>
           {frontmatter.categorizedTech ? (
             // 카테고리별로 표시

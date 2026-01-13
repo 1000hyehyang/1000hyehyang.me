@@ -22,6 +22,8 @@ export type PortfolioFrontmatter = {
   siteUrl?: string;
   category: "project" | "hackathon";
   categorizedTech?: boolean; // 사용 기술을 카테고리별로 표시할지 여부
+  teamMembers?: string; // 팀 구성 (어떤 역할의 팀원들이 있었는지)
+  myRole?: string; // 내 역할 담당 범위
 };
 
 export type PortfolioCategory = "all" | "project" | "hackathon";
