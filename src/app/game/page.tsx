@@ -8,7 +8,7 @@ export default function GamePage() {
   return (
     <div className="w-full">
       {/* 헤더 */}
-      <div className="mb-12">
+      <div className="mb-6">
         <h1 className="text-xl font-semibold mb-2">
           Playground.
         </h1>
