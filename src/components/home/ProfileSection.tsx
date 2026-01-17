@@ -15,6 +15,7 @@ export const ProfileSection = () => {
         height={72}
         className="rounded-full mb-2"
         priority
+        unoptimized
       />
     </motion.div>
   );
