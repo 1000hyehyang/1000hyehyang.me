@@ -23,9 +23,9 @@ export const ORGANIZATION_DATA: TimelineItem[] = [
     logoAlt: "UMC 로고",
     url: "https://umc.makeus.in/",
     activities: [
+      "브랜드·마이크로 인플루언서 매칭 및 협업 플랫폼 ⌜리얼 매치⌟ 백엔드 개발",
       "디자인 파트장으로 UI/UX 디자인 교육 및 멘토링",
       "소동물 반려인을 위한 라이프 케어 플랫폼 ⌜리틀펫⌟ UI/UX 설계",
-      "Spring Boot 기반 백엔드 핵심 기술 학습 및 실습",
     ]
   },
   {
