@@ -31,11 +31,15 @@ const PROJECT_TECH_CATEGORIES: Record<string, string> = {
   "Java": "Backend",
   "Python": "Backend",
   "C#": "Backend",
+  "RabbitMQ": "Backend",
+  "WebSocket": "Backend",
+  "QueryDSL": "Backend",
   // Frontend
   "Next.js": "Frontend",
   "React": "Frontend",
   "TypeScript": "Frontend",
   "Typescript": "Frontend",
+  "Vite": "Frontend",
   // Database
   "MySQL": "Database",
   "Redis": "Database",

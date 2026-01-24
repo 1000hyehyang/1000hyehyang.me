@@ -90,6 +90,8 @@ const ICON_NAMES = [
   "Vite.js",
   "Vue.js",
   "WebRTC",
+  "Websocket",
+  "QueryDSL",
   "jQuery",
 ] as const;
 
@@ -103,6 +105,8 @@ const CUSTOM_ICON_NAME_ENTRIES: Array<[string, string]> = [
   ["arfoundation", "ARCore"],
   ["idea", "PM"],
   ["unity xr interaction toolkit", "Unity"],
+  ["websocket", "Websocket"],
+  ["vite", "Vite.js"],
 ];
 
 const CUSTOM_ICON_NAME_MAP = CUSTOM_ICON_NAME_ENTRIES.reduce<Record<string, string>>((acc, [alias, target]) => {
