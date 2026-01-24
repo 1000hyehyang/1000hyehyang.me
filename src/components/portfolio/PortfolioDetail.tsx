@@ -61,47 +61,44 @@ export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps)
     >
       {/* 프로젝트 헤더 */}
       <motion.div variants={itemVariants} className="mb-6">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          {/* 프로젝트 정보 */}
-          <div className="flex-1">
-            <h1 className="text-3xl font-semibold mb-4">{frontmatter.title}</h1>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <div>{frontmatter.period}</div>
-              {frontmatter.summary && (
-                <div className="text-base text-foreground">{frontmatter.summary}</div>
+        <h1 className="text-3xl font-semibold mb-4">{frontmatter.title}</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-2 text-sm text-muted-foreground">
+            <div>{frontmatter.period}</div>
+            {frontmatter.summary && (
+              <div className="text-base text-foreground">{frontmatter.summary}</div>
+            )}
+          </div>
+          {(frontmatter.githubUrl || frontmatter.siteUrl) && (
+            <div className="flex gap-2 flex-shrink-0">
+              {frontmatter.githubUrl && (
+                <a
+                  href={frontmatter.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:bg-accent transition-colors"
+                  aria-label="GitHub 저장소 보기"
+                  tabIndex={0}
+                >
+                  <Github className="w-4 h-4" />
+                  <span className="text-sm">GitHub</span>
+                </a>
+              )}
+              {frontmatter.siteUrl && (
+                <a
+                  href={frontmatter.siteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:bg-accent transition-colors"
+                  aria-label="사이트 보기"
+                  tabIndex={0}
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span className="text-sm">Site</span>
+                </a>
               )}
             </div>
-          </div>
-
-          {/* 링크 버튼들 */}
-          <motion.div variants={itemVariants} className="flex gap-2">
-            {frontmatter.githubUrl && (
-              <a
-                href={frontmatter.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:bg-accent transition-colors"
-                aria-label="GitHub 저장소 보기"
-                tabIndex={0}
-              >
-                <Github className="w-4 h-4" />
-                <span className="text-sm">GitHub</span>
-              </a>
-            )}
-            {frontmatter.siteUrl && (
-              <a
-                href={frontmatter.siteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:bg-accent transition-colors"
-                aria-label="사이트 보기"
-                tabIndex={0}
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span className="text-sm">Site</span>
-              </a>
-            )}
-          </motion.div>
+          )}
         </div>
       </motion.div>
 
