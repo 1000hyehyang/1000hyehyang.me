@@ -35,10 +35,9 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const postsPerPage = 8; // 페이지당 10개 글
   
-  // 터치 스와이프를 위한 ref와 상태
   const carouselRef = useRef<HTMLDivElement>(null);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   const categories = useMemo(() => {
     const categorySet = new Set(posts.map(post => post.category));  
@@ -112,22 +111,29 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
     setCurrentSlide((prev) => (prev - 1 + pinnedPosts.length) % pinnedPosts.length);
   };
 
-  // 터치 스와이프
+  // 터치 스와이프 (ref 사용으로 모바일에서 즉시 반응)
   const minSwipeDistance = 50;
 
   const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
+    touchEndX.current = null;
+    touchStartX.current = e.targetTouches[0].clientX;
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    touchEndX.current = e.targetTouches[0].clientX;
   };
 
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStartX.current;
+    let end = touchEndX.current;
+    if (start === null) return;
+    // touchMove가 호출되지 않은 경우 changedTouches에서 끝 위치 사용
+    if (end === null && e.changedTouches.length > 0) {
+      end = e.changedTouches[0].clientX;
+    }
+    if (end === null) return;
+
+    const distance = start - end;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
@@ -137,6 +143,8 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
     if (isRightSwipe && pinnedPosts.length > 1) {
       prevSlide();
     }
+    touchStartX.current = null;
+    touchEndX.current = null;
   };
 
   // 추천 글 카드
@@ -351,6 +359,7 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
           <div 
             ref={carouselRef}
             className="relative overflow-hidden rounded-xl"
+            style={{ touchAction: "pan-y" }}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
