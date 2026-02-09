@@ -1,4 +1,4 @@
-import { getBlogPostBySlug, getPinnedPostBySlug } from "@/lib/github";
+import { getBlogPostBySlug, getPinnedPostBySlug, getAllBlogPosts, getPinnedPosts } from "@/lib/github";
 import { BlogDetail } from "@/components/blog/BlogDetail";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -27,17 +27,13 @@ export async function generateStaticParams() {
   }
 }
 
+async function getPostBySlug(slug: string) {
+  return (await getBlogPostBySlug(slug)) ?? (await getPinnedPostBySlug(slug));
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  
-  // 먼저 일반 블로그 글에서 찾기
-  let post = await getBlogPostBySlug(slug);
-  
-  // 일반 블로그 글에 없으면 고정 글에서 찾기
-  if (!post) {
-    post = await getPinnedPostBySlug(slug);
-  }
-  
+  const post = await getPostBySlug(slug);
   if (!post) return {};
   
   return {
@@ -79,16 +75,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  
-  // 먼저 일반 블로그 글에서 찾기
-  let post = await getBlogPostBySlug(slug);
-  
-  // 일반 블로그 글에 없으면 고정 글에서 찾기
-  if (!post) {
-    post = await getPinnedPostBySlug(slug);
-  }
-  
+  const post = await getPostBySlug(slug);
   if (!post) return notFound();
+
+  // 이전/다음 글 (날짜 내림차순 기준)
+  const [posts, pinnedPosts] = await Promise.all([getAllBlogPosts(), getPinnedPosts()]);
+  const slugSet = new Set(posts.map((p) => p.slug));
+  const merged = [...posts, ...pinnedPosts.filter((p) => !slugSet.has(p.slug))];
+  const sorted = [...merged].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const currentIndex = sorted.findIndex((p) => p.slug === slug);
+  const prevPost =
+    currentIndex >= 0 && currentIndex < sorted.length - 1
+      ? { slug: sorted[currentIndex + 1].slug, title: sorted[currentIndex + 1].title }
+      : null;
+  const nextPost =
+    currentIndex > 0 ? { slug: sorted[currentIndex - 1].slug, title: sorted[currentIndex - 1].title } : null;
 
   // 마크다운을 HTML로 변환
   const htmlContent = await markdownToHtml(post.content);
@@ -122,7 +123,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <BlogDetail frontmatter={post.frontmatter}>
+      <BlogDetail frontmatter={post.frontmatter} prevPost={prevPost} nextPost={nextPost}>
         <div className="markdown-body" dangerouslySetInnerHTML={{ __html: htmlContent }} />
       </BlogDetail>
     </>

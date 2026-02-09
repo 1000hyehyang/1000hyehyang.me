@@ -60,9 +60,18 @@ export type BlogCardProps = BlogFrontmatter & {
   variants?: import("framer-motion").Variants;
 };
 
+export type AdjacentPost = {
+  slug: string;
+  title: string;
+};
+
 export type BlogDetailProps = {
   frontmatter: BlogFrontmatter;
   children: React.ReactNode;
+  /** 이전 글(더 오래된 글) */
+  prevPost?: AdjacentPost | null;
+  /** 다음 글(더 최신 글) */
+  nextPost?: AdjacentPost | null;
 };
 
 export type PortfolioCardProps = PortfolioFrontmatter & {

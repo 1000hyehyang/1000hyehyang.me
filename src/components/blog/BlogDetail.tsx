@@ -1,6 +1,6 @@
 "use client";
 
-import { BlogDetailProps } from "@/types";
+import type { AdjacentPost, BlogDetailProps } from "@/types";
 import { GiscusComments } from "@/components/common/GiscusComments";
 import { LinkPreview } from "@/components/common/LinkPreview";
 import { CopyCodeButton } from "@/components/common/CopyCodeButton";
@@ -9,8 +9,41 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useEffect } from "react";
 import { containerVariants, itemVariants } from "@/lib/animations";
 import { createRoot } from "react-dom/client";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
+const CARD_CLASS =
+  "group flex min-w-0 items-center gap-3 overflow-hidden rounded-lg border border-border bg-muted/15 dark:bg-muted/30 p-4 transition-colors hover:bg-muted/25 dark:hover:bg-muted/50 hover:border-orange-200/50";
+const ICON_CLASS =
+  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted/50 dark:bg-muted text-muted-foreground group-hover:bg-orange-200/20 group-hover:text-orange-300";
+
+function AdjacentPostCard({
+  post,
+  direction,
+  alignRightOnSm,
+}: {
+  post: AdjacentPost;
+  direction: "prev" | "next";
+  alignRightOnSm?: boolean;
+}) {
+  const isNext = direction === "next";
+  return (
+    <Link
+      href={`/blog/${post.slug}`}
+      className={`${CARD_CLASS} ${isNext ? "flex-row-reverse" : ""} ${alignRightOnSm ? "sm:col-start-2" : ""}`}
+    >
+      <span className={ICON_CLASS}>
+        {isNext ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+      </span>
+      <div className={`min-w-0 flex-1 overflow-hidden ${isNext ? "text-right" : ""}`}>
+        <span className="text-xs text-muted-foreground">{isNext ? "다음 글" : "이전 글"}</span>
+        <p className="mt-0.5 truncate font-medium text-foreground group-hover:text-orange-300">{post.title}</p>
+      </div>
+    </Link>
+  );
+}
+
+export const BlogDetail = ({ frontmatter, children, prevPost, nextPost }: BlogDetailProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -79,6 +112,18 @@ export const BlogDetail = ({ frontmatter, children }: BlogDetailProps) => {
       <motion.div variants={itemVariants}>
         {children}
       </motion.div>
+
+      {(prevPost || nextPost) && (
+        <motion.nav
+          variants={itemVariants}
+          aria-label="이전 글 / 다음 글"
+          className="mt-12 w-full min-w-0 grid grid-cols-1 gap-4 sm:grid-cols-2"
+        >
+          {prevPost && <AdjacentPostCard post={prevPost} direction="prev" />}
+          {nextPost && <AdjacentPostCard post={nextPost} direction="next" alignRightOnSm={!prevPost} />}
+        </motion.nav>
+      )}
+
       <motion.div variants={itemVariants} className="mt-8">
         <GiscusComments
           repo={GISCUS_BLOG_CONFIG.repo as `${string}/${string}`}

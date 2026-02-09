@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getAllBlogPosts, getPinnedPosts } from "@/lib/github";
 import { BlogList } from "@/components/blog/BlogList";
 import type { Metadata } from "next";
@@ -15,5 +16,25 @@ export default async function BlogListPage() {
     getAllBlogPosts(),
     getPinnedPosts()
   ]);
-  return <BlogList posts={posts} pinnedPosts={pinnedPosts} />;
+  return (
+    <Suspense
+      fallback={
+        <section className="w-full animate-pulse">
+          <div className="mb-6 flex gap-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-9 w-16 rounded-md bg-muted/40" />
+            ))}
+          </div>
+          <div className="mb-6 h-12 rounded-lg bg-muted/40" />
+          <div className="grid gap-6 sm:grid-cols-2">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-48 rounded-xl bg-muted/40" />
+            ))}
+          </div>
+        </section>
+      }
+    >
+      <BlogList posts={posts} pinnedPosts={pinnedPosts} />
+    </Suspense>
+  );
 } 
