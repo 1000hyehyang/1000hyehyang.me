@@ -3,7 +3,8 @@
 import { PortfolioFrontmatter, PortfolioCategory } from "@/types";
 import { PortfolioCard } from "./PortfolioCard";
 import { motion } from "framer-motion";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useEffect } from "react";
+import { usePortfolioUrlState } from "@/hooks/usePortfolioUrlState";
 import { listVariants, cardVariants, groupVariants } from "@/lib/animations";
 
 interface PortfolioListProps {
@@ -11,21 +12,23 @@ interface PortfolioListProps {
 }
 
 export const PortfolioList = ({ projects }: PortfolioListProps) => {
-  // 사용 가능한 카테고리 목록 생성
+  const { category: selectedCategory, setCategory } = usePortfolioUrlState();
+
   const availableCategories = useMemo(() => {
-    const categories = new Set(projects.map(project => project.category));
+    const categories = new Set(projects.map((project) => project.category));
     return Array.from(categories) as ("project" | "hackathon")[];
   }, [projects]);
 
-  // 기본 카테고리를 '전체'로 설정
-  const [selectedCategory, setSelectedCategory] = useState<PortfolioCategory>("all");
-
-  // availableCategories가 변경될 때 기본 카테고리 업데이트
+  // URL에 있는 카테고리가 현재 목록에 없으면 '전체'로 보정
   useEffect(() => {
-    if (availableCategories.length > 0 && selectedCategory !== "all" && !availableCategories.includes(selectedCategory as "project" | "hackathon")) {
-      setSelectedCategory("all");
+    if (
+      availableCategories.length > 0 &&
+      selectedCategory !== "all" &&
+      !availableCategories.includes(selectedCategory as "project" | "hackathon")
+    ) {
+      setCategory("all");
     }
-  }, [availableCategories, selectedCategory]);
+  }, [availableCategories, selectedCategory, setCategory]);
 
   // 선택된 카테고리로 필터링된 프로젝트들
   const filteredProjects = useMemo(() => {
@@ -59,9 +62,7 @@ export const PortfolioList = ({ projects }: PortfolioListProps) => {
       }));
   }, [filteredProjects]);
 
-  const handleCategoryClick = (category: PortfolioCategory) => {
-    setSelectedCategory(category);
-  };
+  const handleCategoryClick = (category: PortfolioCategory) => setCategory(category);
 
   // 카테고리 라벨 매핑
   const categoryLabels = {
