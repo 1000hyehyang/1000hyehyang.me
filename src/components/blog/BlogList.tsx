@@ -3,7 +3,8 @@ import { BlogFrontmatter } from "@/types";
 import { BlogCard } from "./BlogCard";
 import { SearchBar } from "./SearchBar";
 import { motion } from "framer-motion";
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useBlogListUrlState } from "@/hooks/useBlogListUrlState";
 import { listVariants, cardVariants } from "@/lib/animations";
 import { searchBlogPosts, getSearchResultCount, debounce } from "@/lib/search";
 import { PINNED_POSTS_CONFIG } from "@/lib/github";
@@ -24,83 +25,72 @@ interface BlogListProps {
   pinnedPosts: BlogFrontmatter[];
 }
 
+const SEARCH_DEBOUNCE_MS = 300;
+const POSTS_PER_PAGE = 8;
+
 export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [currentSlide, setCurrentSlide] = useState<number>(0);
-  
-  // 페이지네이션 상태
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const postsPerPage = 8; // 페이지당 10개 글
-  
+  const urlState = useBlogListUrlState();
+  const { category: selectedCategory, page: currentPage, searchQuery: urlSearchQuery, setCategory, setPage, setSearchQuery: setUrlSearchQuery } = urlState;
+
+  const [inputValue, setInputValue] = useState(() => urlSearchQuery);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(() => urlSearchQuery);
+  const [isSearching, setIsSearching] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
   const carouselRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
+  // URL에서 복원될 때(뒤로가기 등) 입력값·검색 결과 동기화
+  useEffect(() => {
+    setInputValue(urlSearchQuery);
+    setDebouncedSearchQuery(urlSearchQuery);
+  }, [urlSearchQuery]);
+
+  const applySearchQueryRef = useRef<(q: string) => void>(() => {});
+  applySearchQueryRef.current = (q: string) => {
+    setUrlSearchQuery(q);
+    setDebouncedSearchQuery(q);
+    setIsSearching(false);
+  };
+  const debouncedApplySearch = useRef(
+    debounce((q: string) => applySearchQueryRef.current(q), SEARCH_DEBOUNCE_MS)
+  ).current;
+
   const categories = useMemo(() => {
-    const categorySet = new Set(posts.map(post => post.category));  
+    const categorySet = new Set(posts.map((post) => post.category));
     return ["ALL", ...Array.from(categorySet).sort()];
   }, [posts]);
 
-  // 검색 디바운싱
-  const debouncedSearch = useCallback(
-    (query: string) => {
-      const debouncedFn = debounce((q: string) => {
-        setDebouncedSearchQuery(q);
-        setIsSearching(false);
-      }, 300);
-      debouncedFn(query);
-    },
-    [setDebouncedSearchQuery, setIsSearching]
+  const handleSearch = useCallback((query: string) => {
+    setInputValue(query);
+    if (query.trim()) setIsSearching(true);
+    else setIsSearching(false);
+    debouncedApplySearch(query);
+  }, [debouncedApplySearch]);
+
+  const searchResults = useMemo(
+    () => searchBlogPosts(posts, debouncedSearchQuery),
+    [posts, debouncedSearchQuery]
   );
 
-  // 검색 처리
-  const handleSearch = useCallback((query: string) => {
-    setSearchQuery(query);
-    if (query.trim()) {
-      setIsSearching(true);
-    } else {
-      setIsSearching(false);
-    }
-    debouncedSearch(query);
-  }, [debouncedSearch]);
-
-  // 검색 결과
-  const searchResults = useMemo(() => {
-    return searchBlogPosts(posts, debouncedSearchQuery);
-  }, [posts, debouncedSearchQuery]);
-
-  // 카테고리 필터링
   const filteredPosts = useMemo(() => {
-    let filtered = searchResults;
-    
-    if (selectedCategory !== "ALL") {
-      filtered = filtered.filter(result => result.post.category === selectedCategory);
-    }
-    
-    return filtered;
+    if (selectedCategory === "ALL") return searchResults;
+    return searchResults.filter((r) => r.post.category === selectedCategory);
   }, [searchResults, selectedCategory]);
 
-  // 페이지네이션
+  const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
   const paginatedPosts = useMemo(() => {
-    const startIndex = (currentPage - 1) * postsPerPage;
-    return filteredPosts.slice(startIndex, startIndex + postsPerPage);
-  }, [filteredPosts, currentPage, postsPerPage]);
+    const start = (currentPage - 1) * POSTS_PER_PAGE;
+    return filteredPosts.slice(start, start + POSTS_PER_PAGE);
+  }, [filteredPosts, currentPage]);
 
-  // 총 페이지 수
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const handleCategoryClick = useCallback(
+    (category: string) => setCategory(category),
+    [setCategory]
+  );
 
-  const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category);
-    setCurrentPage(1); // 카테고리 변경 시 첫 페이지로
-  };
-
-  // 페이지 변경
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  const handlePageChange = useCallback((page: number) => setPage(page), [setPage]);
 
   // 캐러셀 네비게이션
   const nextSlide = () => {
@@ -319,7 +309,7 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
       </div>
 
       {/* 검색창 */}
-      <SearchBar onSearch={handleSearch} />
+      <SearchBar value={inputValue} onSearch={handleSearch} />
 
       {/* 추천 글 캐러셀 섹션 */}
       {pinnedPosts.length > 0 && (
@@ -402,7 +392,7 @@ export const BlogList = ({ posts, pinnedPosts }: BlogListProps) => {
       )}
       
       {/* 검색 결과 개수 표시 */}
-      {searchQuery && (
+      {inputValue && (
         <motion.div
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}

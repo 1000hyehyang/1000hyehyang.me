@@ -7,25 +7,30 @@ import { motion, AnimatePresence } from "framer-motion";
 interface SearchBarProps {
   onSearch: (query: string) => void;
   placeholder?: string;
+  value?: string;
 }
 
-export const SearchBar = ({ onSearch, placeholder = "주제, 키워드 검색 ..." }: SearchBarProps) => {
-  const [query, setQuery] = useState("");
+export const SearchBar = ({ onSearch, placeholder = "주제, 키워드 검색 ...", value: controlledValue }: SearchBarProps) => {
+  const [internalQuery, setInternalQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const isControlled = controlledValue !== undefined;
+  const query = isControlled ? controlledValue : internalQuery;
+
   const handleSearch = (searchQuery: string) => {
+    if (!isControlled) setInternalQuery(searchQuery);
     onSearch(searchQuery);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setQuery(value);
+    if (!isControlled) setInternalQuery(value);
     handleSearch(value);
   };
 
   const handleClear = () => {
-    setQuery("");
+    if (!isControlled) setInternalQuery("");
     handleSearch("");
     inputRef.current?.focus();
   };
