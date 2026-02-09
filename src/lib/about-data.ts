@@ -36,8 +36,10 @@ export const ORGANIZATION_DATA: TimelineItem[] = [
     logoAlt: "GDG 로고",
     url: "https://gdg.community.dev/gdg-on-campus-hankuk-university-of-foreign-studies-seoul-south-korea/",
     activities: [
-      "개발자 커뮤니티 활동 및 네트워킹",
+      "한국외대 개발자 커뮤니티 ⌜HUFS DEV COMMUNITY⌟  PM 및 백엔드 개발",
+      "2026 GDGoC 연합 해커톤: ONE WAVE 백엔드 파트 개발",
       "Docker·Kubernetes 스터디 참여를 통해 컨테이너 기반 서비스 이해 및 실습",
+      "개발자 커뮤니티 활동 및 네트워킹",
     ]
   },
   {
