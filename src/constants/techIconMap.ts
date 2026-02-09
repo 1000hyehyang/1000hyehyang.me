@@ -77,6 +77,7 @@ const ICON_NAMES = [
   "React",
   "Redis",
   "Render",
+  "S3",
   "Sass",
   "Sidequest",
   "Socket.io",
@@ -107,6 +108,7 @@ const CUSTOM_ICON_NAME_ENTRIES: Array<[string, string]> = [
   ["unity xr interaction toolkit", "Unity"],
   ["websocket", "Websocket"],
   ["vite", "Vite.js"],
+  ["fcm", "Firebase"],
 ];
 
 const CUSTOM_ICON_NAME_MAP = CUSTOM_ICON_NAME_ENTRIES.reduce<Record<string, string>>((acc, [alias, target]) => {

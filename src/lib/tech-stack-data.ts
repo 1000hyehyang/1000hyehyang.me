@@ -34,6 +34,9 @@ const PROJECT_TECH_CATEGORIES: Record<string, string> = {
   "RabbitMQ": "Backend",
   "WebSocket": "Backend",
   "QueryDSL": "Backend",
+  "Spring Mail": "Backend",
+  "FCM": "Backend",
+  "S3": "DevOps",
   // Frontend
   "Next.js": "Frontend",
   "React": "Frontend",
