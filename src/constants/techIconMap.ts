@@ -34,6 +34,7 @@ const ICON_NAMES = [
   "Gradle",
   "Grafana",
   "GraphQL",
+  "Haproxy",
   "HTML5",
   "Hibernate",
   "JSON",
@@ -74,6 +75,7 @@ const ICON_NAMES = [
   "R",
   "RabbitMQ",
   "Raspberry Pi",
+  "RDS",
   "React",
   "Redis",
   "Render",
@@ -109,6 +111,7 @@ const CUSTOM_ICON_NAME_ENTRIES: Array<[string, string]> = [
   ["websocket", "Websocket"],
   ["vite", "Vite.js"],
   ["fcm", "Firebase"],
+  ["haproxy", "Haproxy"], // MDX에서는 HAProxy로 표기
 ];
 
 const CUSTOM_ICON_NAME_MAP = CUSTOM_ICON_NAME_ENTRIES.reduce<Record<string, string>>((acc, [alias, target]) => {
