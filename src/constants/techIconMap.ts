@@ -14,6 +14,7 @@ const ICON_NAMES = [
   "C++",
   "CSS3",
   "Cloudflare",
+  "CloudFront",
   "DBeaver",
   "Dart",
   "Django",
