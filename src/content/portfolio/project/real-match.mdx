@@ -29,6 +29,37 @@ myRole: "실시간 WebSocket 채팅 서비스 구현, S3 파일 스토리지 구
 
 ![시스템 아키텍처](https://eaalkymxyfskjojh.public.blob.vercel-storage.com/portfolio/real-match/system-architecture.png)
 
+### 프론트엔드 배포
+
+프론트엔드는 Vercel에 배포해 정적 자산을 CDN으로 제공했습니다. 
+프론트 배포를 백엔드 릴리즈와 분리하여, UI 변경을 더 빠르게 반영하고 
+백엔드 배포 리스크에 영향을 받지 않도록 했습니다.
+
+### 백엔드 인프라
+
+백엔드는 `가비아 클라우드`에 배포했습니다. 사용자 트래픽은 **CloudFlare**를 
+거쳐 HTTPS로 전달되고, 가비아 내부에서는 **HAProxy**가 리버스 프록시로 동작해 Spring Boot 
+애플리케이션으로 라우팅합니다. 애플리케이션 VM과 DB VM을 분리해 Redis, RabbitMQ, MySQL을 
+별도 컨테이너로 운영했습니다. 외부 노출 지점을 CloudFlare와 HAProxy로 최소화하고, 라우팅과 
+접근 제어를 리버스 프록시 계층에서 일괄 통제할 수 있도록 구성했습니다.
+
+### 배포 전략
+
+배포는 GitHub Actions로 빌드 및 Docker 이미지 생성을 수행하고, Docker Hub에 푸시한 뒤 
+가비아 클라우드 VM에서 최신 이미지를 반영하는 방식으로 구성했습니다. CI/CD 파이프라인을 통해 
+코드 푸시부터 배포까지 자동화했고, 컨테이너 단위 배포로 환경 일관성을 유지했습니다.
+
+### 파일 스토리지 및 CDN
+
+파일 스토리지는 S3를 사용했고, 용도에 따라 퍼블릭 버킷과 프라이빗 버킷을 분리했습니다. 
+퍼블릭 버킷은 **CloudFront**와 연동해 CDN으로 제공하고, 프라이빗 버킷은 Presigned URL로 
+제한된 접근만 허용하도록 구성했습니다.
+
+### Firebase Cloud Messaging
+
+**FCM**을 사용해 오프라인 사용자에게도 협업 이벤트를 전달할 수 있도록 했습니다. 
+Spring Boot 애플리케이션에서 FCM API를 호출해 웹 푸시를 발송합니다.
+
 &nbsp;
 
 # 실시간 WebSocket 채팅 시스템
