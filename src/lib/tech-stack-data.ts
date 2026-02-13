@@ -56,6 +56,7 @@ const PROJECT_TECH_CATEGORIES: Record<string, string> = {
   "Nginx": "DevOps",
   "RDS": "DevOps",
   "CloudFront": "DevOps",
+  "Cloudflare": "DevOps",
   "HAProxy": "DevOps",
   "Prometheus": "DevOps",
   "Grafana": "DevOps",
