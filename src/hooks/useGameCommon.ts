@@ -27,7 +27,7 @@ export const useOrientation = () => {
 export const useGameOver = () => {
   const [showGameOver, setShowGameOver] = useState(false);
   const [playerName, setPlayerName] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSaving] = useState(false);
   const [hasSaved, setHasSaved] = useState(false);
   const [originalHighScore, setOriginalHighScore] = useState(0);
 
@@ -44,9 +44,7 @@ export const useGameOver = () => {
     playerName,
     setPlayerName,
     isSaving,
-    setIsSaving,
     hasSaved,
-    setHasSaved,
     originalHighScore,
     setOriginalHighScore,
     handleGameOverClose
@@ -125,5 +123,5 @@ export const useScoreSave = () => {
     }
   };
 
-  return { isSaving, hasSaved, setHasSaved, saveScore };
+  return { isSaving, hasSaved, saveScore };
 };

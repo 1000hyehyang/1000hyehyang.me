@@ -38,7 +38,6 @@ export interface GameState {
   resetGame: () => void;
   movePlayer: (dx: number, dy: number) => void;
   updateGame: () => void;
-  updateHighScore: (score: number) => void;
   setHighScore: (score: number) => void;
 }
 
@@ -235,12 +234,6 @@ export function useTangerineMasterGame(): GameState {
     });
   }, [isPlaying, isPaused, difficulty, gameArea, player, endGame]);
 
-  const updateHighScore = useCallback((score: number) => {
-    if (score > highScore) {
-      setHighScore(score);
-    }
-  }, [highScore]);
-
   const setHighScoreFromStorage = useCallback((score: number) => {
     setHighScore(score);
   }, []);
@@ -364,7 +357,6 @@ export function useTangerineMasterGame(): GameState {
     resetGame,
     movePlayer,
     updateGame,
-    updateHighScore,
     setHighScore: setHighScoreFromStorage
   };
 }

@@ -12,12 +12,14 @@ import { useOrientation, useGameOver, useGameAudio, useScoreSave } from "@/hooks
 
 export const TangerineMasterGame = () => {
   const gameState = useTangerineMasterGame();
+  const { setHighScore } = gameState;
   const { highScore, updateHighScore } = useSyncHighScoreWithLocalStorage();
   const controlsRef = useRef<TangerineMasterControlsRef>(null);
   
   // 공통 훅 사용
   const isPortrait = useOrientation();
   const gameOverState = useGameOver();
+  const { setOriginalHighScore, setShowGameOver, showGameOver } = gameOverState;
   const { bgMusic, sfxSound } = useGameAudio(
     "/tangerine-master/tangerine-master-bgm.mp3",
     "/tangerine-master/fail.mp3"
@@ -42,18 +44,18 @@ export const TangerineMasterGame = () => {
     }
   };
 
-  // 게임 오버 처리
+  // 게임 오버 처리 (gameOverState 전체 대신 안정적인 setter만 의존성에 포함하여 무한 루프 방지)
   const handleGameOver = useCallback(() => {
     if (gameState.survivalTime > 0) {
-      gameOverState.setShowGameOver(true);
-      gameOverState.setOriginalHighScore(highScore); // 게임 오버 시점의 원래 최고 기록 저장
+      setShowGameOver(true);
+      setOriginalHighScore(highScore); // 게임 오버 시점의 원래 최고 기록 저장
       updateHighScore(gameState.survivalTime);
       // 게임 오버 효과음 재생
       if (!sfxSound.isMuted) {
         sfxSound.play();
       }
     }
-  }, [gameState.survivalTime, updateHighScore, sfxSound, highScore, gameOverState]);
+  }, [gameState.survivalTime, updateHighScore, sfxSound, highScore, setOriginalHighScore, setShowGameOver]);
 
   // 점수 저장
   const handleSaveScore = async () => {
@@ -85,15 +87,15 @@ export const TangerineMasterGame = () => {
 
   // 게임 오버 감지
   useEffect(() => {
-    if (!gameState.isPlaying && gameState.survivalTime > 0 && !gameOverState.showGameOver) {
+    if (!gameState.isPlaying && gameState.survivalTime > 0 && !showGameOver) {
       handleGameOver();
     }
-  }, [gameState.isPlaying, gameState.survivalTime, handleGameOver, gameOverState.showGameOver]);
+  }, [gameState.isPlaying, gameState.survivalTime, handleGameOver, showGameOver]);
 
   // 하이스코어 동기화
   useEffect(() => {
-    gameState.setHighScore(highScore);
-  }, [highScore, gameState]);
+    setHighScore(highScore);
+  }, [highScore, setHighScore]);
 
   // 세로 모드일 때 가로 모드 안내
   if (isPortrait) {

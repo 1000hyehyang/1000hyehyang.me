@@ -19,7 +19,6 @@ export const TangerineGame = () => {
     timeLeft, 
     selectTangerine, 
     updateTime,
-    endGame: endGameFromStore,
     generateNewGrid,
     highScore
   } = useTangerineGameStore();
@@ -27,6 +26,7 @@ export const TangerineGame = () => {
   // 공통 훅 사용
   const isPortrait = useOrientation();
   const gameOverState = useGameOver();
+  const { setOriginalHighScore, setShowGameOver } = gameOverState;
   const { bgMusic, sfxSound } = useGameAudio(
     "/orange-game/orange-game-bgm.mp3",
     "/orange-game/success.mp3"
@@ -60,11 +60,10 @@ export const TangerineGame = () => {
   // 게임 종료 처리
   useEffect(() => {
     if (timeLeft <= 0) {
-      endGameFromStore();
-      gameOverState.setOriginalHighScore(highScore);
-      gameOverState.setShowGameOver(true);
+      setOriginalHighScore(highScore);
+      setShowGameOver(true);
     }
-  }, [timeLeft, endGameFromStore, highScore, gameOverState]);
+  }, [timeLeft, highScore, setOriginalHighScore, setShowGameOver]);
 
   // 배경음악 재생
   useEffect(() => {
@@ -188,7 +187,7 @@ export const TangerineGame = () => {
 
       {/* 게임 보드 */}
       <motion.div
-        className="flex justify-center"
+        className="w-full"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}

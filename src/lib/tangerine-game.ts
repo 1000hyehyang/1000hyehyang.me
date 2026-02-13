@@ -31,9 +31,7 @@ export interface GameState {
   deselectTangerine: (tangerine: Tangerine) => void;
   clearSelection: () => void;
   removeTangerines: (tangerines: Tangerine[], onSuccess?: () => void) => void;
-  addNewTangerines: () => void;
   updateTime: () => void;
-  updateHighScore: (score: number) => void;
   generateNewGrid: () => void;
   setHighScore: (score: number) => void;
 }
@@ -212,14 +210,6 @@ export const useTangerineGameStore = create<GameState>((set, get) => ({
     }
   },
 
-  addNewTangerines: () => {
-    const { tangerines } = get();
-    const newTangerines = tangerines.map(row =>
-      row.map(t => t.value === 0 ? generateTangerine(t.row, t.col) : t)
-    );
-    set({ tangerines: newTangerines });
-  },
-
   updateTime: () => {
     const { timeLeft, isPlaying, isPaused } = get();
     if (isPlaying && !isPaused && timeLeft > 0) {
@@ -230,14 +220,6 @@ export const useTangerineGameStore = create<GameState>((set, get) => ({
       } else {
         set({ timeLeft: newTimeLeft });
       }
-    }
-  },
-
-  updateHighScore: (score: number) => {
-    const { highScore } = get();
-    if (score > highScore) {
-      set({ highScore: score });
-      safeLocalStorage.setNumber('tangerine_high_score', score);
     }
   },
 

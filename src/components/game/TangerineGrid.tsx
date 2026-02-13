@@ -21,8 +21,8 @@ export const TangerineGrid = ({ onTangerineClick }: TangerineGridProps) => {
 
   return (
     <div className="relative">
-      {/* 천혜향 격자 - 미니멀 디자인 */}
-      <div className="grid grid-cols-20 gap-1 p-4 bg-muted/30 rounded-lg max-w-full overflow-x-auto">
+      {/* 천혜향 격자 */}
+      <div className="grid grid-cols-20 gap-1 p-4 bg-muted/30 rounded-lg w-full overflow-x-auto">
         {tangerines.map((row, rowIndex) =>
           row.map((tangerine, colIndex) => (
             <motion.div
