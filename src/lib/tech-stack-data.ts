@@ -47,6 +47,7 @@ const PROJECT_TECH_CATEGORIES: Record<string, string> = {
   "MySQL": "Database",
   "Redis": "Database",
   "PostgresSQL": "Database",
+  "PostgreSQL": "Database",
   "MongoDB": "Database",
   "Oracle": "Database",
   // DevOps
