@@ -114,6 +114,7 @@ const CUSTOM_ICON_NAME_ENTRIES: Array<[string, string]> = [
   ["fcm", "Firebase"],
   ["haproxy", "Haproxy"], // MDX에서는 HAProxy로 표기
   ["postgresql", "PostgresSQL"],
+  ["android", "Kotlin"],
 ];
 
 const CUSTOM_ICON_NAME_MAP = CUSTOM_ICON_NAME_ENTRIES.reduce<Record<string, string>>((acc, [alias, target]) => {

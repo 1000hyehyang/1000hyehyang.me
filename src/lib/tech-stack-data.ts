@@ -43,6 +43,7 @@ const PROJECT_TECH_CATEGORIES: Record<string, string> = {
   "TypeScript": "Frontend",
   "Typescript": "Frontend",
   "Vite": "Frontend",
+  "Android": "Frontend",
   // Database
   "MySQL": "Database",
   "Redis": "Database",
