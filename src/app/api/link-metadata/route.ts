@@ -41,22 +41,64 @@ const BROWSER_LIKE_HEADERS: HeadersInit = {
   "Sec-Fetch-User": "?1",
 };
 
-async function fetchHTML(url: string): Promise<string> {
-  const doFetch = () =>
-    fetch(url, {
-      headers: BROWSER_LIKE_HEADERS,
-      cache: "no-store",
-      redirect: "follow",
-      signal: AbortSignal.timeout(15000),
-    });
+/** OG 수집용 크롤러 UA — 나무위키 등에서 일반 브라우저보다 200/HTML을 잘 주는 경우가 많음 */
+const FACEBOOK_OG_CRAWLER_HEADERS: HeadersInit = {
+  "User-Agent":
+    "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+};
 
-  let res = await doFetch();
-  if (!res.ok) {
-    await new Promise((r) => setTimeout(r, 350));
-    res = await doFetch();
+const DISCORD_BOT_HEADERS: HeadersInit = {
+  "User-Agent": "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)",
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+};
+
+function looksLikeBotWallOrChallenge(html: string): boolean {
+  const head = html.slice(0, 16000).toLowerCase();
+  return (
+    head.includes("cf-browser-verification") ||
+    head.includes("id=\"cf-challenge-running\"") ||
+    head.includes("checking your browser") ||
+    head.includes("just a moment") ||
+    head.includes("enable javascript and cookies") ||
+    head.includes("attention required! | cloudflare")
+  );
+}
+
+/** 한국 인근 실행 — 일부 국내 사이트·CDN과의 연결에 유리할 수 있음 */
+export const preferredRegion = "icn1";
+
+async function fetchHTML(url: string): Promise<string> {
+  const strategies: HeadersInit[] = [
+    BROWSER_LIKE_HEADERS,
+    FACEBOOK_OG_CRAWLER_HEADERS,
+    DISCORD_BOT_HEADERS,
+  ];
+
+  let lastError: unknown;
+  for (const headers of strategies) {
+    try {
+      const res = await fetch(url, {
+        headers,
+        cache: "no-store",
+        redirect: "follow",
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!res.ok) {
+        lastError = new Error(`Upstream ${res.status}`);
+        continue;
+      }
+      const text = await res.text();
+      if (looksLikeBotWallOrChallenge(text)) {
+        lastError = new Error("Challenge or bot wall HTML");
+        continue;
+      }
+      return text;
+    } catch (e) {
+      lastError = e;
+    }
   }
-  if (!res.ok) throw new Error(`Upstream ${res.status}`);
-  return await res.text();
+  throw lastError instanceof Error ? lastError : new Error("HTML fetch failed");
 }
 
 function absolutizeOgImage(pageUrl: string, trimmed: string): string | undefined {

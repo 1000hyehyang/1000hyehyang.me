@@ -157,6 +157,7 @@ export const LinkPreview = ({ url, children }: LinkPreviewProps) => {
           <img
             src={image}
             alt=""
+            referrerPolicy="no-referrer"
             className="absolute inset-0 box-border m-0 h-full w-full max-w-none rounded-none object-cover object-center shadow-none"
             loading="lazy"
             decoding="async"
