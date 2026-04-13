@@ -9,6 +9,7 @@ const ICON_NAMES = [
   "Azure",
   "Blender",
   "Bootstrap",
+  "Capacitor",
   "C",
   "C#",
   "C++",
