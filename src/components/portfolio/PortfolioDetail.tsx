@@ -4,52 +4,16 @@ import { PortfolioDetailProps } from "@/types";
 import Image from "next/image";
 import { ExternalLink, Github } from "lucide-react";
 import { motion, useInView } from "framer-motion";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { containerVariants, itemVariants } from "@/lib/animations";
-import { LinkPreview } from "@/components/common/LinkPreview";
-import { CopyCodeButton } from "@/components/common/CopyCodeButton";
-import { createRoot } from "react-dom/client";
+import { useMarkdownBodyHydration } from "@/hooks/useHydrateMarkdownWidgets";
 import { TechBadge } from "@/components/portfolio/TechBadge";
 import { groupProjectTechByCategory } from "@/lib/tech-stack-data";
 
 export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  // LinkPreview와 CopyCodeButton 컴포넌트를 동적으로 렌더링
-  useEffect(() => {
-    // LinkPreview 렌더링
-    const linkPreviewWrappers = document.querySelectorAll('.link-preview-wrapper');
-    
-    linkPreviewWrappers.forEach((wrapper) => {
-      const url = wrapper.getAttribute('data-url');
-      const linkText = wrapper.getAttribute('data-link-text');
-      
-      if (url && !wrapper.hasAttribute('data-rendered')) {
-        const root = createRoot(wrapper);
-        root.render(<LinkPreview url={url}>{linkText}</LinkPreview>);
-        wrapper.setAttribute('data-rendered', 'true');
-      }
-    });
-
-    // CopyCodeButton 렌더링
-    const copyButtonWrappers = document.querySelectorAll('.copy-code-button');
-    
-    copyButtonWrappers.forEach((wrapper) => {
-      const encodedCode = wrapper.getAttribute('data-code-encoded');
-      
-      if (encodedCode && !wrapper.hasAttribute('data-rendered')) {
-        try {
-          const decodedCode = decodeURIComponent(escape(atob(encodedCode)));
-          const root = createRoot(wrapper);
-          root.render(<CopyCodeButton code={decodedCode} />);
-          wrapper.setAttribute('data-rendered', 'true');
-        } catch (error) {
-          console.error('코드 디코딩 실패:', error);
-        }
-      }
-    });
-  }, []);
+  const setMarkdownContainerRef = useMarkdownBodyHydration();
 
   return (
     <motion.article
@@ -184,7 +148,11 @@ export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps)
       )}
 
       {/* 프로젝트 상세 내용 */}
-      <motion.div variants={itemVariants} className="prose prose-neutral dark:prose-invert max-w-none">
+      <motion.div
+        ref={setMarkdownContainerRef}
+        variants={itemVariants}
+        className="prose prose-neutral dark:prose-invert max-w-none"
+      >
         {children}
       </motion.div>
     </motion.article>
