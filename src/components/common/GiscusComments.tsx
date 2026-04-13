@@ -22,15 +22,15 @@ export const GiscusComments = ({
   categoryId: string;
   term: string;
 }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // 클라이언트 마운트 후 렌더링
-  if (!mounted || !theme) {
+  // 마운트 전까지만 대기
+  if (!mounted) {
     return (
       <div className="mt-8 p-4 text-center text-muted-foreground">
         댓글 로딩 중...
@@ -38,10 +38,12 @@ export const GiscusComments = ({
     );
   }
 
+  const giscusTheme = resolvedTheme === "dark" ? "dark" : "light";
+
   return (
     <div className="mt-8">
       <Giscus
-        key={theme}
+        key={giscusTheme}
         id="comments"
         repo={repo}
         repoId={repoId}
@@ -52,9 +54,9 @@ export const GiscusComments = ({
         reactionsEnabled="1"
         emitMetadata="0"
         inputPosition="top"
-        theme={theme === "dark" ? "dark" : "light"}
+        theme={giscusTheme}
         lang="ko"
-        loading="lazy"
+        loading="eager"
       />
     </div>
   );

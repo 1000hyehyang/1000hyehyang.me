@@ -40,6 +40,26 @@ async function fetchHTML(url: string): Promise<string> {
   return await res.text();
 }
 
+// 미리보기 이미지
+function extractPreviewImage($: cheerio.CheerioAPI, pageUrl: string): string | undefined {
+  const rawCandidates = [
+    $("meta[property='og:image']").attr("content"),
+    $("meta[property='og:image:url']").attr("content"),
+    $("meta[name='twitter:image']").attr("content"),
+    $("meta[name='twitter:image:src']").attr("content"),
+    $("link[rel='image_src']").attr("href"),
+  ];
+  for (const raw of rawCandidates) {
+    const trimmed = raw?.trim();
+    if (!trimmed || trimmed.startsWith("data:")) continue;
+    const abs = absolutize(pageUrl, trimmed);
+    if (abs && (abs.startsWith("http://") || abs.startsWith("https://"))) {
+      return abs;
+    }
+  }
+  return undefined;
+}
+
 // 파비콘 추출
 function extractFavicon($: cheerio.CheerioAPI, origin: string): string | undefined {
   const rels = ["icon", "shortcut icon", "apple-touch-icon"];
@@ -90,6 +110,7 @@ const extractMetadata = async (url: string): Promise<LinkMetadata> => {
     );
 
     const favicon = extractFavicon($, origin);
+    const image = extractPreviewImage($, target.toString());
 
     return {
       url: target.toString(),
@@ -97,7 +118,7 @@ const extractMetadata = async (url: string): Promise<LinkMetadata> => {
       siteName,
       title,
       description,
-      image: undefined, // 이미지는 가져오지 않음
+      image,
       favicon,
     };
   } catch (error) {

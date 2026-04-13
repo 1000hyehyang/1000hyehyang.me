@@ -88,6 +88,7 @@ export const TangerineMasterControls = forwardRef<TangerineMasterControlsRef, Ta
     const formatDate = (timestamp: string) => {
       const date = new Date(timestamp);
       return date.toLocaleDateString('ko-KR', {
+        year: 'numeric',
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
@@ -274,7 +275,7 @@ export const TangerineMasterControls = forwardRef<TangerineMasterControlsRef, Ta
                 <div className="mt-6 text-center">
                   <button
                     onClick={fetchLeaderboard}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="cursor-pointer text-sm text-muted-foreground hover:text-foreground transition-colors disabled:cursor-not-allowed"
                     disabled={isLoading}
                   >
                     {isLoading ? '새로고침 중...' : '새로고침'}
