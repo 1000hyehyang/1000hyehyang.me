@@ -38,6 +38,7 @@ export const ORGANIZATION_DATA: TimelineItem[] = [
     activities: [
       "한국외대 개발자 커뮤니티 ⌜HUFS DEV COMMUNITY⌟  PM 및 백엔드 개발",
       "2026 GDGoC 연합 해커톤: ONE WAVE 백엔드 파트 개발",
+      "알고리즘 스터디 스터디장으로 스터디 운영",
       "Docker·Kubernetes 스터디 참여를 통해 컨테이너 기반 서비스 이해 및 실습",
       "개발자 커뮤니티 활동 및 네트워킹",
     ]
