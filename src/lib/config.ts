@@ -47,4 +47,4 @@ export const getValidatedGitHubConfig = () => {
     discussionCategory: validateRequiredEnv("GITHUB_DISCUSSION_CATEGORY", process.env.GITHUB_DISCUSSION_CATEGORY),
     userId: validateRequiredEnv("NEXT_PUBLIC_GITHUB_USER_ID", process.env.NEXT_PUBLIC_GITHUB_USER_ID),
   } as const;
-}; 
+};

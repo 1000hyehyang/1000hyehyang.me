@@ -1,9 +1,11 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { handleKeyDown } from "@/lib/utils";
 
-export const ThemeToggle = () => {
+export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -28,9 +30,9 @@ export const ThemeToggle = () => {
       className="inline-flex items-center justify-center rounded-md p-2 transition-colors hover:bg-accent text-orange-200 dark:text-orange-200 cursor-pointer"
       onClick={handleToggle}
       tabIndex={0}
-      onKeyDown={e => { if (e.key === "Enter" || e.key === " ") handleToggle(); }}
+      onKeyDown={(e) => handleKeyDown(e, handleToggle)}
     >
       {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
     </button>
   );
-}; 
+}

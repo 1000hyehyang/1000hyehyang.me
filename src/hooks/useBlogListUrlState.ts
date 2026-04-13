@@ -15,6 +15,12 @@ const DEFAULTS = {
   q: "",
 } as const;
 
+interface BlogListUrlUpdates {
+  category?: string;
+  page?: number;
+  q?: string;
+}
+
 function parsePage(value: string | null): number {
   if (value === null) return DEFAULTS.page;
   const n = parseInt(value, 10);
@@ -30,10 +36,6 @@ export interface BlogListUrlState {
   setSearchQuery: (query: string) => void;
 }
 
-/**
- * 블로그 목록의 필터 상태를 URL과 동기화합니다.
- * 뒤로가기/앞으로가기 시 이전 목록 상태가 복원됩니다.
- */
 export function useBlogListUrlState(): BlogListUrlState {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -48,14 +50,8 @@ export function useBlogListUrlState(): BlogListUrlState {
     searchParams.get(PARAM_KEYS.q) ?? DEFAULTS.q
   );
 
-  interface UrlUpdates {
-    category?: string;
-    page?: number;
-    q?: string;
-  }
-
   const replaceUrl = useCallback(
-    (updates: UrlUpdates) => {
+    (updates: BlogListUrlUpdates) => {
       const params = new URLSearchParams(searchParams.toString());
 
       if (updates.category !== undefined) {
@@ -77,7 +73,6 @@ export function useBlogListUrlState(): BlogListUrlState {
     [router, searchParams]
   );
 
-  // 브라우저 뒤로가기/앞으로가기 시 URL 기준으로 상태 복원
   useEffect(() => {
     setCategoryState(searchParams.get(PARAM_KEYS.category) ?? DEFAULTS.category);
     setPageState(parsePage(searchParams.get(PARAM_KEYS.page)));

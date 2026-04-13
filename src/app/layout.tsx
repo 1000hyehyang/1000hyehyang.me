@@ -12,6 +12,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const contentMaxWidthClass = "max-w-[768px]";
+
 export const metadata: Metadata = {
   title: {
     default: SITE_CONFIG.name,
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
   description: SITE_CONFIG.description,
   metadataBase: new URL(SITE_CONFIG.url),
   alternates: {
-    canonical: '/'
+    canonical: "/",
   },
   openGraph: {
     title: SITE_CONFIG.name,
@@ -82,12 +84,12 @@ export default function RootLayout({
         <ThemeProvider>
           <TooltipProvider>
             <header className="w-full px-6 py-4">
-              <div className="w-full max-w-[768px] mx-auto flex justify-end">
+              <div className={`w-full ${contentMaxWidthClass} mx-auto flex justify-end`}>
                 <ThemeToggle />
               </div>
             </header>
             <main className="min-h-[80vh] container mx-auto px-4 py-8 pb-24">
-              <div className="w-full max-w-[768px] mx-auto px-0">{children}</div>
+              <div className={`w-full ${contentMaxWidthClass} mx-auto px-0`}>{children}</div>
             </main>
             <BottomNav />
           </TooltipProvider>

@@ -3,14 +3,19 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { linkPreviewMotion } from "@/lib/animations";
 
-interface SearchBarProps {
+type SearchBarProps = {
   onSearch: (query: string) => void;
   placeholder?: string;
   value?: string;
-}
+};
 
-export const SearchBar = ({ onSearch, placeholder = "주제, 키워드 검색 ...", value: controlledValue }: SearchBarProps) => {
+export function SearchBar({
+  onSearch,
+  placeholder = "주제, 키워드 검색 ...",
+  value: controlledValue,
+}: SearchBarProps) {
   const [internalQuery, setInternalQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -35,31 +40,25 @@ export const SearchBar = ({ onSearch, placeholder = "주제, 키워드 검색 ..
     inputRef.current?.focus();
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Escape") {
       handleClear();
     }
   };
 
-  // ESC 키로 검색창 포커스 해제
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isFocused) {
+      if (e.key === "Escape" && isFocused) {
         inputRef.current?.blur();
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isFocused]);
 
   return (
-    <motion.div
-      className="relative mb-6"
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <motion.div className="relative mb-6" {...linkPreviewMotion}>
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="w-4 h-4 text-muted-foreground" />
@@ -80,9 +79,10 @@ export const SearchBar = ({ onSearch, placeholder = "주제, 키워드 검색 ..
             w-full pl-10 pr-10 py-3 border rounded-lg bg-background text-foreground
             placeholder:text-muted-foreground focus:outline-none focus:ring-2 
             transition-all duration-200 text-sm
-            ${isFocused 
-              ? 'border-orange-200 ring-orange-200/20' 
-              : 'border-border hover:border-orange-200'
+            ${
+              isFocused
+                ? "border-orange-200 ring-orange-200/20"
+                : "border-border hover:border-orange-200"
             }
           `}
         />
@@ -106,4 +106,4 @@ export const SearchBar = ({ onSearch, placeholder = "주제, 키워드 검색 ..
       
     </motion.div>
   );
-};
+}

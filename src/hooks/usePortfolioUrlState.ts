@@ -18,10 +18,6 @@ export interface PortfolioUrlState {
   setCategory: (category: PortfolioCategory) => void;
 }
 
-/**
- * 포트폴리오 목록의 카테고리 상태를 URL과 동기화합니다.
- * 뒤로가기/앞으로가기 시 이전 선택 탭이 복원됩니다.
- */
 export function usePortfolioUrlState(): PortfolioUrlState {
   const searchParams = useSearchParams();
   const router = useRouter();

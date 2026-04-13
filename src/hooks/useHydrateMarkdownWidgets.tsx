@@ -9,13 +9,6 @@ function decodeEncodedCode(encoded: string): string {
   return decodeURIComponent(escape(atob(encoded)));
 }
 
-/**
- * `.link-preview-wrapper`, `.copy-code-button` 플레이스홀더에
- * `markdownToHtml` 이 넣은 마크업을 React 위젯으로 하이드레이션합니다.
- * 언마운트 시 `createRoot` 인스턴스를 정리합니다.
- *
- * @param container 본문을 감싼 DOM 노드(보통 `markdown-body` 부모). `null`이면 스킵.
- */
 export function useHydrateMarkdownWidgets(container: HTMLElement | null): void {
   const rootsRef = useRef<Root[]>([]);
 
@@ -55,22 +48,21 @@ export function useHydrateMarkdownWidgets(container: HTMLElement | null): void {
     rootsRef.current = roots;
 
     return () => {
-      rootsRef.current.forEach((root) => {
-        try {
-          root.unmount();
-        } catch {
-          /* noop */
+      const pending = rootsRef.current.slice();
+      rootsRef.current = [];
+      queueMicrotask(() => {
+        for (const root of pending) {
+          try {
+            root.unmount();
+          } catch {
+            /* ignore */
+          }
         }
       });
-      rootsRef.current = [];
     };
   }, [container]);
 }
 
-/**
- * 본문 래퍼에 넘길 ref 콜백 + 내부에서 하이드레이션까지 처리.
- * `motion.div` 등에 `ref={setMarkdownContainer}` 형태로 연결합니다.
- */
 export function useMarkdownBodyHydration(): (node: HTMLElement | null) => void {
   const [container, setContainer] = useState<HTMLElement | null>(null);
   useHydrateMarkdownWidgets(container);

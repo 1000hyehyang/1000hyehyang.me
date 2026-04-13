@@ -1,4 +1,3 @@
-/** 리더보드 API·UI에서 공통으로 쓰는 엔트리 형태 */
 export interface GameLeaderboardEntry {
   score: number;
   timestamp: string;
@@ -9,7 +8,6 @@ const XSS_PATTERN = /[<>]/g;
 const JS_PROTOCOL = /javascript:/gi;
 const EVENT_HANDLER = /on\w+=/gi;
 
-/** 리더보드에 표시할 플레이어명 정리 (XSS 완화) */
 export function sanitizeLeaderboardPlayerName(
   text: string,
   options?: { maxLength?: number }
@@ -36,7 +34,6 @@ export function formatLeaderboardDate(isoTimestamp: string): string {
   });
 }
 
-/** 생존 시간(초) → MM:SS */
 export function formatSurvivalTime(seconds: number): string {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);

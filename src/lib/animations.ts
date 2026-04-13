@@ -1,6 +1,11 @@
 import { Variants } from "framer-motion";
 
-// 공통 애니메이션 변수들
+export const linkPreviewMotion = {
+  initial: { opacity: 0, y: -10 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.3 },
+} as const;
+
 export const listVariants: Variants = {
   hidden: {},
   show: {
@@ -39,4 +44,4 @@ export const itemVariants: Variants = {
     y: 0,
     transition: { duration: 0.5 },
   },
-}; 
+};

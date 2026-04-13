@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 import { Copy, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-interface CopyCodeButtonProps {
+type CopyCodeButtonProps = {
   code: string;
   className?: string;
-}
+};
 
-export const CopyCodeButton = ({ code, className = "" }: CopyCodeButtonProps) => {
+export function CopyCodeButton({ code, className = "" }: CopyCodeButtonProps) {
   const [copied, setCopied] = useState(false);
 
-  // 코드 복사
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(code);
@@ -24,8 +24,12 @@ export const CopyCodeButton = ({ code, className = "" }: CopyCodeButtonProps) =>
 
   return (
     <button
+      type="button"
       onClick={handleCopy}
-      className={`absolute top-3 right-3 p-2 rounded-md bg-muted/80 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors duration-200 cursor-pointer ${className}`}
+      className={cn(
+        "absolute top-3 right-3 p-2 rounded-md bg-muted/80 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors duration-200 cursor-pointer",
+        className
+      )}
       title={copied ? "복사됨!" : "코드 복사"}
       aria-label={copied ? "복사됨!" : "코드 복사"}
     >
@@ -36,4 +40,4 @@ export const CopyCodeButton = ({ code, className = "" }: CopyCodeButtonProps) =>
       )}
     </button>
   );
-};
+}

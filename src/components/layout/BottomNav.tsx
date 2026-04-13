@@ -1,8 +1,9 @@
 "use client";
+
+import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Home, PenTool, Archive, Citrus, Gamepad2 } from "lucide-react";
-import { useState } from "react";
-import { NavItem } from "@/types";
+import type { NavItem } from "@/types";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const NAV_ITEMS: NavItem[] = [
@@ -13,22 +14,21 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/about", icon: Citrus, label: "소개" },
 ];
 
-export const BottomNav = () => {
+function isNavItemActive(
+  pathname: string,
+  href: string,
+  focusedItem: string | null
+): boolean {
+  if (href === "/") {
+    return pathname === href || focusedItem === href;
+  }
+  return pathname.startsWith(href) || focusedItem === href;
+}
+
+export function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
-
-  const handleNavClick = (href: string) => {
-    router.push(href);
-  };
-
-  const handleNavFocus = (href: string) => {
-    setFocusedItem(href);
-  };
-
-  const handleNavBlur = () => {
-    setFocusedItem(null);
-  };
 
   return (
     <nav
@@ -36,20 +36,16 @@ export const BottomNav = () => {
       aria-label="하단 네비게이션"
     >
       {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
-        // 홈 경로는 정확히 일치해야 하고, 다른 경로는 해당 경로로 시작하면 활성화
-        const isActive = 
-          href === "/" 
-            ? pathname === href || focusedItem === href
-            : (pathname.startsWith(href) || focusedItem === href);
-        
+        const isActive = isNavItemActive(pathname, href, focusedItem);
+
         return (
           <Tooltip key={href}>
             <TooltipTrigger asChild>
               <button
                 type="button"
-                onClick={() => handleNavClick(href)}
-                onFocus={() => handleNavFocus(href)}
-                onBlur={handleNavBlur}
+                onClick={() => router.push(href)}
+                onFocus={() => setFocusedItem(href)}
+                onBlur={() => setFocusedItem(null)}
                 className={
                   "flex items-center justify-center p-3 rounded-lg transition-colors duration-200 select-none hover:cursor-pointer " +
                   (isActive
@@ -63,8 +59,8 @@ export const BottomNav = () => {
                 <Icon className="w-4 h-4" />
               </button>
             </TooltipTrigger>
-            <TooltipContent 
-              side="top" 
+            <TooltipContent
+              side="top"
               className="bg-popover text-popover-foreground border border-border shadow-none"
             >
               {label}
@@ -74,4 +70,4 @@ export const BottomNav = () => {
       })}
     </nav>
   );
-}; 
+}
