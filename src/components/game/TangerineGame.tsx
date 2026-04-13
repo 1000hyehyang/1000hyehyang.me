@@ -227,6 +227,7 @@ export const TangerineGame = () => {
                   </label>
                   <input
                     id="playerName"
+                    name="playerName"
                     type="text"
                     value={gameOverState.playerName}
                     onChange={(e) => gameOverState.setPlayerName(e.target.value)}

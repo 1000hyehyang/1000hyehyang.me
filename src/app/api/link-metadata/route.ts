@@ -26,18 +26,50 @@ function pick<T>(...vals: (T | undefined)[]): T | undefined {
   return vals.find(Boolean) as T | undefined;
 }
 
-// HTML 가져오기
+const BROWSER_LIKE_HEADERS: HeadersInit = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  Accept:
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+  "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+  "Cache-Control": "no-cache",
+  Pragma: "no-cache",
+  "Upgrade-Insecure-Requests": "1",
+  "Sec-Fetch-Dest": "document",
+  "Sec-Fetch-Mode": "navigate",
+  "Sec-Fetch-Site": "none",
+  "Sec-Fetch-User": "?1",
+};
+
 async function fetchHTML(url: string): Promise<string> {
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119 Safari/537.36",
-      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    },
-    cache: "no-store",
-    signal: AbortSignal.timeout(10000), // 10초 타임아웃
-  });
+  const doFetch = () =>
+    fetch(url, {
+      headers: BROWSER_LIKE_HEADERS,
+      cache: "no-store",
+      redirect: "follow",
+      signal: AbortSignal.timeout(15000),
+    });
+
+  let res = await doFetch();
+  if (!res.ok) {
+    await new Promise((r) => setTimeout(r, 350));
+    res = await doFetch();
+  }
   if (!res.ok) throw new Error(`Upstream ${res.status}`);
   return await res.text();
+}
+
+function absolutizeOgImage(pageUrl: string, trimmed: string): string | undefined {
+  if (trimmed.startsWith("//")) {
+    try {
+      return `${new URL(pageUrl).protocol}${trimmed}`;
+    } catch {
+      return undefined;
+    }
+  }
+  const abs = absolutize(pageUrl, trimmed);
+  if (abs?.startsWith("http://") || abs?.startsWith("https://")) return abs;
+  return undefined;
 }
 
 // 미리보기 이미지
@@ -52,10 +84,8 @@ function extractPreviewImage($: cheerio.CheerioAPI, pageUrl: string): string | u
   for (const raw of rawCandidates) {
     const trimmed = raw?.trim();
     if (!trimmed || trimmed.startsWith("data:")) continue;
-    const abs = absolutize(pageUrl, trimmed);
-    if (abs && (abs.startsWith("http://") || abs.startsWith("https://"))) {
-      return abs;
-    }
+    const abs = absolutizeOgImage(pageUrl, trimmed);
+    if (abs) return abs;
   }
   return undefined;
 }

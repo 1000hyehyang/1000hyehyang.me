@@ -67,6 +67,8 @@ export const SearchBar = ({ onSearch, placeholder = "주제, 키워드 검색 ..
         
         <input
           ref={inputRef}
+          id="blog-search"
+          name="search_term_string"
           type="text"
           value={query}
           onChange={handleInputChange}
