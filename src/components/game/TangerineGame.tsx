@@ -30,6 +30,7 @@ export const TangerineGame = () => {
     updateTime,
     generateNewGrid,
     highScore,
+    resetGame,
   } = useTangerineGameStore();
 
   const isPortrait = useOrientation();
@@ -75,6 +76,7 @@ export const TangerineGame = () => {
     gameOverState,
     buildGameState,
     onRefreshLeaderboard: () => gameControlsRef.current?.refreshLeaderboard(),
+    onCloseExtra: resetGame,
   });
 
   useEffect(() => {
