@@ -5,9 +5,15 @@ interface UseAudioProps {
   src: string;
   loop?: boolean;
   volume?: number;
+  muteStorageKey?: string;
 }
 
-export const useAudio = ({ src, loop = true, volume = 0.3 }: UseAudioProps) => {
+export const useAudio = ({
+  src,
+  loop = true,
+  volume = 0.3,
+  muteStorageKey,
+}: UseAudioProps) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const baseVolumeRef = useRef(volume);
   const fadeFrameRef = useRef<number | null>(null);
@@ -27,11 +33,11 @@ export const useAudio = ({ src, loop = true, volume = 0.3 }: UseAudioProps) => {
     }
   };
 
-  // localStorage에서 음소거 상태 불러오기
   useEffect(() => {
-    const savedMuted = safeLocalStorage.getBoolean('sfx-muted');
+    if (!muteStorageKey) return;
+    const savedMuted = safeLocalStorage.getBoolean(muteStorageKey);
     setIsMuted(savedMuted);
-  }, []);
+  }, [muteStorageKey]);
 
   useEffect(() => {
     baseVolumeRef.current = volume;
@@ -120,7 +126,9 @@ export const useAudio = ({ src, loop = true, volume = 0.3 }: UseAudioProps) => {
       const nextMuted = !isMuted;
       audioRef.current.muted = nextMuted;
       setIsMuted(nextMuted);
-      safeLocalStorage.setBoolean('sfx-muted', nextMuted);
+      if (muteStorageKey) {
+        safeLocalStorage.setBoolean(muteStorageKey, nextMuted);
+      }
     }
   };
 
