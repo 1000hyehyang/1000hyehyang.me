@@ -53,20 +53,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       modifiedTime: post.frontmatter.updatedAt,
       authors: [post.frontmatter.author || '천혜향'],
       tags: post.frontmatter.tags,
-      images: [
-        {
-          url: "/og/default.png",
-          width: 1200,
-          height: 630,
-          alt: post.frontmatter.title,
-        },
-      ],
     },
     twitter: {
       card: "summary_large_image",
       title: post.frontmatter.title,
       description: post.frontmatter.summary,
-      images: ["/og/default.png"],
     },
     alternates: {
       canonical: `/blog/${slug}`,

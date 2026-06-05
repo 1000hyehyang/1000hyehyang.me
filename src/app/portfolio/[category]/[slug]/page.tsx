@@ -30,20 +30,24 @@ export async function generateMetadata({ params }: { params: Promise<{ category:
       description: item.frontmatter.summary,
       type: "article",
       url: `${SITE_CONFIG.url}/portfolio/${category}/${slug}`,
-      images: [
-        {
-          url: item.frontmatter.images?.[0] || "/og/default.png",
-          width: 1200,
-          height: 630,
-          alt: item.frontmatter.title,
-        },
-      ],
+      images: item.frontmatter.images?.[0]
+        ? [
+            {
+              url: item.frontmatter.images[0],
+              width: 1200,
+              height: 630,
+              alt: item.frontmatter.title,
+            },
+          ]
+        : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: item.frontmatter.title,
       description: item.frontmatter.summary,
-      images: [item.frontmatter.images?.[0] || "/og/default.png"],
+      images: item.frontmatter.images?.[0]
+        ? [item.frontmatter.images[0]]
+        : undefined,
     },
   };
 }

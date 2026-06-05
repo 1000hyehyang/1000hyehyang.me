@@ -1,39 +1,78 @@
+import type { MetadataRoute } from "next";
 import { getAllPortfolio } from "@/lib/mdx";
 import { getAllBlogPosts, getPinnedPosts } from "@/lib/github";
 import { SITE_CONFIG } from "@/lib/config";
 
-export default async function sitemap() {
+function toIso(value: string | Date): string {
+  return new Date(value).toISOString();
+}
+
+function maxDate(...values: (string | Date)[]): Date {
+  return values.reduce<Date>((latest, value) => {
+    const current = new Date(value);
+    return current > latest ? current : latest;
+  }, new Date(0));
+}
+
+function getPortfolioDate(period: string): Date {
+  const start = period.split(" - ")[0]?.trim();
+  const parsed = new Date(start);
+  return Number.isNaN(parsed.getTime()) ? new Date(0) : parsed;
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_CONFIG.url;
   const portfolios = getAllPortfolio();
   const [blogPosts, pinnedPosts] = await Promise.all([
     getAllBlogPosts(),
-    getPinnedPosts()
+    getPinnedPosts(),
   ]);
 
-  const urls = [
-    { url: `${baseUrl}/`, lastModified: new Date().toISOString() },
-    { url: `${baseUrl}/blog`, lastModified: new Date().toISOString() },
-    { url: `${baseUrl}/portfolio`, lastModified: new Date().toISOString() },
-    { url: `${baseUrl}/about`, lastModified: new Date().toISOString() },
-    { url: `${baseUrl}/game`, lastModified: new Date().toISOString() },
-    { url: `${baseUrl}/game/orange-game`, lastModified: new Date().toISOString() },
-    { url: `${baseUrl}/game/tangerine-master`, lastModified: new Date().toISOString() },
-    // 포트폴리오 페이지들
-    ...portfolios.map(p => ({
-      url: `${baseUrl}/portfolio/${p.category}/${p.slug}`,
-      lastModified: new Date().toISOString(),
-    })),
-    // 일반 블로그 포스트들
-    ...blogPosts.map(post => ({
-      url: `${baseUrl}/blog/${post.slug}`,
-      lastModified: new Date(post.updatedAt || post.date).toISOString(),
-    })),
-    // 고정 글들
-    ...pinnedPosts.map(post => ({
-      url: `${baseUrl}/blog/${post.slug}`,
-      lastModified: new Date(post.date).toISOString(),
-    })),
+  const blogUrlMap = new Map<string, string>();
+
+  const registerBlogPost = (slug: string, date: string, updatedAt?: string) => {
+    const url = `${baseUrl}/blog/${slug}`;
+    const candidate = toIso(updatedAt || date);
+    const existing = blogUrlMap.get(url);
+    if (!existing || new Date(candidate) > new Date(existing)) {
+      blogUrlMap.set(url, candidate);
+    }
+  };
+
+  blogPosts.forEach((post) =>
+    registerBlogPost(post.slug, post.date, post.updatedAt)
+  );
+  pinnedPosts.forEach((post) =>
+    registerBlogPost(post.slug, post.date, post.updatedAt)
+  );
+
+  const blogDates = blogPosts.map((post) => post.updatedAt || post.date);
+  const portfolioDates = portfolios.map((project) => getPortfolioDate(project.period));
+  const latestContentUpdate = maxDate(...blogDates, ...portfolioDates);
+
+  const listPageLastModified =
+    latestContentUpdate.getTime() > 0
+      ? toIso(latestContentUpdate)
+      : toIso(new Date());
+
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/`, lastModified: listPageLastModified },
+    { url: `${baseUrl}/blog`, lastModified: listPageLastModified },
+    { url: `${baseUrl}/portfolio`, lastModified: listPageLastModified },
+    { url: `${baseUrl}/about`, lastModified: listPageLastModified },
+    { url: `${baseUrl}/game`, lastModified: listPageLastModified },
+    { url: `${baseUrl}/game/orange-game`, lastModified: listPageLastModified },
+    { url: `${baseUrl}/game/tangerine-master`, lastModified: listPageLastModified },
   ];
 
-  return urls;
-} 
+  const portfolioPages: MetadataRoute.Sitemap = portfolios.map((project) => ({
+    url: `${baseUrl}/portfolio/${project.category}/${project.slug}`,
+    lastModified: toIso(getPortfolioDate(project.period)),
+  }));
+
+  const blogPages: MetadataRoute.Sitemap = Array.from(blogUrlMap.entries()).map(
+    ([url, lastModified]) => ({ url, lastModified })
+  );
+
+  return [...staticPages, ...portfolioPages, ...blogPages];
+}

@@ -29,14 +29,6 @@ export const metadata: Metadata = {
     description: SITE_CONFIG.description,
     url: SITE_CONFIG.url,
     siteName: SITE_CONFIG.name,
-    images: [
-      {
-        url: "/og/default.png",
-        width: 1200,
-        height: 630,
-        alt: `${SITE_CONFIG.name} OG 이미지`
-      }
-    ],
     locale: "ko_KR",
     type: "website"
   },
@@ -44,7 +36,6 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: SITE_CONFIG.name,
     description: SITE_CONFIG.description,
-    images: ["/og/default.png"]
   }
 };
 
@@ -73,7 +64,7 @@ export default function RootLayout({
               "description": SITE_CONFIG.description,
               "potentialAction": {
                 "@type": "SearchAction",
-                "target": `${SITE_CONFIG.url}/blog?search={search_term_string}`,
+                "target": `${SITE_CONFIG.url}/blog?q={search_term_string}`,
                 "query-input": "required name=search_term_string"
               }
             })
