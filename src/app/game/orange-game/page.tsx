@@ -1,5 +1,9 @@
-import { TangerineGame } from "@/components/game/TangerineGame";
+import dynamic from "next/dynamic";
 import type { Metadata } from "next";
+
+const TangerineGame = dynamic(() =>
+  import("@/components/game/TangerineGame").then((mod) => mod.TangerineGame)
+);
 
 export const metadata: Metadata = {
   title: "천혜향 게임",
@@ -11,4 +15,4 @@ export const metadata: Metadata = {
 
 export default function OrangeGamePage() {
   return <TangerineGame />;
-} 
+}

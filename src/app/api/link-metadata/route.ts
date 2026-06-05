@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchLinkMetadata } from "@/lib/link-metadata/server";
+import { isBlockedFetchUrl } from "@/lib/url-validation";
 
 export const preferredRegion = "icn1";
 
@@ -15,7 +16,13 @@ function validateRequestUrl(raw: string | null): string | NextResponse {
         { status: 400 }
       );
     }
-    return raw;
+    if (isBlockedFetchUrl(parsed)) {
+      return NextResponse.json(
+        { error: "허용되지 않는 URL입니다." },
+        { status: 400 }
+      );
+    }
+    return parsed.toString();
   } catch {
     return NextResponse.json({ error: "유효하지 않은 URL입니다." }, { status: 400 });
   }

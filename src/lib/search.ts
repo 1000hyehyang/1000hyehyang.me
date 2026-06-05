@@ -1,3 +1,4 @@
+import { escapeHtml } from "@/lib/html-utils";
 import { BlogFrontmatter } from "@/types";
 
 export function debounce<T extends (...args: never[]) => void>(
@@ -73,8 +74,18 @@ export const searchBlogPosts = (posts: BlogFrontmatter[], query: string): Search
 export const highlightSearchTerm = (text: string, query: string): string => {
   if (!query.trim()) return text;
 
-  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
-  return text.replace(regex, '<mark class="bg-orange-200 px-0.5 rounded">$1</mark>');
+  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${escapedQuery})`, "gi");
+  const parts = text.split(regex);
+
+  return parts
+    .map((part, index) => {
+      const escapedPart = escapeHtml(part);
+      return index % 2 === 1
+        ? `<mark class="bg-orange-200 px-0.5 rounded">${escapedPart}</mark>`
+        : escapedPart;
+    })
+    .join("");
 };
 
 export const getSearchResultCount = (results: SearchResult[], query: string): string => {

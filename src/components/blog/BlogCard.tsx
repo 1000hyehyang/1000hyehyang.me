@@ -3,7 +3,6 @@
 import { BlogCardProps } from "@/types";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { handleKeyDown } from "@/lib/utils";
 import { highlightSearchTerm } from "@/lib/search";
 
 interface BlogCardWithHighlightProps extends BlogCardProps {
@@ -11,10 +10,6 @@ interface BlogCardWithHighlightProps extends BlogCardProps {
 }
 
 export const BlogCard = ({ title, date, category, tags, summary, slug, variants, searchQuery }: BlogCardWithHighlightProps) => {
-  const handleClick = () => {
-    // 클릭 핸들러 로직이 필요한 경우 여기에 추가
-  };
-
   return (
     <motion.article
       initial="hidden"
@@ -27,7 +22,6 @@ export const BlogCard = ({ title, date, category, tags, summary, slug, variants,
         tabIndex={0} 
         aria-label={`${title} 상세 보기`} 
         className="flex flex-col h-full p-6 focus:outline-none"
-        onKeyDown={(e) => handleKeyDown(e, handleClick)}
       >
         <div className="flex-1 flex flex-col">
           <div className="text-xs text-muted-foreground mb-3 flex gap-2 items-center">

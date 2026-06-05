@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import type { LinkMetadata } from "./types";
+import { isBlockedFetchUrl } from "@/lib/url-validation";
 
 function absolutize(base: string, maybeRelative?: string | null): string | undefined {
   if (!maybeRelative) return undefined;
@@ -140,6 +141,9 @@ function fallbackMetadata(url: string): LinkMetadata {
 export async function fetchLinkMetadata(url: string): Promise<LinkMetadata> {
   try {
     const target = new URL(url);
+    if (isBlockedFetchUrl(target)) {
+      return fallbackMetadata(url);
+    }
     const origin = `${target.protocol}//${target.host}`;
 
     const html = await fetchHTML(target.toString());

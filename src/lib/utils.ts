@@ -73,27 +73,3 @@ export const logger = {
     console.info(message, data);
   },
 };
-
-export const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-};
-
-export const truncateText = (text: string, maxLength: number): string => {
-  if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + "...";
-};
-
-export const filterByCategory = <T extends { category: string }>(
-  items: T[],
-  selectedCategory: string
-): T[] => {
-  if (selectedCategory === "ALL") {
-    return items;
-  }
-  return items.filter((item) => item.category === selectedCategory);
-};

@@ -5,13 +5,9 @@ const validateRequiredEnv = (name: string, value: string | undefined): string =>
   return value;
 };
 
-export const GITHUB_CONFIG = {
-  token: process.env.GITHUB_TOKEN,
-  repoOwner: process.env.GITHUB_REPO_OWNER || "",
-  repoName: process.env.GITHUB_REPO_NAME || "",
-  author: process.env.GITHUB_AUTHOR || "",
-  discussionCategory: process.env.GITHUB_DISCUSSION_CATEGORY || "",
-  userId: process.env.NEXT_PUBLIC_GITHUB_USER_ID || "",
+/** 클라이언트 컴포넌트에서 안전하게 사용할 수 있는 공개 설정 */
+export const PUBLIC_CONFIG = {
+  githubUserId: process.env.NEXT_PUBLIC_GITHUB_USER_ID || "",
 } as const;
 
 export const SITE_CONFIG = {

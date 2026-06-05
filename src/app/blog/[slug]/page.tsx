@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getBlogPostBySlug, getPinnedPostBySlug, getAllBlogPosts, getPinnedPosts } from "@/lib/github";
 import { BlogDetail } from "@/components/blog/BlogDetail";
 import { notFound } from "next/navigation";
@@ -27,9 +28,9 @@ export async function generateStaticParams() {
   }
 }
 
-async function getPostBySlug(slug: string) {
+const getPostBySlug = cache(async (slug: string) => {
   return (await getBlogPostBySlug(slug)) ?? (await getPinnedPostBySlug(slug));
-}
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;

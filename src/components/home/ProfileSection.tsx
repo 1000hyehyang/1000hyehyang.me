@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { GITHUB_CONFIG } from "@/lib/config";
+import { PUBLIC_CONFIG } from "@/lib/config";
 import { motion } from "framer-motion";
 import { itemVariants } from "@/lib/animations";
 import { useState } from "react";
@@ -9,7 +9,7 @@ import { useState } from "react";
 export const ProfileSection = () => {
   const [isHovered, setIsHovered] = useState(false);
   
-  const avatarUrl = `https://avatars.githubusercontent.com/u/${GITHUB_CONFIG.userId}?v=4`;
+  const avatarUrl = `https://avatars.githubusercontent.com/u/${PUBLIC_CONFIG.githubUserId}?v=4`;
   const hoverAvatarUrl = "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/1000hyehyang%20%EC%A6%9D%EB%AA%85%EC%82%AC%EC%A7%84.png";
 
   return (

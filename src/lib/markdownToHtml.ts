@@ -5,6 +5,7 @@ import remarkRehype from "remark-rehype";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
+import { escapeHtmlAttribute } from "@/lib/html-utils";
 
 export async function markdownToHtml(markdown: string): Promise<string> {
   const file = await unified()
@@ -88,7 +89,7 @@ export async function markdownToHtml(markdown: string): Promise<string> {
   html = html.replace(
     /<a\s+([^>]*?)href=["'](https?:\/\/[^"']+)["']([^>]*?)>([^<]*?)<\/a>/gi,
     (_match, _beforeHref, url, _afterHref, linkText) =>
-      `<div class="link-preview-wrapper" data-url="${url}" data-link-text="${linkText}"></div>`
+      `<div class="link-preview-wrapper" data-url="${escapeHtmlAttribute(url)}" data-link-text="${escapeHtmlAttribute(linkText)}"></div>`
   );
 
   return html;

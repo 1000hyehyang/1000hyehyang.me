@@ -1,9 +1,17 @@
-import { getPortfolioBySlug } from "@/lib/mdx";
+import { getPortfolioBySlug, getAllPortfolio } from "@/lib/mdx";
 import { PortfolioDetail } from "@/components/portfolio/PortfolioDetail";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SITE_CONFIG } from "@/lib/config";
 import { markdownToHtml } from "@/lib/markdownToHtml";
+
+export async function generateStaticParams() {
+  const projects = getAllPortfolio();
+  return projects.map((project) => ({
+    category: project.category,
+    slug: project.slug,
+  }));
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ category: string; slug: string }> }): Promise<Metadata> {
   const { category, slug } = await params;
