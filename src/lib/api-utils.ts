@@ -1,6 +1,20 @@
 import { headers } from "next/headers";
 import { Redis } from "@upstash/redis";
 
+export type GameId = "tangerine" | "master";
+
+export const LEADERBOARD_KEYS: Record<GameId, string> = {
+  tangerine: "tangerine_leaderboard",
+  master: "tangerine_master_leaderboard",
+};
+
+export const LEADERBOARD_MAX_ENTRIES = 100;
+export const LEADERBOARD_DISPLAY_COUNT = 5;
+export const SESSION_TTL_SECONDS = 600;
+export const SESSION_MAX_AGE_MS = 600_000;
+export const RATE_LIMIT_MAX_SUBMISSIONS = 10;
+export const RATE_LIMIT_WINDOW_SECONDS = 3600;
+
 export const getRedisClient = () => {
   return process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
     ? new Redis({
@@ -9,6 +23,12 @@ export const getRedisClient = () => {
       })
     : null;
 };
+
+export const getSessionKey = (gameId: GameId, sessionId: string): string =>
+  `session:${gameId}:${sessionId}`;
+
+export const getRateLimitKey = (gameId: GameId, ip: string): string =>
+  `ratelimit:${gameId}:${ip}`;
 
 export const getClientIP = async (): Promise<string> => {
   const headersList = await headers();
@@ -22,6 +42,11 @@ export const getClientIP = async (): Promise<string> => {
   return "localhost";
 };
 
+import { generateDefaultPlayerName } from "@/lib/nanangi-player-names";
+
+export const getDefaultPlayerName = (_ip: string): string =>
+  generateDefaultPlayerName();
+
 export const sanitizeInput = (input: string): string => {
   return input
     .replace(/[<>]/g, "")
@@ -32,34 +57,55 @@ export const sanitizeInput = (input: string): string => {
 };
 
 export const validateTangerineScore = (score: number): boolean => {
-  return Number.isInteger(score) && score >= 0 && score <= 50000;
+  return Number.isInteger(score) && score > 0 && score <= 50000;
 };
 
 export const validateMasterScore = (score: number): boolean => {
-  return Number.isInteger(score) && score >= 0 && score <= 3600;
+  return Number.isInteger(score) && score > 0 && score <= 3600;
 };
 
-export const validatePlayerName = (name: string): boolean => {
-  const validPattern = /^[가-힣a-zA-Z0-9\s]{1,20}$/;
-  return validPattern.test(name);
-};
-
-export const validateGameSession = async (sessionId: string, ip: string): Promise<boolean> => {
+export const validateGameSession = async (
+  gameId: GameId,
+  sessionId: string,
+  ip: string
+): Promise<boolean> => {
   const redis = getRedisClient();
   if (!redis || !sessionId) return false;
 
   try {
-    const session = await redis.get(`session:${sessionId}`);
+    const session = await redis.get(getSessionKey(gameId, sessionId));
     if (!session) return false;
 
     const sessionData = session as { ip: string; createdAt: number; isValid: boolean };
     const timeDiff = Date.now() - sessionData.createdAt;
 
-    return sessionData.isValid && sessionData.ip === ip && timeDiff < 600000;
+    return sessionData.isValid && sessionData.ip === ip && timeDiff < SESSION_MAX_AGE_MS;
   } catch (error) {
     console.error("게임 세션 검증 실패:", error);
     return false;
   }
+};
+
+export const invalidateGameSession = async (
+  gameId: GameId,
+  sessionId: string
+): Promise<void> => {
+  const redis = getRedisClient();
+  if (!redis) return;
+  await redis.del(getSessionKey(gameId, sessionId));
+};
+
+export const checkAndIncrementRateLimit = async (
+  redis: Redis,
+  gameId: GameId,
+  ip: string
+): Promise<boolean> => {
+  const key = getRateLimitKey(gameId, ip);
+  const count = await redis.incr(key);
+  if (count === 1) {
+    await redis.expire(key, RATE_LIMIT_WINDOW_SECONDS);
+  }
+  return count <= RATE_LIMIT_MAX_SUBMISSIONS;
 };
 
 export const validateTangerineGameState = (gameState: Record<string, unknown>): boolean => {
@@ -70,14 +116,22 @@ export const validateTangerineGameState = (gameState: Record<string, unknown>): 
     if (!(field in gameState)) return false;
   }
 
+  if (gameState.isPlaying !== false) return false;
+
   const score = gameState.score as number;
-  if (score <= 0 || score > 50000) return false;
+  if (!Number.isInteger(score) || score <= 0 || score > 50000) return false;
 
   const timeLeft = gameState.timeLeft as number;
-  if (typeof timeLeft !== "number" || timeLeft < 0 || timeLeft > 60) return false;
+  if (!Number.isInteger(timeLeft) || timeLeft < 0 || timeLeft > 60) return false;
 
   const tangerines = gameState.tangerines as unknown[];
-  if (!Array.isArray(tangerines) || tangerines.length > 200) return false;
+  if (!Array.isArray(tangerines) || tangerines.length === 0 || tangerines.length > 20) {
+    return false;
+  }
+
+  for (const row of tangerines) {
+    if (!Array.isArray(row) || row.length === 0 || row.length > 20) return false;
+  }
 
   return true;
 };
@@ -90,8 +144,12 @@ export const validateMasterGameState = (gameState: Record<string, unknown>): boo
     if (!(field in gameState)) return false;
   }
 
+  if (gameState.isPlaying !== false) return false;
+
   const survivalTime = gameState.survivalTime as number;
-  if (survivalTime <= 0 || survivalTime > 3600) return false;
+  if (typeof survivalTime !== "number" || survivalTime <= 0 || survivalTime > 3600) {
+    return false;
+  }
 
   const player = gameState.player as Record<string, unknown>;
   if (!player || typeof (player.x as number) !== "number" || typeof (player.y as number) !== "number") {
@@ -110,11 +168,51 @@ export const validateMasterGameState = (gameState: Record<string, unknown>): boo
   }
 
   const tangerines = gameState.tangerines as unknown[];
-  if (!Array.isArray(tangerines)) return false;
-
-  if (tangerines.length > 100) return false;
+  if (!Array.isArray(tangerines) || tangerines.length > 100) return false;
 
   return true;
+};
+
+export const addToLeaderboard = async (
+  redis: Redis,
+  leaderboardKey: string,
+  score: number,
+  memberData: { playerName: string; timestamp: string }
+): Promise<string> => {
+  const member = JSON.stringify(memberData);
+
+  await redis.zadd(leaderboardKey, { score, member });
+  await redis.zremrangebyrank(leaderboardKey, 0, -(LEADERBOARD_MAX_ENTRIES + 1));
+
+  return member;
+};
+
+export const getLeaderboardRank = async (
+  redis: Redis,
+  leaderboardKey: string,
+  member: string
+): Promise<number | null> => {
+  const rank = await redis.zrevrank(leaderboardKey, member);
+  if (rank === null || rank === undefined) return null;
+  return rank + 1;
+};
+
+/** 등록 전 점수 기준 예상 순위 (더 높은 점수 개수 + 1) */
+export const getRankForScore = async (
+  redis: Redis,
+  leaderboardKey: string,
+  score: number
+): Promise<number> => {
+  const higherCount = await redis.zcount(leaderboardKey, score + 1, "+inf");
+  return higherCount + 1;
+};
+
+export const getTopLeaderboard = async (redis: Redis, leaderboardKey: string) => {
+  const results = await redis.zrange(leaderboardKey, 0, LEADERBOARD_DISPLAY_COUNT - 1, {
+    rev: true,
+    withScores: true,
+  });
+  return parseLeaderboardData(results);
 };
 
 export const parseLeaderboardData = (

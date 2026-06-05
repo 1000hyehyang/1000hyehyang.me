@@ -4,6 +4,19 @@ export interface GameLeaderboardEntry {
   playerName?: string;
 }
 
+export type SaveScoreResult = {
+  success: boolean;
+  rank?: number;
+  inHallOfFame?: boolean;
+};
+
+export function formatGameOverRankMessage(rank: number, inHallOfFame: boolean): string {
+  if (inHallOfFame) {
+    return `명예의 전당 ${rank}위`;
+  }
+  return `전체 ${rank}위`;
+}
+
 const XSS_PATTERN = /[<>]/g;
 const JS_PROTOCOL = /javascript:/gi;
 const EVENT_HANDLER = /on\w+=/gi;
