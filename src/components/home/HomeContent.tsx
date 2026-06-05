@@ -7,7 +7,6 @@ import { ProfileSection } from "./ProfileSection";
 import { IntroSection } from "./IntroSection";
 import { ContactSection } from "./ContactSection";
 import { VisitorCounter } from "./VisitorCounter";
-import { DevelopmentPrinciplesSection } from "./DevelopmentPrinciplesSection";
 import { TechStackSection } from "./TechStackSection";
 
 export const HomeContent = () => {
@@ -26,7 +25,6 @@ export const HomeContent = () => {
         <VisitorCounter />
         <ProfileSection />
         <IntroSection />
-        <DevelopmentPrinciplesSection />
         <TechStackSection />
         <ContactSection />
       </main>
