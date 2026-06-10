@@ -7,7 +7,7 @@ import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { useBlogListUrlState } from "@/hooks/useBlogListUrlState";
 import { listVariants, cardVariants } from "@/lib/animations";
 import { searchBlogPosts, getSearchResultCount, debounce } from "@/lib/search";
-import { PINNED_POSTS_CONFIG } from "@/lib/github";
+import { PINNED_POSTS_CONFIG } from "@/lib/blog-config";
 import { Pin, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import {

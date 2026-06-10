@@ -389,6 +389,22 @@ export function useTangerineMasterGame(): GameState {
   const hitWaveCooldownUntilRef = useRef(0);
   const spawnWarningsRef = useRef<SpawnWarning[]>([]);
   const hitWaveRef = useRef<HitWaveState | null>(null);
+  const isPlayingRef = useRef(false);
+  const isPausedRef = useRef(false);
+  const playerRef = useRef(player);
+  const lastDisplayedSecondRef = useRef(-1);
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
+
+  useEffect(() => {
+    playerRef.current = player;
+  }, [player]);
 
   useEffect(() => {
     spawnWarningsRef.current = spawnWarnings;
@@ -413,6 +429,7 @@ export function useTangerineMasterGame(): GameState {
     });
     setDifficulty(0);
     survivalTimeRef.current = 0;
+    lastDisplayedSecondRef.current = -1;
     hitWavesTriggeredRef.current.clear();
     hitWaveCooldownUntilRef.current = 0;
     lastSpawnTime.current = 0;
@@ -429,12 +446,18 @@ export function useTangerineMasterGame(): GameState {
   }, []);
 
   const endGame = useCallback(() => {
+    if (!isPlayingRef.current) return;
+
+    isPlayingRef.current = false;
     setIsPlaying(false);
     setIsPaused(false);
-    if (survivalTime > highScore) {
-      setHighScore(survivalTime);
+
+    const finalTime = survivalTimeRef.current;
+    setSurvivalTime(finalTime);
+    if (finalTime > highScore) {
+      setHighScore(finalTime);
     }
-  }, [survivalTime, highScore]);
+  }, [highScore]);
 
   const resetGame = useCallback(() => {
     setIsPlaying(false);
@@ -451,34 +474,41 @@ export function useTangerineMasterGame(): GameState {
     });
     setDifficulty(0);
     survivalTimeRef.current = 0;
+    lastDisplayedSecondRef.current = -1;
     hitWavesTriggeredRef.current.clear();
     hitWaveCooldownUntilRef.current = 0;
     lastSpawnTime.current = 0;
   }, []);
 
   const movePlayer = useCallback((dx: number, dy: number) => {
-    if (!isPlaying || isPaused) return;
+    if (!isPlayingRef.current || isPausedRef.current) return;
     
     setPlayer(prev => {
       const newX = Math.max(prev.size / 2, Math.min(gameArea.width - prev.size / 2, prev.x + dx));
       const newY = Math.max(prev.size / 2, Math.min(gameArea.height - prev.size / 2, prev.y + dy));
-      return { ...prev, x: newX, y: newY };
+      const next = { ...prev, x: newX, y: newY };
+      playerRef.current = next;
+      return next;
     });
-  }, [isPlaying, isPaused, gameArea.width, gameArea.height]);
+  }, [gameArea.width, gameArea.height]);
 
   const updateGame = useCallback(() => {
-    if (!isPlaying || isPaused) return;
+    if (!isPlayingRef.current || isPausedRef.current) return;
 
     const now = Date.now();
     const deltaTime = now - lastUpdateTime.current;
     lastUpdateTime.current = now;
 
-    let activeDifficulty = difficulty;
     const newSurvivalTime = survivalTimeRef.current + deltaTime / 1000;
     survivalTimeRef.current = newSurvivalTime;
-    activeDifficulty = Math.floor(newSurvivalTime / 5);
-    setSurvivalTime(newSurvivalTime);
-    setDifficulty(activeDifficulty);
+    const activeDifficulty = Math.floor(newSurvivalTime / 5);
+
+    const displayedSecond = Math.floor(newSurvivalTime);
+    if (displayedSecond !== lastDisplayedSecondRef.current) {
+      lastDisplayedSecondRef.current = displayedSecond;
+      setSurvivalTime(newSurvivalTime);
+      setDifficulty(activeDifficulty);
+    }
 
     if (hitWaveRef.current && now >= hitWaveRef.current.endsAt) {
       setHitWave(null);
@@ -566,14 +596,14 @@ export function useTangerineMasterGame(): GameState {
         );
 
       updated.forEach((tangerine) => {
-        if (checkCollision(player, tangerine)) {
+        if (checkCollision(playerRef.current, tangerine)) {
           endGame();
         }
       });
 
       return updated;
     });
-  }, [isPlaying, isPaused, difficulty, gameArea, player, endGame]);
+  }, [gameArea, endGame]);
 
   const setHighScoreFromStorage = useCallback((score: number) => {
     setHighScore(score);
@@ -584,13 +614,13 @@ export function useTangerineMasterGame(): GameState {
     let animationId: number;
 
     const gameLoop = () => {
-      if (isPlaying && !isPaused) {
+      if (isPlayingRef.current && !isPausedRef.current) {
         updateGame();
         animationId = requestAnimationFrame(gameLoop);
       }
     };
 
-    if (isPlaying && !isPaused) {
+    if (isPlayingRef.current && !isPausedRef.current) {
       animationId = requestAnimationFrame(gameLoop);
     }
 
@@ -604,21 +634,15 @@ export function useTangerineMasterGame(): GameState {
   // 키보드 이벤트 (부드러운 대각선 이동 지원)
   useEffect(() => {
     const pressedKeys = new Set<string>();
-    const moveSpeed = 4; // 이동 속도 줄임
+    const moveSpeed = 4;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      // 게임 관련 키들에 대해 기본 동작 방지
       const gameKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'W', 'a', 'A', 's', 'S', 'd', 'D'];
       if (gameKeys.includes(event.key)) {
         event.preventDefault();
       }
 
-      // 게임이 진행 중이고 일시정지가 아닐 때만 이동 키 처리
-      // 게임 오버 상태에서도 키 입력을 처리하되, 실제 이동은 게임이 진행 중일 때만
-      if (isPlaying && !isPaused) {
-        pressedKeys.add(event.key);
-      } else {
-        // 게임 오버 상태에서도 키 입력을 기록 (다시 게임 시작할 때를 위해)
+      if (isPlayingRef.current && !isPausedRef.current) {
         pressedKeys.add(event.key);
       }
     };
@@ -627,9 +651,8 @@ export function useTangerineMasterGame(): GameState {
       pressedKeys.delete(event.key);
     };
 
-    // 부드러운 이동을 위한 게임 루프
     const moveLoop = () => {
-      if (isPlaying && !isPaused) {
+      if (isPlayingRef.current && !isPausedRef.current) {
         let dx = 0;
         let dy = 0;
 
@@ -646,7 +669,6 @@ export function useTangerineMasterGame(): GameState {
           dx += moveSpeed;
         }
 
-        // 대각선 이동 시 속도 정규화
         if (dx !== 0 && dy !== 0) {
           const diagonalSpeed = moveSpeed / Math.sqrt(2);
           dx = dx > 0 ? diagonalSpeed : -diagonalSpeed;
@@ -659,14 +681,13 @@ export function useTangerineMasterGame(): GameState {
       }
     };
 
-    // 부드러운 이동을 위한 requestAnimationFrame
     let animationId: number;
     const smoothMoveLoop = () => {
       moveLoop();
       animationId = requestAnimationFrame(smoothMoveLoop);
     };
 
-    if (isPlaying && !isPaused) {
+    if (isPlayingRef.current && !isPausedRef.current) {
       smoothMoveLoop();
     }
 
@@ -676,6 +697,7 @@ export function useTangerineMasterGame(): GameState {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      pressedKeys.clear();
       if (animationId) {
         cancelAnimationFrame(animationId);
       }
@@ -706,20 +728,23 @@ export function useTangerineMasterGame(): GameState {
 
 export function useSyncHighScoreWithLocalStorage() {
   const [highScore, setHighScore] = useState(0);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const saved = safeLocalStorage.getNumber('tangerine_master_high_score');
     if (saved > 0) {
       setHighScore(saved);
     }
+    setIsReady(true);
   }, []);
 
   const updateHighScore = useCallback((score: number) => {
-    if (score > highScore) {
-      setHighScore(score);
-      safeLocalStorage.setNumber('tangerine_master_high_score', score);
+    const flooredScore = Math.floor(score);
+    if (flooredScore > highScore) {
+      setHighScore(flooredScore);
+      safeLocalStorage.setNumber('tangerine_master_high_score', flooredScore);
     }
   }, [highScore]);
 
-  return { highScore, updateHighScore };
+  return { highScore, updateHighScore, isReady };
 } 

@@ -1,7 +1,12 @@
+import "server-only";
+
 import { cache } from "react";
 import { BlogFrontmatter } from "@/types";
 import { getValidatedGitHubConfig } from "./config";
 import { BLOG_CATEGORIES } from "./data";
+import { PINNED_POSTS_CONFIG } from "./blog-config";
+
+export { PINNED_POSTS_CONFIG };
 
 interface GitHubDiscussion {
   id: string;
@@ -45,15 +50,6 @@ const separateCategoryAndTags = (labels: string[]) => {
   const tags: string[] = [];
   return { category, tags };
 };
-
-// 고정 글 설정
-export const PINNED_POSTS_CONFIG = {
-  // 고정 글을 식별하는 라벨
-  pinnedLabel: "pinned",
-  // 고정 글 섹션 제목
-  sectionTitle: "Pinned Posts",
-} as const;
-
 // 단일 페이지 Discussion 가져오기
 const fetchDiscussionsPage = async (cursor: string | null = null): Promise<{ nodes: GitHubDiscussion[]; pageInfo: { hasNextPage: boolean; endCursor: string } }> => {
   const validatedConfig = getValidatedGitHubConfig();
@@ -283,4 +279,30 @@ export const getPinnedPostBySlug = cache(async (slug: string): Promise<{ frontma
     console.error('고정 글 조회 실패:', error);
     return null;
   }
+});
+
+export type AdjacentBlogPost = {
+  slug: string;
+  title: string;
+};
+
+export const getAdjacentBlogPosts = cache(async (slug: string) => {
+  const [posts, pinnedPosts] = await Promise.all([getAllBlogPosts(), getPinnedPosts()]);
+  const slugSet = new Set(posts.map((post) => post.slug));
+  const merged = [...posts, ...pinnedPosts.filter((post) => !slugSet.has(post.slug))];
+  const sorted = [...merged].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+  const currentIndex = sorted.findIndex((post) => post.slug === slug);
+
+  const prevPost =
+    currentIndex >= 0 && currentIndex < sorted.length - 1
+      ? { slug: sorted[currentIndex + 1].slug, title: sorted[currentIndex + 1].title }
+      : null;
+  const nextPost =
+    currentIndex > 0
+      ? { slug: sorted[currentIndex - 1].slug, title: sorted[currentIndex - 1].title }
+      : null;
+
+  return { prevPost, nextPost };
 }); 

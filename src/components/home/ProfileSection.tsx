@@ -33,7 +33,6 @@ export const ProfileSection = () => {
             height={72}
             className="rounded-full w-full h-full object-cover"
             priority
-            unoptimized
           />
         </motion.div>
         
@@ -49,7 +48,6 @@ export const ProfileSection = () => {
             width={72}
             height={72}
             className="rounded-full w-full h-full object-cover"
-            unoptimized
           />
         </motion.div>
       </div>

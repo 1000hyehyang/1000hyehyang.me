@@ -11,13 +11,15 @@ export const metadata: Metadata = {
   },
 };
 
+import { PageLoadingFallback } from "@/components/common/PageLoadingFallback";
+
 export default async function BlogListPage() {
   const [posts, pinnedPosts] = await Promise.all([
     getAllBlogPosts(),
     getPinnedPosts()
   ]);
   return (
-    <Suspense fallback={<section className="w-full min-h-[60vh]" />}>
+    <Suspense fallback={<PageLoadingFallback />}>
       <BlogList posts={posts} pinnedPosts={pinnedPosts} />
     </Suspense>
   );

@@ -6,3 +6,4 @@ export { useGameSession } from "./useGameSession";
 export { useGameOverRankPreview } from "./useGameOverRankPreview";
 export { useScoreSave } from "./useScoreSave";
 export { useGameLeaderboardRegistration } from "./useGameLeaderboardRegistration";
+export { useGameLeaderboard } from "./useGameLeaderboard";

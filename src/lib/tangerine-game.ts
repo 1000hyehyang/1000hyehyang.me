@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { safeLocalStorage, logger } from './utils';
 
 export interface Tangerine {
@@ -120,7 +120,7 @@ export const useTangerineGameStore = create<GameState>((set, get) => ({
       highScore: newHighScore,
     });
     if (typeof window !== 'undefined' && newHighScore > highScore) {
-      localStorage.setItem('tangerine_high_score', String(newHighScore));
+      safeLocalStorage.setNumber('tangerine_high_score', newHighScore);
     }
   },
 
@@ -235,8 +235,13 @@ export const useTangerineGameStore = create<GameState>((set, get) => ({
 // Custom hook to sync highScore from localStorage on client
 export function useSyncHighScoreWithLocalStorage() {
   const setHighScore = useTangerineGameStore((state) => state.setHighScore);
+  const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
     const saved = safeLocalStorage.getNumber('tangerine_high_score');
     if (saved > 0) setHighScore(saved);
+    setIsReady(true);
   }, [setHighScore]);
+
+  return { isReady };
 } 

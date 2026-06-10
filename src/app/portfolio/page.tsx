@@ -11,10 +11,12 @@ export const metadata: Metadata = {
   },
 };
 
+import { PageLoadingFallback } from "@/components/common/PageLoadingFallback";
+
 export default function PortfolioListPage() {
   const projects = getAllPortfolio();
   return (
-    <Suspense fallback={<section className="w-full min-h-[60vh]" />}>
+    <Suspense fallback={<PageLoadingFallback />}>
       <PortfolioList projects={projects} />
     </Suspense>
   );

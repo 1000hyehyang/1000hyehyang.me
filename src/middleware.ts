@@ -11,7 +11,18 @@ const GAME_API_PATHS = [
 const ALLOWED_ORIGINS = [
   "http://localhost:3000",
   "https://www.1000hyehyang.me",
-];
+  "https://1000hyehyang.me",
+] as const;
+
+const ALLOWED_HOSTS = new Set(["www.1000hyehyang.me", "1000hyehyang.me"]);
+
+const isAllowedHost = (host: string | null): boolean => {
+  if (!host) return false;
+  return host.startsWith("localhost") || ALLOWED_HOSTS.has(host);
+};
+
+const isAllowedReferer = (referer: string | null): boolean =>
+  !!referer && ALLOWED_ORIGINS.some((origin) => referer.startsWith(origin));
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -20,7 +31,7 @@ export async function middleware(request: NextRequest) {
 
   if (isGameAPI) {
     const origin = request.headers.get("origin");
-    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+    if (origin && !ALLOWED_ORIGINS.includes(origin as (typeof ALLOWED_ORIGINS)[number])) {
       return NextResponse.json(
         { error: "허용되지 않은 Origin입니다." },
         { status: 403 }
@@ -28,7 +39,9 @@ export async function middleware(request: NextRequest) {
     }
 
     const referer = request.headers.get("referer");
-    if (!referer || !ALLOWED_ORIGINS.some((allowed) => referer.startsWith(allowed))) {
+    const host = request.headers.get("host");
+
+    if (!isAllowedReferer(referer) && !isAllowedHost(host)) {
       return NextResponse.json(
         { error: "유효하지 않은 Referer입니다." },
         { status: 403 }

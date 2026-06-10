@@ -32,8 +32,6 @@ export const PortfolioCard = ({ title, period, images, summary, slug, category, 
             width={1920}
             height={1080}
             className="w-full aspect-[16/9] object-cover rounded-lg mb-3"
-            unoptimized
-            priority
           />
         )}
         <div className="flex-1 flex flex-col gap-1">

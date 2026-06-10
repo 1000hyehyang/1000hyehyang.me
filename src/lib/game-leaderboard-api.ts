@@ -1,3 +1,5 @@
+import "server-only";
+
 import { NextResponse } from "next/server";
 import {
   type GameId,
@@ -54,7 +56,7 @@ export async function handleGameLeaderboardGet(
       }
 
       if (!redis) {
-        return NextResponse.json({ rank: 1, inHallOfFame: true });
+        return NextResponse.json({ rank: null, inHallOfFame: false });
       }
 
       const rank = await getRankForScore(redis, leaderboardKey(config.gameId), score);
@@ -162,10 +164,10 @@ export async function handleGameScorePost(
       timestamp: new Date().toISOString(),
     });
 
-    await invalidateGameSession(config.gameId, gameSessionId);
-
     const rank = await getLeaderboardRank(redis, key, member);
     const leaderboard = await getTopLeaderboard(redis, key);
+
+    await invalidateGameSession(config.gameId, gameSessionId);
 
     return NextResponse.json({
       success: true,

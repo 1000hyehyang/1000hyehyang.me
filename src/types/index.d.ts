@@ -1,4 +1,6 @@
 // 블로그 관련 타입
+import type { ComponentType, ReactNode } from "react";
+
 export type BlogFrontmatter = {
   title: string;
   date: string;
@@ -34,7 +36,7 @@ export type Category = string;
 
 export type NavItem = {
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
   label: string;
 };
 
@@ -67,7 +69,7 @@ export type AdjacentPost = {
 
 export type BlogDetailProps = {
   frontmatter: BlogFrontmatter;
-  children: React.ReactNode;
+  children: ReactNode;
   /** 이전 글(더 오래된 글) */
   prevPost?: AdjacentPost | null;
   /** 다음 글(더 최신 글) */
@@ -80,5 +82,5 @@ export type PortfolioCardProps = PortfolioFrontmatter & {
 
 export type PortfolioDetailProps = {
   frontmatter: PortfolioFrontmatter;
-  children: React.ReactNode;
+  children: ReactNode;
 }; 

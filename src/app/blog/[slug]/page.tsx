@@ -1,22 +1,18 @@
 import { cache } from "react";
-import { getBlogPostBySlug, getPinnedPostBySlug, getAllBlogPosts, getPinnedPosts } from "@/lib/github";
+import { getBlogPostBySlug, getPinnedPostBySlug, getAllBlogPosts, getPinnedPosts, getAdjacentBlogPosts } from "@/lib/github";
 import { BlogDetail } from "@/components/blog/BlogDetail";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SITE_CONFIG } from "@/lib/config";
 import { markdownToHtml } from "@/lib/markdownToHtml";
 
-// 동적 라우팅을 위한 정적 경로 생성
 export async function generateStaticParams() {
   try {
-    const { getAllBlogPosts, getPinnedPosts } = await import("@/lib/github");
-    
     const [posts, pinnedPosts] = await Promise.all([
       getAllBlogPosts(),
       getPinnedPosts()
     ]);
     
-    // 일반 블로그 글과 고정 글 모두 포함
     const allPosts = [...posts, ...pinnedPosts];
     
     return allPosts.map((post) => ({
@@ -70,23 +66,11 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   const post = await getPostBySlug(slug);
   if (!post) return notFound();
 
-  // 이전/다음 글 (날짜 내림차순 기준)
-  const [posts, pinnedPosts] = await Promise.all([getAllBlogPosts(), getPinnedPosts()]);
-  const slugSet = new Set(posts.map((p) => p.slug));
-  const merged = [...posts, ...pinnedPosts.filter((p) => !slugSet.has(p.slug))];
-  const sorted = [...merged].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  const currentIndex = sorted.findIndex((p) => p.slug === slug);
-  const prevPost =
-    currentIndex >= 0 && currentIndex < sorted.length - 1
-      ? { slug: sorted[currentIndex + 1].slug, title: sorted[currentIndex + 1].title }
-      : null;
-  const nextPost =
-    currentIndex > 0 ? { slug: sorted[currentIndex - 1].slug, title: sorted[currentIndex - 1].title } : null;
+  const [{ prevPost, nextPost }, htmlContent] = await Promise.all([
+    getAdjacentBlogPosts(slug),
+    markdownToHtml(post.content),
+  ]);
 
-  // 마크다운을 HTML로 변환
-  const htmlContent = await markdownToHtml(post.content);
-
-  // 구조화된 데이터 (JSON-LD)
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -120,4 +104,4 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
       </BlogDetail>
     </>
   );
-} 
+}

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Home, PenTool, Archive, Citrus, Gamepad2 } from "lucide-react";
 import type { NavItem } from "@/types";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -27,7 +28,6 @@ function isNavItemActive(
 
 export function BottomNav() {
   const pathname = usePathname();
-  const router = useRouter();
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
 
   return (
@@ -41,9 +41,9 @@ export function BottomNav() {
         return (
           <Tooltip key={href}>
             <TooltipTrigger asChild>
-              <button
-                type="button"
-                onClick={() => router.push(href)}
+              <Link
+                href={href}
+                prefetch
                 onFocus={() => setFocusedItem(href)}
                 onBlur={() => setFocusedItem(null)}
                 className={
@@ -53,11 +53,10 @@ export function BottomNav() {
                     : "bg-white dark:bg-black text-muted-foreground border border-white dark:border-black")
                 }
                 aria-label={label}
-                tabIndex={0}
                 style={{ outline: "none" }}
               >
                 <Icon className="w-4 h-4" />
-              </button>
+              </Link>
             </TooltipTrigger>
             <TooltipContent
               side="top"

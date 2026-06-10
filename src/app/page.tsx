@@ -1,5 +1,5 @@
 import { HomeContent } from "@/components/home/HomeContent";
 
-export default async function Home() {
+export default function Home() {
   return <HomeContent />;
 }

@@ -20,7 +20,7 @@ import { GameInstructions } from "./GameInstructions";
 import { GamePageTitle } from "./GamePageTitle";
 
 export const TangerineGame = () => {
-  useSyncHighScoreWithLocalStorage();
+  const { isReady: highScoreReady } = useSyncHighScoreWithLocalStorage();
   const {
     isPlaying,
     isPaused,
@@ -31,6 +31,7 @@ export const TangerineGame = () => {
     generateNewGrid,
     highScore,
     resetGame,
+    pauseGame,
   } = useTangerineGameStore();
 
   const isPortrait = useOrientation();
@@ -44,7 +45,8 @@ export const TangerineGame = () => {
   const gameControlsRef = useRef<GameControlsRef>(null);
   const prevIsPlayingRef = useRef(false);
   const gameOverHandledRef = useRef(false);
-  const isNewRecord = score > gameOverState.originalHighScore && score > 0;
+  const isNewRecord =
+    highScoreReady && score > gameOverState.originalHighScore && score > 0;
 
   const buildGameState = useCallback(
     () => ({
@@ -80,9 +82,15 @@ export const TangerineGame = () => {
   });
 
   useEffect(() => {
+    if (isPortrait && isPlaying && !isPaused) {
+      pauseGame();
+    }
+  }, [isPortrait, isPlaying, isPaused, pauseGame]);
+
+  useEffect(() => {
     let interval: NodeJS.Timeout;
 
-    if (isPlaying && !isPaused && timeLeft > 0) {
+    if (isPlaying && !isPaused && !isPortrait && timeLeft > 0) {
       interval = setInterval(() => {
         updateTime();
       }, 1000);
@@ -93,20 +101,20 @@ export const TangerineGame = () => {
         clearInterval(interval);
       }
     };
-  }, [isPlaying, isPaused, timeLeft, updateTime]);
+  }, [isPlaying, isPaused, isPortrait, timeLeft, updateTime]);
 
   useEffect(() => {
-    generateNewGrid();
-  }, [generateNewGrid]);
-
-  useEffect(() => {
-    if (isPlaying && !prevIsPlayingRef.current) {
+    if (isPlaying && !prevIsPlayingRef.current && highScoreReady) {
       gameOverHandledRef.current = false;
       setOriginalHighScore(highScore);
       void createSession();
     }
     prevIsPlayingRef.current = isPlaying;
-  }, [isPlaying, highScore, setOriginalHighScore, createSession]);
+  }, [isPlaying, highScore, highScoreReady, setOriginalHighScore, createSession]);
+
+  useEffect(() => {
+    generateNewGrid();
+  }, [generateNewGrid]);
 
   useEffect(() => {
     if (timeLeft <= 0 && !showGameOver && !gameOverHandledRef.current) {
@@ -116,10 +124,12 @@ export const TangerineGame = () => {
   }, [timeLeft, showGameOver, setShowGameOver]);
 
   useEffect(() => {
-    if (isPlaying && !isPaused) {
-      bgMusic.play();
+    if (isPlaying && !isPaused && !isPortrait) {
+      void bgMusic.play();
+    } else {
+      bgMusic.pause();
     }
-  }, [isPlaying, isPaused, bgMusic]);
+  }, [isPlaying, isPaused, isPortrait, bgMusic.play, bgMusic.pause]);
 
   const handleTangerineClick = (tangerine: Tangerine) => {
     if (isPlaying && !isPaused) {

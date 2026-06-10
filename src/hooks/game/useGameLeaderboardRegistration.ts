@@ -7,6 +7,9 @@ import type { useGameOver } from "./useGameOver";
 
 type GameOverState = ReturnType<typeof useGameOver>;
 
+const SESSION_INVALID_ERROR =
+  "게임 세션이 유효하지 않습니다. 게임을 다시 시작해주세요.";
+
 type UseGameLeaderboardRegistrationOptions = {
   apiUrl: string;
   sessionUrl: string;
@@ -41,15 +44,19 @@ export const useGameLeaderboardRegistration = ({
 
   const handleSaveScore = useCallback(
     async (name: string, options?: { allowResave?: boolean }) => {
-      let sessionId = getSessionId();
+      const ensureSessionId = async (): Promise<string | null> => {
+        const sessionId = getSessionId();
+        if (sessionId) return sessionId;
 
-      if (!sessionId) {
         const created = await createSession();
-        if (!created) return { success: false as const };
-        sessionId = getSessionId();
-      }
+        if (!created) return null;
+        return getSessionId();
+      };
 
-      const result = await saveScore(
+      let sessionId = await ensureSessionId();
+      if (!sessionId) return { success: false as const };
+
+      let result = await saveScore(
         score,
         name,
         buildGameState(),
@@ -57,6 +64,21 @@ export const useGameLeaderboardRegistration = ({
         sessionId,
         options
       );
+
+      if (!result.success && result.error === SESSION_INVALID_ERROR) {
+        clearSession();
+        sessionId = await ensureSessionId();
+        if (sessionId) {
+          result = await saveScore(
+            score,
+            name,
+            buildGameState(),
+            apiUrl,
+            sessionId,
+            options
+          );
+        }
+      }
 
       if (result.success) {
         if (!options?.allowResave) {
@@ -96,13 +118,10 @@ export const useGameLeaderboardRegistration = ({
 
   useEffect(() => {
     if (!showGameOver || !isNewRecord) return;
-    if (!playerName) {
-      setPlayerName(generateDefaultPlayerName());
-    }
-    if (!getSessionId()) {
-      void createSession();
-    }
-  }, [showGameOver, isNewRecord, playerName, setPlayerName, getSessionId, createSession]);
+    setPlayerName(generateDefaultPlayerName());
+    clearSession();
+    void createSession();
+  }, [showGameOver, isNewRecord, setPlayerName, clearSession, createSession]);
 
   return {
     playerName,

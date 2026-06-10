@@ -1,12 +1,15 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import type { SaveScoreResult } from "@/lib/game-leaderboard";
 
 export const useScoreSave = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [hasSaved, setHasSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const isSavingRef = useRef(false);
+  const hasSavedRef = useRef(false);
 
   const resetSaveState = useCallback(() => {
+    hasSavedRef.current = false;
     setHasSaved(false);
     setSaveError(null);
   }, []);
@@ -19,14 +22,22 @@ export const useScoreSave = () => {
     gameSessionId: string | null,
     options?: { allowResave?: boolean }
   ): Promise<SaveScoreResult> => {
-    if (isSaving) return { success: false };
-    if (hasSaved && !options?.allowResave) return { success: false };
-
-    if (!gameSessionId) {
-      setSaveError("게임 세션이 없습니다. 게임을 다시 시작해주세요.");
-      return { success: false };
+    if (isSavingRef.current) {
+      return { success: false, error: "저장 중입니다." };
+    }
+    if (hasSavedRef.current && !options?.allowResave) {
+      const message = "이미 등록된 점수입니다.";
+      setSaveError(message);
+      return { success: false, error: message };
     }
 
+    if (!gameSessionId) {
+      const message = "게임 세션이 없습니다. 게임을 다시 시작해주세요.";
+      setSaveError(message);
+      return { success: false, error: message };
+    }
+
+    isSavingRef.current = true;
     setIsSaving(true);
     setSaveError(null);
 
@@ -45,6 +56,7 @@ export const useScoreSave = () => {
       const data = await response.json().catch(() => ({}));
 
       if (response.ok) {
+        hasSavedRef.current = true;
         setHasSaved(true);
         const rank = typeof (data as { rank?: unknown }).rank === "number"
           ? (data as { rank: number }).rank
@@ -57,12 +69,14 @@ export const useScoreSave = () => {
         (data as { error?: string }).error ?? "점수를 저장할 수 없습니다.";
       setSaveError(message);
       console.error("점수 저장 실패:", message);
-      return { success: false };
+      return { success: false, error: message };
     } catch (error) {
       console.error("점수 저장 중 오류:", error);
-      setSaveError("네트워크 오류가 발생했습니다.");
-      return { success: false };
+      const message = "네트워크 오류가 발생했습니다.";
+      setSaveError(message);
+      return { success: false, error: message };
     } finally {
+      isSavingRef.current = false;
       setIsSaving(false);
     }
   };

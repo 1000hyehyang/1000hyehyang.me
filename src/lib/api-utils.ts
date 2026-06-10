@@ -1,5 +1,9 @@
+import "server-only";
+
 import { headers } from "next/headers";
 import { Redis } from "@upstash/redis";
+import { generateDefaultPlayerName } from "@/lib/nanangi-player-names";
+import { sanitizeTextInput } from "@/lib/sanitize";
 
 export type GameId = "tangerine" | "master";
 
@@ -10,8 +14,8 @@ export const LEADERBOARD_KEYS: Record<GameId, string> = {
 
 export const LEADERBOARD_MAX_ENTRIES = 100;
 export const LEADERBOARD_DISPLAY_COUNT = 5;
-export const SESSION_TTL_SECONDS = 600;
-export const SESSION_MAX_AGE_MS = 600_000;
+export const SESSION_TTL_SECONDS = 3700;
+export const SESSION_MAX_AGE_MS = 3_700_000;
 export const RATE_LIMIT_MAX_SUBMISSIONS = 10;
 export const RATE_LIMIT_WINDOW_SECONDS = 3600;
 
@@ -42,19 +46,11 @@ export const getClientIP = async (): Promise<string> => {
   return "localhost";
 };
 
-import { generateDefaultPlayerName } from "@/lib/nanangi-player-names";
-
 export const getDefaultPlayerName = (_ip: string): string =>
   generateDefaultPlayerName();
 
-export const sanitizeInput = (input: string): string => {
-  return input
-    .replace(/[<>]/g, "")
-    .replace(/javascript:/gi, "")
-    .replace(/on\w+=/gi, "")
-    .trim()
-    .slice(0, 20);
-};
+export const sanitizeInput = (input: string): string =>
+  sanitizeTextInput(input, { maxLength: 20 });
 
 export const validateTangerineScore = (score: number): boolean => {
   return Number.isInteger(score) && score > 0 && score <= 50000;
@@ -77,9 +73,12 @@ export const validateGameSession = async (
     if (!session) return false;
 
     const sessionData = session as { ip: string; createdAt: number; isValid: boolean };
-    const timeDiff = Date.now() - sessionData.createdAt;
+    const createdAt = Number(sessionData.createdAt);
+    if (!Number.isFinite(createdAt)) return false;
 
-    return sessionData.isValid && sessionData.ip === ip && timeDiff < SESSION_MAX_AGE_MS;
+    const timeDiff = Date.now() - createdAt;
+
+    return sessionData.isValid !== false && sessionData.ip === ip && timeDiff < SESSION_MAX_AGE_MS;
   } catch (error) {
     console.error("게임 세션 검증 실패:", error);
     return false;

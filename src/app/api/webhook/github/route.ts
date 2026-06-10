@@ -2,19 +2,35 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import crypto from 'crypto';
 
+const verifyGithubSignature = (
+  body: string,
+  signature: string | null,
+  secret: string
+): boolean => {
+  if (!signature) return false;
+
+  const expectedSignature = `sha256=${crypto
+    .createHmac('sha256', secret)
+    .update(body)
+    .digest('hex')}`;
+
+  const expected = Buffer.from(expectedSignature);
+  const received = Buffer.from(signature);
+
+  if (expected.length !== received.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(expected, received);
+};
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text();
     const signature = request.headers.get('x-hub-signature-256');
     
-    // GitHub Webhook 시크릿 검증
     if (process.env.GITHUB_WEBHOOK_SECRET) {
-      const expectedSignature = `sha256=${crypto
-        .createHmac('sha256', process.env.GITHUB_WEBHOOK_SECRET)
-        .update(body)
-        .digest('hex')}`;
-      
-      if (signature !== expectedSignature) {
+      if (!verifyGithubSignature(body, signature, process.env.GITHUB_WEBHOOK_SECRET)) {
         return NextResponse.json(
           { error: '유효하지 않은 webhook signature입니다.' },
           { status: 403 }
@@ -24,13 +40,11 @@ export async function POST(request: NextRequest) {
     
     const payload = JSON.parse(body);
     
-    // Discussion 이벤트인지 확인
     const isDiscussionEvent = payload.action && ['created', 'edited', 'deleted'].includes(payload.action);
     const isDiscussionCommentEvent = payload.discussion && payload.action;
-    const isPushEvent = payload.ref && payload.commits; // Push 이벤트도 감지
+    const isPushEvent = payload.ref && payload.commits;
     
     if (isDiscussionEvent || isDiscussionCommentEvent || isPushEvent) {
-      // 블로그 관련 페이지들 재검증
       await Promise.all([
         revalidatePath('/blog'),
         revalidatePath('/blog/[slug]', 'page'),

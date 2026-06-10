@@ -1,3 +1,5 @@
+import { sanitizeTextInput } from "@/lib/sanitize";
+
 export interface GameLeaderboardEntry {
   score: number;
   timestamp: string;
@@ -8,6 +10,7 @@ export type SaveScoreResult = {
   success: boolean;
   rank?: number;
   inHallOfFame?: boolean;
+  error?: string;
 };
 
 export function formatGameOverRankMessage(rank: number, inHallOfFame: boolean): string {
@@ -17,23 +20,11 @@ export function formatGameOverRankMessage(rank: number, inHallOfFame: boolean): 
   return `전체 ${rank}위`;
 }
 
-const XSS_PATTERN = /[<>]/g;
-const JS_PROTOCOL = /javascript:/gi;
-const EVENT_HANDLER = /on\w+=/gi;
-
 export function sanitizeLeaderboardPlayerName(
   text: string,
   options?: { maxLength?: number }
 ): string {
-  let s = text
-    .replace(XSS_PATTERN, "")
-    .replace(JS_PROTOCOL, "")
-    .replace(EVENT_HANDLER, "")
-    .trim();
-  if (options?.maxLength != null) {
-    s = s.slice(0, options.maxLength);
-  }
-  return s;
+  return sanitizeTextInput(text, options);
 }
 
 export function formatLeaderboardDate(isoTimestamp: string): string {

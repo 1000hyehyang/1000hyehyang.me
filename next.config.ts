@@ -15,9 +15,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    esmExternals: true,
-  },
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   
   // non-www → www 리디렉션

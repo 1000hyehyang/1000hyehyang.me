@@ -33,8 +33,6 @@ const ItemComponent = ({ item, index, className = "mb-6" }: { item: TimelineItem
           style={{ objectFit: 'contain' }}
           className="w-full h-full"
           aria-hidden="true"
-          unoptimized
-          priority
         />
       </div>
       
@@ -94,8 +92,6 @@ const TimelineItemComponent = ({ item, index }: { item: TimelineItem; index: num
             style={{ objectFit: 'contain' }}
             className="rounded-xs"
             aria-hidden="true"
-            unoptimized
-            priority
           />
         </div>
         <span className="text-sm font-semibold">{item.title}</span>
@@ -188,8 +184,6 @@ const CertificationGrid = ({ items }: { items: TimelineItem[] }) => {
                   style={{ objectFit: 'contain' }}
                   className="rounded-sm"
                   aria-hidden="true"
-                  unoptimized
-                  priority
                 />
               </div>
               <div className="flex-1">

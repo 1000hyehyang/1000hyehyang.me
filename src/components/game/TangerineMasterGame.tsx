@@ -27,7 +27,7 @@ const HIT_WAVE_WARNING_FADE_MS = 900;
 export const TangerineMasterGame = () => {
   const gameState = useTangerineMasterGame();
   const { setHighScore, resetGame } = gameState;
-  const { highScore, updateHighScore } = useSyncHighScoreWithLocalStorage();
+  const { highScore, updateHighScore, isReady: highScoreReady } = useSyncHighScoreWithLocalStorage();
   const controlsRef = useRef<TangerineMasterControlsRef>(null);
 
   const isPortrait = useOrientation();
@@ -48,17 +48,18 @@ export const TangerineMasterGame = () => {
   const hitWaveWarningTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const gameOverHandledRef = useRef(false);
   const finalScore = Math.floor(gameState.survivalTime);
-  const isNewRecord = finalScore > gameOverState.originalHighScore && finalScore > 0;
+  const isNewRecord =
+    highScoreReady && finalScore > gameOverState.originalHighScore && finalScore > 0;
 
   const buildGameState = useCallback(
     () => ({
       isPlaying: false,
-      survivalTime: gameState.survivalTime,
+      survivalTime: finalScore,
       player: gameState.player,
       tangerines: gameState.tangerines,
       difficulty: gameState.difficulty,
     }),
-    [gameState.survivalTime, gameState.player, gameState.tangerines, gameState.difficulty]
+    [finalScore, gameState.player, gameState.tangerines, gameState.difficulty]
   );
 
   const {
@@ -85,12 +86,14 @@ export const TangerineMasterGame = () => {
   });
 
   const handleStartGame = () => {
+    if (!highScoreReady) return;
+
     if (!gameState.isPlaying) {
-      setOriginalHighScore(highScore);
+      setOriginalHighScore(Math.floor(highScore));
       gameState.startGame();
 
       if (!bgMusic.isMuted) {
-        bgMusic.play();
+        void bgMusic.play();
       }
     } else if (gameState.isPaused) {
       gameState.resumeGame();
@@ -100,14 +103,29 @@ export const TangerineMasterGame = () => {
   };
 
   const handleGameOver = useCallback(() => {
-    if (gameState.survivalTime > 0) {
+    const flooredTime = Math.floor(gameState.survivalTime);
+    if (flooredTime > 0) {
       setShowGameOver(true);
-      updateHighScore(gameState.survivalTime);
+      updateHighScore(flooredTime);
       if (!sfxSound.isMuted) {
-        sfxSound.play();
+        void sfxSound.play();
       }
     }
-  }, [gameState.survivalTime, updateHighScore, sfxSound, setShowGameOver]);
+  }, [gameState.survivalTime, updateHighScore, sfxSound.play, sfxSound.isMuted, setShowGameOver]);
+
+  useEffect(() => {
+    if (isPortrait && gameState.isPlaying && !gameState.isPaused) {
+      gameState.pauseGame();
+    }
+  }, [isPortrait, gameState.isPlaying, gameState.isPaused, gameState.pauseGame]);
+
+  useEffect(() => {
+    if (gameState.isPlaying && !gameState.isPaused && !isPortrait) {
+      void bgMusic.play();
+    } else {
+      bgMusic.pause();
+    }
+  }, [gameState.isPlaying, gameState.isPaused, isPortrait, bgMusic.play, bgMusic.pause]);
 
   useEffect(() => {
     if (gameState.isPlaying && !prevIsPlayingRef.current) {
@@ -135,7 +153,7 @@ export const TangerineMasterGame = () => {
 
   useEffect(() => {
     warningSound.setMuted(sfxSound.isMuted);
-  }, [sfxSound.isMuted]);
+  }, [sfxSound.isMuted, warningSound.setMuted]);
 
   useEffect(() => {
     if (!gameState.isPlaying) {
@@ -160,7 +178,7 @@ export const TangerineMasterGame = () => {
 
     warningSound.stop();
     if (!sfxSound.isMuted) {
-      warningSound.play();
+      void warningSound.play();
       hitWaveWarningTimerRef.current = setTimeout(() => {
         warningSound.fadeOut(HIT_WAVE_WARNING_FADE_MS);
         hitWaveWarningTimerRef.current = null;
@@ -173,7 +191,15 @@ export const TangerineMasterGame = () => {
         hitWaveWarningTimerRef.current = null;
       }
     };
-  }, [gameState.hitWave, gameState.isPlaying, gameState.isPaused, sfxSound.isMuted]);
+  }, [
+    gameState.hitWave,
+    gameState.isPlaying,
+    gameState.isPaused,
+    sfxSound.isMuted,
+    warningSound.stop,
+    warningSound.play,
+    warningSound.fadeOut,
+  ]);
 
   if (isPortrait) {
     return (
