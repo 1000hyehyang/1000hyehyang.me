@@ -23,10 +23,10 @@ export const IntroSection = () => {
     >
       <h1 className="text-xl font-semibold mb-6">안녕하세요, 개발자 여채현입니다.</h1>
       
-      <div className="bg-zinc-50 dark:bg-[#0d0d0d] rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800/50 min-h-[140px]">
+      <div className="min-h-[140px] overflow-hidden rounded-lg border border-terminal-border bg-terminal-surface">
         <TrafficLights />
         <TerminalContent text={displayedText} />
       </div>
     </motion.section>
   );
-}; 
+};

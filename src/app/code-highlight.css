@@ -1,7 +1,7 @@
 /* Highlight.js 테마 - GitHub 스타일 */
 .hljs {
-  color: #24292f;
-  background: #f6f8fa;
+  color: var(--syntax-foreground);
+  background: var(--syntax-background);
 }
 
 .hljs-doctag,
@@ -11,14 +11,14 @@
 .hljs-template-variable,
 .hljs-type,
 .hljs-variable.language_ {
-  color: #d73a49;
+  color: var(--syntax-keyword);
 }
 
 .hljs-title,
 .hljs-title.class_,
 .hljs-title.class_.inherited__,
 .hljs-title.function_ {
-  color: #6f42c1;
+  color: var(--syntax-title);
 }
 
 .hljs-attr,
@@ -31,70 +31,70 @@
 .hljs-selector-attr,
 .hljs-selector-class,
 .hljs-selector-id {
-  color: #005cc5;
+  color: var(--syntax-number);
 }
 
 .hljs-regexp,
 .hljs-string,
 .hljs-meta .hljs-string {
-  color: #032f62;
+  color: var(--syntax-string);
 }
 
 .hljs-built_in,
 .hljs-symbol {
-  color: #e36209;
+  color: var(--syntax-symbol);
 }
 
 .hljs-comment,
 .hljs-code,
 .hljs-formula {
-  color: #6a737d;
+  color: var(--syntax-comment);
 }
 
 .hljs-name,
 .hljs-quote,
 .hljs-selector-tag,
 .hljs-selector-pseudo {
-  color: #22863a;
+  color: var(--syntax-name);
 }
 
 .hljs-subst {
-  color: #24292f;
+  color: var(--syntax-foreground);
 }
 
 .hljs-section {
-  color: #005cc5;
+  color: var(--syntax-number);
   font-weight: bold;
 }
 
 .hljs-bullet {
-  color: #735c0f;
+  color: var(--syntax-bullet);
 }
 
 .hljs-emphasis {
-  color: #24292f;
+  color: var(--syntax-foreground);
   font-style: italic;
 }
 
 .hljs-strong {
-  color: #24292f;
+  color: var(--syntax-foreground);
   font-weight: bold;
 }
 
 .hljs-addition {
-  color: #22863a;
-  background-color: #f0fff4;
+  color: var(--syntax-addition);
+  background-color: var(--syntax-addition-background);
 }
 
 .hljs-deletion {
-  color: #b31d28;
-  background-color: #ffeef0;
+  color: var(--syntax-deletion);
+  background-color: var(--syntax-deletion-background);
 }
 
 /* 다크 모드 */
 .dark .hljs {
-  color: #e6edf3;
-  background: #0d1117;
+  color: var(--syntax-foreground);
+  background: var(--syntax-background);
 }
 
 .dark .hljs-doctag,
@@ -104,14 +104,14 @@
 .dark .hljs-template-variable,
 .dark .hljs-type,
 .dark .hljs-variable.language_ {
-  color: #ff7b72;
+  color: var(--syntax-keyword);
 }
 
 .dark .hljs-title,
 .dark .hljs-title.class_,
 .dark .hljs-title.class_.inherited__,
 .dark .hljs-title.function_ {
-  color: #d2a8ff;
+  color: var(--syntax-title);
 }
 
 .dark .hljs-attr,
@@ -124,70 +124,70 @@
 .dark .hljs-selector-attr,
 .dark .hljs-selector-class,
 .dark .hljs-selector-id {
-  color: #79c0ff;
+  color: var(--syntax-number);
 }
 
 .dark .hljs-regexp,
 .dark .hljs-string,
 .dark .hljs-meta .hljs-string {
-  color: #a5d6ff;
+  color: var(--syntax-string);
 }
 
 .dark .hljs-built_in,
 .dark .hljs-symbol {
-  color: #ffa657;
+  color: var(--syntax-symbol);
 }
 
 .dark .hljs-comment,
 .dark .hljs-code,
 .dark .hljs-formula {
-  color: #8b949e;
+  color: var(--syntax-comment);
 }
 
 .dark .hljs-name,
 .dark .hljs-quote,
 .dark .hljs-selector-tag,
 .dark .hljs-selector-pseudo {
-  color: #7ee787;
+  color: var(--syntax-name);
 }
 
 .dark .hljs-subst {
-  color: #e6edf3;
+  color: var(--syntax-foreground);
 }
 
 .dark .hljs-section {
-  color: #1f6feb;
+  color: var(--syntax-number);
   font-weight: bold;
 }
 
 .dark .hljs-bullet {
-  color: #f2cc60;
+  color: var(--syntax-bullet);
 }
 
 .dark .hljs-emphasis {
-  color: #e6edf3;
+  color: var(--syntax-foreground);
   font-style: italic;
 }
 
 .dark .hljs-strong {
-  color: #e6edf3;
+  color: var(--syntax-foreground);
   font-weight: bold;
 }
 
 .dark .hljs-addition {
-  color: #aff5b4;
-  background-color: #033a16;
+  color: var(--syntax-addition);
+  background-color: var(--syntax-addition-background);
 }
 
 .dark .hljs-deletion {
-  color: #ffdcd7;
-  background-color: #67060c;
+  color: var(--syntax-deletion);
+  background-color: var(--syntax-deletion-background);
 }
 
 /* Highlight.js 스타일 오버라이드 */
 .markdown-body .hljs {
-  background: #f3f4f6 !important; /* Tailwind zinc-100 */
-  color: #1e293b !important;      /* Tailwind slate-800 */
+  background: var(--code-block-background) !important;
+  color: var(--code-block-foreground) !important;
   border-radius: 0.5rem;
   padding: 1.1em 1.3em;
   margin: 0;
@@ -199,14 +199,14 @@
 }
 
 .dark .markdown-body .hljs {
-  background: #18181b !important; /* Tailwind zinc-900 */
-  color: #f4f4f5 !important;      /* Tailwind zinc-100 */
+  background: var(--code-block-background) !important;
+  color: var(--code-block-foreground) !important;
 }
 
 /* Highlight.js 코드 블록 래퍼 - 기존 스타일 제거 */
 .markdown-body .code-block-wrapper .hljs {
-  background: #f3f4f6 !important;
-  color: #1e293b !important;
+  background: var(--code-block-background) !important;
+  color: var(--code-block-foreground) !important;
   border-radius: 0.5rem;
   padding: 1.1em 1.3em;
   margin: 0;
@@ -218,8 +218,8 @@
 }
 
 .dark .markdown-body .code-block-wrapper .hljs {
-  background: #18181b !important;
-  color: #f4f4f5 !important;
+  background: var(--code-block-background) !important;
+  color: var(--code-block-foreground) !important;
 }
 
 /* highlight.js가 적용된 코드 블록에서 기존 pre 스타일 제거 */

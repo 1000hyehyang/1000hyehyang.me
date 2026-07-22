@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { MotionConfig } from "framer-motion";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -9,7 +10,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       defaultTheme="system"
       enableSystem
     >
-      {children}
+      <MotionConfig reducedMotion="user">{children}</MotionConfig>
     </NextThemesProvider>
   );
-}; 
+};

@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import { getRedisClient, getClientIP } from "@/lib/api-utils";
+import {
+  getVisitorClientIp,
+  getVisitorRedisClient,
+} from "@/lib/visitor-server";
 import { cookies } from "next/headers";
 import { randomUUID } from "crypto";
 
-const redis = getRedisClient();
+const redis = getVisitorRedisClient();
 
 interface VisitorsData {
   today: number;
@@ -154,7 +157,7 @@ export async function GET() {
 
 export async function POST() {
   try {
-    const clientIP = await getClientIP();
+    const clientIP = await getVisitorClientIp();
     const cookieStore = await cookies();
     
     let visitorId = cookieStore.get('visitor_id')?.value;
@@ -230,4 +233,4 @@ export async function POST() {
       { status: 500 }
     );
   }
-} 
+}

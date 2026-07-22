@@ -2,7 +2,6 @@
 
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { LinkPreview } from "@/components/common/LinkPreview";
 import { CopyCodeButton } from "@/components/common/CopyCodeButton";
 
 function decodeEncodedCode(encoded: string): string {
@@ -16,18 +15,6 @@ export function useHydrateMarkdownWidgets(container: HTMLElement | null): void {
     if (!container) return;
 
     const roots: Root[] = [];
-
-    container.querySelectorAll(".link-preview-wrapper").forEach((node) => {
-      const el = node as HTMLElement;
-      const url = el.getAttribute("data-url");
-      const linkText = el.getAttribute("data-link-text");
-      if (!url || el.hasAttribute("data-rendered")) return;
-
-      const root = createRoot(el);
-      root.render(<LinkPreview url={url}>{linkText}</LinkPreview>);
-      el.setAttribute("data-rendered", "true");
-      roots.push(root);
-    });
 
     container.querySelectorAll(".copy-code-button").forEach((node) => {
       const el = node as HTMLElement;

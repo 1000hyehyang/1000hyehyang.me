@@ -1,8 +1,12 @@
 export const TrafficLights = () => {
-  const colors = ["#ff5f57", "#ffbd2e", "#28ca42"] as const;
+  const colors = [
+    "var(--terminal-dot-red)",
+    "var(--terminal-dot-yellow)",
+    "var(--terminal-dot-green)",
+  ] as const;
   
   return (
-    <div className="flex items-center gap-2 px-4 py-3 bg-zinc-100 dark:bg-zinc-900/50 border-b border-zinc-300 dark:border-zinc-800/50">
+    <div className="flex items-center gap-2 border-b border-terminal-border bg-terminal-header px-4 py-3">
       <div className="flex gap-1.5">
         {colors.map((color, index) => (
           <div

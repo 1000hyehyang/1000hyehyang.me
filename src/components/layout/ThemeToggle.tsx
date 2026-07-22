@@ -13,14 +13,15 @@ export function ThemeToggle() {
   } = useThemeCircleTransition();
 
   if (!isMounted) {
-    return <span aria-hidden="true" className="inline-block size-9" />;
+    return <span aria-hidden="true" className="inline-block size-11" />;
   }
 
   return (
     <button
       type="button"
       aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
-      className="inline-flex cursor-pointer items-center justify-center rounded-md p-2 text-orange-200 transition-colors hover:bg-accent"
+      aria-pressed={isDark}
+      className="inline-flex size-11 cursor-pointer items-center justify-center text-brand transition-colors hover:text-brand-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-wait disabled:opacity-60"
       onClick={toggleTheme}
       disabled={isTransitioning}
     >

@@ -29,7 +29,7 @@ function ExperienceCard({ item, index }: { item: TimelineItem; index: number }) 
       transition={{ duration: 0.6, delay: index * 0.1 }}
       className="flex items-start gap-4"
     >
-      <div className="size-16 shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="size-16 shrink-0 overflow-hidden rounded-lg border border-logo-border bg-logo-surface">
         <Image
           src={item.logo}
           alt={item.logoAlt}
@@ -46,7 +46,7 @@ function ExperienceCard({ item, index }: { item: TimelineItem; index: number }) 
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={`${titleClassName} cursor-pointer hover:text-orange-300`}
+              className={`${titleClassName} cursor-pointer hover:text-brand`}
             >
               {item.title}
             </a>
@@ -63,7 +63,7 @@ function ExperienceCard({ item, index }: { item: TimelineItem; index: number }) 
           <ul className="space-y-1">
             {item.activities.map((activity) => (
               <li key={activity} className="flex items-start text-xs text-muted-foreground">
-                <span aria-hidden="true" className="mr-2 text-orange-300">
+                <span aria-hidden="true" className="mr-2 text-brand">
                   •
                 </span>
                 <span>{activity}</span>

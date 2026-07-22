@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { BottomNav } from "@/components/layout/BottomNav";
+import { SiteHeader } from "@/components/layout/SiteHeader";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SITE_CONFIG } from "@/lib/config";
 
@@ -11,8 +10,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-const contentMaxWidthClass = "max-w-[768px]";
 
 export const metadata: Metadata = {
   title: {
@@ -39,6 +36,14 @@ export const metadata: Metadata = {
   }
 };
 
+const websiteStructuredData = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_CONFIG.name,
+  url: SITE_CONFIG.url,
+  description: SITE_CONFIG.description,
+}).replace(/</g, "\\u003c");
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -56,33 +61,20 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": SITE_CONFIG.name,
-              "url": SITE_CONFIG.url,
-              "description": SITE_CONFIG.description,
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": `${SITE_CONFIG.url}/blog?q={search_term_string}`,
-                "query-input": "required name=search_term_string"
-              }
-            })
+            __html: websiteStructuredData,
           }}
         />
       </head>
       <body className={`${geistMono.variable} antialiased bg-background text-foreground`}>
         <ThemeProvider>
           <TooltipProvider>
-            <header className="w-full px-6 py-4">
-              <div className={`w-full ${contentMaxWidthClass} mx-auto flex justify-end`}>
-                <ThemeToggle />
-              </div>
-            </header>
-            <main className="min-h-[80vh] container mx-auto px-4 py-8 pb-24">
-              <div className={`w-full ${contentMaxWidthClass} mx-auto px-0`}>{children}</div>
+            <SiteHeader />
+            <main
+              id="main-content"
+              className="min-h-[calc(100dvh-var(--site-header-height))]"
+            >
+              <div className="site-shell">{children}</div>
             </main>
-            <BottomNav />
           </TooltipProvider>
         </ThemeProvider>
       </body>

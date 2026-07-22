@@ -1,4 +1,24 @@
-/* 앱 전역 유틸 (line-clamp 등) */
+/* 앱 전역 레이아웃 유틸 */
+
+.site-shell {
+  width: calc(100% - var(--layout-gutter) - var(--layout-gutter));
+  max-width: var(--layout-wide);
+  margin-inline: auto;
+}
+
+.reading-shell {
+  width: 100%;
+  max-width: var(--layout-reading);
+  margin-inline: auto;
+}
+
+.site-header {
+  background: transparent;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+}
+
+/* 텍스트 말줄임 유틸 */
 
 .line-clamp-1 {
   overflow: hidden;
@@ -13,4 +33,42 @@
 .line-clamp-3 {
   overflow: hidden;
   line-clamp: 3;
+}
+
+.portfolio-split-grid {
+  display: grid;
+  min-width: 0;
+  gap: var(--portfolio-grid-gap, 3rem);
+}
+
+@media (min-width: 64rem) {
+  .portfolio-split-grid {
+    grid-template-columns:
+      var(--portfolio-rail-width, 18rem)
+      minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 64rem) and (max-height: 45rem) {
+  .portfolio-detail-aside {
+    padding-block: 1.25rem;
+  }
+
+  .portfolio-detail-back {
+    margin-bottom: 1rem;
+  }
+
+  .portfolio-detail-title {
+    font-size: 1.65rem;
+    line-height: 1.18;
+  }
+
+  .portfolio-detail-summary,
+  .portfolio-detail-links {
+    margin-top: 1rem;
+  }
+
+  .portfolio-detail-meta {
+    margin-top: 1.25rem;
+  }
 }

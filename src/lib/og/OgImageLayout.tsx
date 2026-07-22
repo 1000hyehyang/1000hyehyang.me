@@ -70,7 +70,7 @@ export function OgImageLayout({
           borderRadius: 16,
           overflow: "hidden",
           backgroundColor: OG_COLORS.background,
-          boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
+          boxShadow: OG_COLORS.cardShadow,
         }}
       >
         {/* 터미널 헤더 — IntroSection 스타일 */}
@@ -87,7 +87,7 @@ export function OgImageLayout({
           <span
             style={{
               fontSize: 14,
-              color: "#a1a1aa",
+              color: OG_COLORS.terminalMuted,
               letterSpacing: "0.02em",
             }}
           >

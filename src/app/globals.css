@@ -4,25 +4,6 @@
 @import "./styles/markdown-body.css";
 @import "./styles/utilities.css";
 
-/* 파스텔 배경 애니메이션 */
-@keyframes rotate {
-  0% {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
-
-@keyframes rotate-reverse {
-  0% {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(-360deg);
-  }
-}
-
 /* 테마 변경 시 새 화면이 중앙에서 원형으로 펼쳐지는 전환 */
 html.theme-circle-transition::view-transition-group(root) {
   animation-duration: var(--theme-transition-duration);
@@ -58,33 +39,25 @@ html.theme-circle-transition::view-transition-new(root) {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-pale: var(--brand-pale);
+  --color-terminal-foreground: var(--terminal-foreground);
+  --color-terminal-surface: var(--terminal-surface);
+  --color-terminal-header: var(--terminal-header);
+  --color-terminal-border: var(--terminal-border);
+  --color-logo-surface: var(--logo-surface);
+  --color-logo-border: var(--logo-border);
   --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
-  --color-input: var(--input);
   --color-border: var(--border);
-  --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -97,6 +70,50 @@ html.theme-circle-transition::view-transition-new(root) {
 
 :root {
   --radius: 0.625rem;
+  --layout-wide: 70rem;
+  --layout-reading: 48rem;
+  --layout-gutter: clamp(1rem, 3vw, 2rem);
+  --portfolio-rail-width: 18rem;
+  --portfolio-grid-gap: clamp(2.5rem, 5vw, 4rem);
+  --site-header-height: 4rem;
+  --brand: #fdba74;
+  --brand-foreground: #1c1917;
+  --brand-soft: rgb(253 186 116 / 14%);
+  --brand-strong: #fb923c;
+  --brand-pale: #fed7aa;
+  --code-block-background: #f3f4f6;
+  --code-block-foreground: #1e293b;
+  --code-inline-background: #fff7ed;
+  --code-inline-foreground: #fb923c;
+  --syntax-background: #f6f8fa;
+  --syntax-foreground: #24292f;
+  --syntax-keyword: #d73a49;
+  --syntax-title: #6f42c1;
+  --syntax-number: #005cc5;
+  --syntax-string: #032f62;
+  --syntax-symbol: #e36209;
+  --syntax-comment: #6a737d;
+  --syntax-name: #22863a;
+  --syntax-bullet: #735c0f;
+  --syntax-addition: #22863a;
+  --syntax-addition-background: #f0fff4;
+  --syntax-deletion: #b31d28;
+  --syntax-deletion-background: #ffeef0;
+  --content-shadow: 0 2px 16px rgb(15 23 42 / 6%);
+  --table-shadow: 0 1px 4px rgb(15 23 42 / 3%);
+  --terminal-dot-red: #ff5f57;
+  --terminal-dot-yellow: #ffbd2e;
+  --terminal-dot-green: #28ca42;
+  --terminal-foreground: #3f3f46;
+  --terminal-surface: #fafafa;
+  --terminal-header: #f4f4f5;
+  --terminal-border: #d4d4d8;
+  --logo-surface: #ffffff;
+  --logo-border: #e5e7eb;
+  --glass-blur: 1rem;
+  --scrollbar-thumb: #fed7aa;
+  --selection-background: #fed7aa;
+  --selection-foreground: #1e293b;
   --theme-transition-duration: 0.7s;
   --theme-transition-easing: cubic-bezier(0.16, 1, 0.3, 1);
   --background: oklch(1 0 0);
@@ -105,65 +122,58 @@ html.theme-circle-transition::view-transition-new(root) {
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
+  --brand: #fdba74;
+  --brand-foreground: #1c1917;
+  --brand-soft: rgb(253 186 116 / 14%);
+  --brand-strong: #fb923c;
+  --brand-pale: #fed7aa;
+  --code-block-background: #18181b;
+  --code-block-foreground: #f4f4f5;
+  --code-inline-background: #2d2a2a;
+  --code-inline-foreground: #fdba74;
+  --syntax-background: #0d1117;
+  --syntax-foreground: #e6edf3;
+  --syntax-keyword: #ff7b72;
+  --syntax-title: #d2a8ff;
+  --syntax-number: #79c0ff;
+  --syntax-string: #a5d6ff;
+  --syntax-symbol: #ffa657;
+  --syntax-comment: #8b949e;
+  --syntax-name: #7ee787;
+  --syntax-bullet: #f2cc60;
+  --syntax-addition: #aff5b4;
+  --syntax-addition-background: #033a16;
+  --syntax-deletion: #ffdcd7;
+  --syntax-deletion-background: #67060c;
+  --content-shadow: 0 2px 16px rgb(0 0 0 / 22%);
+  --table-shadow: 0 1px 4px rgb(0 0 0 / 18%);
+  --terminal-foreground: #d4d4d8;
+  --terminal-surface: #0d0d0d;
+  --terminal-header: rgb(24 24 27 / 50%);
+  --terminal-border: rgb(39 39 42 / 50%);
+  --selection-background: #fdba74;
+  --selection-foreground: #ffffff;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
@@ -172,24 +182,24 @@ html.theme-circle-transition::view-transition-new(root) {
   }
   body {
     @apply bg-background text-foreground;
-    overflow-y: scroll;
+    overflow-y: auto;
     scrollbar-gutter: stable;
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    caret-color: transparent;
+    font-family: var(--font-sans);
   }
   
   /* 텍스트 선택 시 주황색 배경 */
   ::selection {
-    background-color: #fed7aa; /* orange-200 */
-    color: #1e293b; /* slate-800 */
-  }
-  .dark ::selection {
-    background-color: #fdba74; /* orange-300 */
-    color: #ffffff;
+    background-color: var(--selection-background);
+    color: var(--selection-foreground);
   }
   
   /* 다크모드 전환 시 깜빡임 방지를 위한 최적화 */
   html {
     transition: none;
+    scroll-padding-top: var(--site-header-height);
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+    scrollbar-width: thin;
   }
   
   /* 핵심 UI 요소들만 부드러운 전환 적용 */
@@ -203,35 +213,34 @@ html.theme-circle-transition::view-transition-new(root) {
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   }
   
-  /* 성능에 영향을 주는 요소들은 애니메이션 제외 */
-  img, svg, canvas, video, iframe {
-    transition: none !important;
-  }
-  
-  /* 복잡한 레이아웃 요소들도 애니메이션 제외 */
-  .prose, .prose * {
-    transition: none;
-  }
-  
-  /* Giscus iframe에 프리텐다드 폰트 적용 */
-  iframe[src*="giscus.app"] {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
-  }
-  
-  /* Giscus 관련 요소들에 폰트 적용 */
-  .gsc-comment-box,
-  .gsc-comment-box *,
-  .gsc-reply-box,
-  .gsc-reply-box *,
-  .gsc-header,
-  .gsc-header *,
-  .gsc-comment,
-  .gsc-comment * {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
-  }
 }
 
-/* 천혜향 게임을 위한 커스텀 그리드 */
-.grid-cols-20 {
-  grid-template-columns: repeat(20, minmax(0, 1fr));
+* {
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: 0.375rem;
+  height: 0.375rem;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,6 +1,6 @@
-import { Suspense } from "react";
 import { getAllPortfolio } from "@/lib/mdx";
 import { PortfolioList } from "@/components/portfolio/PortfolioList";
+import { parsePortfolioFilter } from "@/lib/portfolio";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,13 +11,21 @@ export const metadata: Metadata = {
   },
 };
 
-import { PageLoadingFallback } from "@/components/common/PageLoadingFallback";
+type PortfolioListPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-export default function PortfolioListPage() {
-  const projects = getAllPortfolio();
-  return (
-    <Suspense fallback={<PageLoadingFallback />}>
-      <PortfolioList projects={projects} />
-    </Suspense>
+function firstParam(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function PortfolioListPage({
+  searchParams,
+}: PortfolioListPageProps) {
+  const params = await searchParams;
+  const initialFilter = parsePortfolioFilter(
+    firstParam(params.filter) ?? firstParam(params.category),
   );
-} 
+  const projects = getAllPortfolio();
+  return <PortfolioList projects={projects} initialFilter={initialFilter} />;
+}

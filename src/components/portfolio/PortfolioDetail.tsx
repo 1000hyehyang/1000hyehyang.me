@@ -1,159 +1,213 @@
 "use client";
 
-import { PortfolioDetailProps } from "@/types";
-import Image from "next/image";
-import { ExternalLink, Github } from "lucide-react";
-import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { containerVariants, itemVariants } from "@/lib/animations";
-import { useMarkdownBodyHydration } from "@/hooks/useHydrateMarkdownWidgets";
-import { TechBadge } from "@/components/portfolio/TechBadge";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, ExternalLink, Github } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import type { PortfolioDetailProps, PortfolioFrontmatter } from "@/types";
+import { getPortfolioDisplayCategory } from "@/lib/portfolio";
 import { groupProjectTechByCategory } from "@/lib/tech-stack-data";
+import { useGsapScrollReveal } from "@/hooks/useGsapScrollReveal";
+import { useMarkdownBodyHydration } from "@/hooks/useHydrateMarkdownWidgets";
+import { TechBadge } from "./TechBadge";
 
-export const PortfolioDetail = ({ frontmatter, children }: PortfolioDetailProps) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+function ProjectTechList({ frontmatter }: { frontmatter: PortfolioFrontmatter }) {
+  if (!frontmatter.tech.length) return null;
+
+  if (!frontmatter.categorizedTech) {
+    return (
+      <div className="flex flex-wrap gap-2">
+        {frontmatter.tech.map((tech, index) => (
+          <TechBadge key={tech} tech={tech} index={index} />
+        ))}
+      </div>
+    );
+  }
+
+  const groupedTech = groupProjectTechByCategory(frontmatter.tech);
+  const categories = Object.keys(groupedTech).sort();
+  let globalIndex = 0;
+
+  return (
+    <div className="space-y-5">
+      {categories.map((category) => (
+        <div key={category} className="space-y-2">
+          <h3 className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            {category}
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {groupedTech[category].map((tech) => (
+              <TechBadge key={tech} tech={tech} index={globalIndex++} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps) {
+  const scrollPaneRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = Boolean(useReducedMotion());
   const setMarkdownContainerRef = useMarkdownBodyHydration();
+  const displayCategory = getPortfolioDisplayCategory(frontmatter);
+  const hasLinks = Boolean(frontmatter.githubUrl || frontmatter.siteUrl);
+  const hasProjectDetails = Boolean(
+    frontmatter.teamMembers || frontmatter.myRole,
+  );
+
+  useGsapScrollReveal(scrollPaneRef, {
+    selector: "[data-scroll-reveal], .markdown-body > *",
+    initialY: -30,
+  });
 
   return (
     <motion.article
-      ref={ref}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      variants={containerVariants}
+      initial={shouldReduceMotion ? false : { opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       className="w-full"
     >
-      {/* 프로젝트 헤더 */}
-      <motion.div variants={itemVariants} className="mb-6">
-        <h1 className="text-3xl font-semibold mb-4">{frontmatter.title}</h1>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="space-y-2 text-sm text-muted-foreground">
-            <div>{frontmatter.period}</div>
-            {frontmatter.summary && (
-              <div className="text-base text-foreground">{frontmatter.summary}</div>
-            )}
-          </div>
-          {(frontmatter.githubUrl || frontmatter.siteUrl) && (
-            <div className="flex gap-2 flex-shrink-0">
-              {frontmatter.githubUrl && (
+      <div className="portfolio-split-grid">
+        <aside className="portfolio-detail-aside min-w-0 pb-2 pt-8 sm:pt-10 lg:sticky lg:top-[var(--site-header-height)] lg:self-start lg:py-10">
+          <Link
+            href="/portfolio"
+            className="portfolio-detail-back mb-10 inline-flex items-center gap-2 rounded-md py-2 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Archive
+          </Link>
+
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-brand">
+            {displayCategory}
+          </p>
+          <h1 className="portfolio-detail-title text-3xl font-semibold leading-tight tracking-[-0.04em] text-foreground lg:text-[2rem]">
+            {frontmatter.title}
+          </h1>
+
+          {frontmatter.summary ? (
+            <p className="portfolio-detail-summary mt-6 text-sm leading-6 text-muted-foreground">
+              {frontmatter.summary}
+            </p>
+          ) : null}
+
+          <dl className="portfolio-detail-meta mt-8 space-y-5">
+            <div>
+              <dt className="mb-1.5 text-xs font-medium text-muted-foreground">
+                작업 기간
+              </dt>
+              <dd className="text-sm leading-6 text-foreground">
+                {frontmatter.period}
+              </dd>
+            </div>
+          </dl>
+
+          {hasProjectDetails ? (
+            <section
+              className="mt-8 border-t border-border pt-8"
+              aria-labelledby="project-details-title"
+            >
+              <h2
+                id="project-details-title"
+                className="mb-5 text-sm font-semibold text-foreground"
+              >
+                프로젝트 정보
+              </h2>
+              <dl className="space-y-5">
+                {frontmatter.teamMembers ? (
+                  <div>
+                    <dt className="mb-1.5 text-xs font-medium text-muted-foreground">
+                      팀 구성
+                    </dt>
+                    <dd className="text-sm leading-6 text-foreground">
+                      {frontmatter.teamMembers}
+                    </dd>
+                  </div>
+                ) : null}
+                {frontmatter.myRole ? (
+                  <div>
+                    <dt className="mb-1.5 text-xs font-medium text-muted-foreground">
+                      담당 역할
+                    </dt>
+                    <dd className="break-words text-sm leading-6 text-foreground">
+                      {frontmatter.myRole}
+                    </dd>
+                  </div>
+                ) : null}
+              </dl>
+            </section>
+          ) : null}
+
+          {hasLinks ? (
+            <div className="portfolio-detail-links mt-7 flex flex-wrap gap-2">
+              {frontmatter.githubUrl ? (
                 <a
                   href={frontmatter.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:bg-accent transition-colors"
+                  className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label="GitHub 저장소 보기"
-                  tabIndex={0}
                 >
-                  <Github className="w-4 h-4" />
-                  <span className="text-sm">GitHub</span>
+                  <Github className="h-4 w-4" aria-hidden="true" />
+                  GitHub
                 </a>
-              )}
-              {frontmatter.siteUrl && (
+              ) : null}
+              {frontmatter.siteUrl ? (
                 <a
                   href={frontmatter.siteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:bg-accent transition-colors"
-                  aria-label="사이트 보기"
-                  tabIndex={0}
+                  className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label="프로젝트 사이트 보기"
                 >
-                  <ExternalLink className="w-4 h-4" />
-                  <span className="text-sm">Site</span>
+                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                  Site
                 </a>
-              )}
+              ) : null}
             </div>
-          )}
+          ) : null}
+        </aside>
+
+        <div
+          ref={scrollPaneRef}
+          className="min-w-0 pb-16 pt-8 sm:pt-10 lg:py-10"
+        >
+          {frontmatter.images?.[0] ? (
+            <div
+              data-scroll-reveal
+              className="relative mb-12 aspect-video overflow-hidden rounded-xl bg-muted"
+            >
+              <Image
+                src={frontmatter.images[0]}
+                alt={`${frontmatter.title} 썸네일`}
+                fill
+                priority
+                sizes="(max-width: 1023px) calc(100vw - 2rem), 820px"
+                className="object-cover"
+              />
+            </div>
+          ) : null}
+
+          {frontmatter.tech.length > 0 ? (
+            <section
+              data-scroll-reveal
+              className="mb-12 pb-12"
+              aria-labelledby="project-tech-title"
+            >
+              <h2
+                id="project-tech-title"
+                className="mb-5 text-lg font-semibold text-foreground"
+              >
+                사용 기술
+              </h2>
+              <ProjectTechList frontmatter={frontmatter} />
+            </section>
+          ) : null}
+
+          <div ref={setMarkdownContainerRef}>{children}</div>
         </div>
-      </motion.div>
-
-      {/* 구분선 */}
-      {(frontmatter.teamMembers || frontmatter.myRole) && (
-        <motion.div variants={itemVariants} className="mb-6">
-          <hr className="border-border" />
-        </motion.div>
-      )}
-
-      {/* 팀 구성 및 내 역할 */}
-      {(frontmatter.teamMembers || frontmatter.myRole) && (
-        <motion.div variants={itemVariants} className="mb-8">
-          <div className="space-y-3 text-sm">
-            {frontmatter.teamMembers && (
-              <div>
-                <span className="font-medium text-foreground">팀 구성: </span>
-                <span className="text-muted-foreground">{frontmatter.teamMembers}</span>
-              </div>
-            )}
-            {frontmatter.myRole && (
-              <div>
-                <span className="font-medium text-foreground">내 역할: </span>
-                <span className="text-muted-foreground">{frontmatter.myRole}</span>
-              </div>
-            )}
-          </div>
-        </motion.div>
-      )}
-
-      {/* 썸네일 이미지 */}
-      {frontmatter.images && frontmatter.images[0] && (
-        <motion.div variants={itemVariants} className="mb-8">
-          <Image
-            src={frontmatter.images[0]}
-            alt={`${frontmatter.title} 썸네일`}
-            width={800}
-            height={400}
-            className="w-full rounded-lg object-cover"
-          />
-        </motion.div>
-      )}
-
-      {/* 기술 스택 */}
-      {frontmatter.tech && frontmatter.tech.length > 0 && (
-        <motion.div variants={itemVariants} className="mb-12">
-          <h2 className="text-lg font-semibold mb-4">사용 기술</h2>
-          {frontmatter.categorizedTech ? (
-            // 카테고리별로 표시
-            (() => {
-              const groupedTech = groupProjectTechByCategory(frontmatter.tech);
-              const categories = Object.keys(groupedTech).sort();
-              let globalIndex = 0;
-              
-              return (
-                <div className="space-y-4">
-                  {categories.map((category) => (
-                    <div key={category} className="space-y-2">
-                      <h3 className="text-sm font-medium text-muted-foreground">
-                        {category}
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {groupedTech[category].map((tech) => {
-                          const index = globalIndex++;
-                          return <TechBadge key={tech} tech={tech} index={index} />;
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })()
-          ) : (
-            // 기존 방식: 모든 기술을 나열
-            <div className="flex flex-wrap gap-2">
-              {frontmatter.tech.map((tech, index) => (
-                <TechBadge key={tech} tech={tech} index={index} />
-              ))}
-            </div>
-          )}
-        </motion.div>
-      )}
-
-      {/* 프로젝트 상세 내용 */}
-      <motion.div
-        ref={setMarkdownContainerRef}
-        variants={itemVariants}
-        className="prose prose-neutral dark:prose-invert max-w-none"
-      >
-        {children}
-      </motion.div>
+      </div>
     </motion.article>
   );
-}; 
+}

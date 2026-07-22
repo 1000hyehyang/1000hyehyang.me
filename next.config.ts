@@ -8,15 +8,8 @@ const nextConfig: NextConfig = {
         hostname: "eaalkymxyfskjojh.public.blob.vercel-storage.com",
         pathname: "/**",
       },
-      {
-        protocol: "https",
-        hostname: "avatars.githubusercontent.com",
-        pathname: "/**",
-      },
     ],
   },
-  pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
-  
   // non-www → www 리디렉션
   async redirects() {
     return [

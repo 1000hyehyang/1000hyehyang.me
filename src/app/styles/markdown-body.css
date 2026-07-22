@@ -1,16 +1,16 @@
-/* 블로그/포트폴리오 마크다운 HTML (.markdown-body) */
+/* 포트폴리오 마크다운 HTML (.markdown-body) */
 
 .markdown-body {
   color: var(--foreground);
   font-size: 1rem;
   line-height: 1.8;
   word-break: break-word;
-  font-family: "Pretendard", "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+  font-family: var(--font-sans);
 }
 
 .markdown-body,
 .markdown-body * {
-  font-family: "Pretendard", "Segoe UI", "Apple SD Gothic Neo", sans-serif !important;
+  font-family: var(--font-sans) !important;
 }
 
 /* --------------------
@@ -84,7 +84,7 @@
 }
 
 .markdown-body input[type="checkbox"] {
-  accent-color: #fb923c;
+  accent-color: var(--brand-strong);
   width: 1.1em;
   height: 1.1em;
   margin-right: 0.5em;
@@ -109,31 +109,13 @@
 }
 
 .markdown-body a {
-  color: #fdba74;
+  color: var(--brand);
   text-decoration: underline;
   transition: color 0.2s;
   word-break: break-all;
 }
 .markdown-body a:hover {
-  color: #fb923c;
-}
-
-.markdown-body .link-preview-wrapper a {
-  text-decoration: none !important;
-}
-.markdown-body .link-preview-wrapper a:hover {
-  text-decoration: none !important;
-}
-
-.markdown-body .link-preview-wrapper a img {
-  margin: 0;
-  max-width: none;
-  width: 100%;
-  height: 100%;
-  border-radius: 0;
-  box-shadow: none;
-  object-fit: cover;
-  object-position: center;
+  color: var(--code-inline-foreground);
 }
 
 /* --------------------
@@ -145,8 +127,8 @@
 }
 
 .markdown-body .code-block-wrapper pre {
-  background: #f3f4f6;
-  color: #1e293b;
+  background: var(--code-block-background);
+  color: var(--code-block-foreground);
   border-radius: 0.5rem;
   padding: 1.1em 1.3em;
   margin: 0;
@@ -157,14 +139,9 @@
   position: relative;
 }
 
-.dark .markdown-body .code-block-wrapper pre {
-  background: #18181b;
-  color: #f4f4f5;
-}
-
 .markdown-body pre:not(.code-block-wrapper pre) {
-  background: #f3f4f6;
-  color: #1e293b;
+  background: var(--code-block-background);
+  color: var(--code-block-foreground);
   border-radius: 0.5rem;
   padding: 1.1em 1.3em;
   margin: 1.5rem 0;
@@ -174,22 +151,13 @@
   border: 1px solid var(--border);
 }
 
-.dark .markdown-body pre:not(.code-block-wrapper pre) {
-  background: #18181b;
-  color: #f4f4f5;
-}
-
 .markdown-body code {
-  background: #fff7ed;
-  color: #fb923c;
+  background: var(--code-inline-background);
+  color: var(--code-inline-foreground);
   border-radius: 0.3rem;
   padding: 0.2em 0.4em;
   font-size: 0.97em;
   font-family: var(--font-mono, "Fira Mono", "Menlo", monospace);
-}
-.dark .markdown-body code {
-  background: #2d2a2a;
-  color: #fdba74;
 }
 .markdown-body pre code {
   background: none !important;
@@ -209,7 +177,7 @@
   background: var(--background);
   border-radius: 0.5rem;
   overflow: hidden;
-  box-shadow: 0 1px 4px 0 rgb(0 0 0 / 3%);
+  box-shadow: var(--table-shadow);
 }
 .markdown-body th,
 .markdown-body td {
@@ -237,7 +205,7 @@
    인용구, 구분선, 이미지
 --------------------- */
 .markdown-body blockquote {
-  border-left: 4px solid #fdba74;
+  border-left: 4px solid var(--brand);
   background: var(--muted);
   color: var(--muted-foreground);
   padding: 1rem 1.5rem;
@@ -262,7 +230,7 @@
   max-width: 100%;
   border-radius: min(0.7rem, 4%);
   margin: 2rem auto;
-  box-shadow: 0 2px 16px 0 rgb(0 0 0 / 6%);
+  box-shadow: var(--content-shadow);
   display: block;
 }
 

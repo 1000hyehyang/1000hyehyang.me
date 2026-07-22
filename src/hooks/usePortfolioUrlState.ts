@@ -1,56 +1,54 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import type { PortfolioCategory } from "@/types";
+import { useCallback, useEffect, useState } from "react";
+import type { PortfolioFilter } from "@/types";
+import { parsePortfolioFilter } from "@/lib/portfolio";
 
-const PARAM_CATEGORY = "category" as const;
-const VALID_CATEGORIES: PortfolioCategory[] = ["all", "project", "hackathon"];
+const FILTER_PARAM = "filter";
+const LEGACY_CATEGORY_PARAM = "category";
 
-function parseCategory(value: string | null): PortfolioCategory {
-  if (value === null) return "all";
-  const lower = value.toLowerCase();
-  return VALID_CATEGORIES.includes(lower as PortfolioCategory) ? (lower as PortfolioCategory) : "all";
+function readFilterFromLocation(): PortfolioFilter {
+  const params = new URLSearchParams(window.location.search);
+  return parsePortfolioFilter(
+    params.get(FILTER_PARAM) ?? params.get(LEGACY_CATEGORY_PARAM),
+  );
 }
 
 export interface PortfolioUrlState {
-  category: PortfolioCategory;
-  setCategory: (category: PortfolioCategory) => void;
+  filter: PortfolioFilter;
+  setFilter: (filter: PortfolioFilter) => void;
 }
 
-export function usePortfolioUrlState(): PortfolioUrlState {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const [category, setCategoryState] = useState<PortfolioCategory>(() =>
-    parseCategory(searchParams.get(PARAM_CATEGORY))
-  );
-
-  const replaceUrl = useCallback(
-    (next: PortfolioCategory) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (next === "all") {
-        params.delete(PARAM_CATEGORY);
-      } else {
-        params.set(PARAM_CATEGORY, next);
-      }
-      const query = params.toString();
-      router.replace(query ? `/portfolio?${query}` : "/portfolio", { scroll: false });
-    },
-    [router, searchParams]
-  );
+export function usePortfolioUrlState(
+  initialFilter: PortfolioFilter,
+): PortfolioUrlState {
+  const [filter, setFilterState] = useState<PortfolioFilter>(initialFilter);
 
   useEffect(() => {
-    setCategoryState(parseCategory(searchParams.get(PARAM_CATEGORY)));
-  }, [searchParams]);
+    const syncFromUrl = () => setFilterState(readFilterFromLocation());
+    syncFromUrl();
+    window.addEventListener("popstate", syncFromUrl);
+    return () => window.removeEventListener("popstate", syncFromUrl);
+  }, []);
 
-  const setCategory = useCallback(
-    (next: PortfolioCategory) => {
-      setCategoryState(next);
-      replaceUrl(next);
-    },
-    [replaceUrl]
-  );
+  const setFilter = useCallback((nextFilter: PortfolioFilter) => {
+    setFilterState(nextFilter);
 
-  return { category, setCategory };
+    const url = new URL(window.location.href);
+    url.searchParams.delete(LEGACY_CATEGORY_PARAM);
+
+    if (nextFilter === "total") {
+      url.searchParams.delete(FILTER_PARAM);
+    } else {
+      url.searchParams.set(FILTER_PARAM, nextFilter);
+    }
+
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${url.pathname}${url.search}${url.hash}`,
+    );
+  }, []);
+
+  return { filter, setFilter };
 }

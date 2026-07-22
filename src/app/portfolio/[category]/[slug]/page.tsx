@@ -15,7 +15,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ category: string; slug: string }> }): Promise<Metadata> {
   const { category, slug } = await params;
-  const item = getPortfolioBySlug(category as "project" | "hackathon", slug);
+  const item = getPortfolioBySlug(category, slug);
   if (!item) return {};
   return {
     title: {
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: { params: Promise<{ category:
 
 export default async function PortfolioDetailPage({ params }: { params: Promise<{ category: string; slug: string }> }) {
   const { category, slug } = await params;
-  const item = getPortfolioBySlug(category as "project" | "hackathon", slug);
+  const item = getPortfolioBySlug(category, slug);
   if (!item) return notFound();
   // 마크다운을 HTML로 변환
   const htmlContent = await markdownToHtml(item.content);
@@ -63,4 +63,4 @@ export default async function PortfolioDetailPage({ params }: { params: Promise<
       <div className="markdown-body" dangerouslySetInnerHTML={{ __html: htmlContent }} />
     </PortfolioDetail>
   );
-} 
+}

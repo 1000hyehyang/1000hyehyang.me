@@ -13,7 +13,7 @@ export default function AboutLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <div className="reading-shell py-8">{children}</div>;
 }
 
 

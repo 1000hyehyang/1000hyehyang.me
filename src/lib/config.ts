@@ -1,46 +1,9 @@
-const validateRequiredEnv = (name: string, value: string | undefined): string => {
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-  return value;
-};
-
-/** 클라이언트 컴포넌트에서 안전하게 사용할 수 있는 공개 설정 */
-export const PUBLIC_CONFIG = {
-  githubUserId: process.env.NEXT_PUBLIC_GITHUB_USER_ID || "",
-} as const;
-
 export const SITE_CONFIG = {
   url: process.env.NEXT_PUBLIC_SITE_URL || "",
   name: process.env.NEXT_PUBLIC_SITE_NAME || "",
   description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION || "",
 } as const;
 
-export const GISCUS_BLOG_CONFIG = {
-  repo: process.env.NEXT_PUBLIC_GISCUS_REPO || "",
-  repoId: process.env.NEXT_PUBLIC_GISCUS_REPO_ID || "",
-  category: process.env.NEXT_PUBLIC_GISCUS_BLOG_CATEGORY || "",
-  categoryId: process.env.NEXT_PUBLIC_GISCUS_BLOG_CATEGORY_ID || "",
-};
-
-export const GISCUS_GAME_CONFIG = {
-  repo: process.env.NEXT_PUBLIC_GISCUS_REPO || "",
-  repoId: process.env.NEXT_PUBLIC_GISCUS_REPO_ID || "",
-  category: process.env.NEXT_PUBLIC_GISCUS_GAME_CATEGORY || "",
-  categoryId: process.env.NEXT_PUBLIC_GISCUS_GAME_CATEGORY_ID || "",
-};
-
-export const getValidatedGitHubConfig = () => {
-  if (typeof window !== 'undefined') {
-    throw new Error('getValidatedGitHubConfig should only be called on server side');
-  }
-  
-  return {
-    token: validateRequiredEnv("GITHUB_TOKEN", process.env.GITHUB_TOKEN),
-    repoOwner: validateRequiredEnv("GITHUB_REPO_OWNER", process.env.GITHUB_REPO_OWNER),
-    repoName: validateRequiredEnv("GITHUB_REPO_NAME", process.env.GITHUB_REPO_NAME),
-    author: validateRequiredEnv("GITHUB_AUTHOR", process.env.GITHUB_AUTHOR),
-    discussionCategory: validateRequiredEnv("GITHUB_DISCUSSION_CATEGORY", process.env.GITHUB_DISCUSSION_CATEGORY),
-    userId: validateRequiredEnv("NEXT_PUBLIC_GITHUB_USER_ID", process.env.NEXT_PUBLIC_GITHUB_USER_ID),
-  } as const;
-};
+export const SITE_LINKS = {
+  blog: "https://blog.1000hyehyang.me",
+} as const;

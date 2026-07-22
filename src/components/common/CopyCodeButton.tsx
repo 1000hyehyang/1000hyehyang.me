@@ -34,7 +34,7 @@ export function CopyCodeButton({ code, className = "" }: CopyCodeButtonProps) {
       aria-label={copied ? "복사됨!" : "코드 복사"}
     >
       {copied ? (
-        <Check className="w-4 h-4 text-orange-200" />
+        <Check className="w-4 h-4 text-brand-pale" />
       ) : (
         <Copy className="w-4 h-4" />
       )}

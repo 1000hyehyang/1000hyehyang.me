@@ -21,13 +21,13 @@ export const HomeContent = () => {
       variants={containerVariants}
       className="flex flex-col min-h-screen items-center justify-between pt-12"
     >
-      <main className="w-full flex flex-col items-center gap-12">
+      <div className="flex w-full flex-col items-center gap-12">
         <VisitorCounter />
         <ProfileSection />
         <IntroSection />
         <TechStackSection />
         <ContactSection />
-      </main>
+      </div>
     </motion.div>
   );
-}; 
+};
