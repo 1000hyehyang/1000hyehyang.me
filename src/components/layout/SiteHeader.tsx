@@ -53,6 +53,8 @@ export function SiteHeader() {
 
           <a
             href={SITE_LINKS.blog}
+            target="_blank"
+            rel="noopener noreferrer"
             className={`${navItemClassName} text-muted-foreground`}
           >
             Blog

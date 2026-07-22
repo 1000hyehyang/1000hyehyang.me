@@ -234,6 +234,29 @@ html.theme-circle-transition::view-transition-new(root) {
   border-radius: 9999px;
 }
 
+.click-ripple {
+  position: absolute;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: -0.625rem;
+  margin-left: -0.625rem;
+  border: 0;
+  border-radius: 9999px;
+  background-color: #ffedd5;
+  animation: click-ripple-wave 650ms ease-out forwards;
+}
+
+@keyframes click-ripple-wave {
+  from {
+    transform: scale(0.2);
+    opacity: 0.55;
+  }
+  to {
+    transform: scale(5);
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

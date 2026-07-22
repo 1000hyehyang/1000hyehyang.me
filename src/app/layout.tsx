@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ClickRipple } from "@/components/common/ClickRipple";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SITE_CONFIG } from "@/lib/config";
+import { SITE_CONFIG, SITE_LINKS } from "@/lib/config";
+import { absoluteUrl, serializeJsonLd } from "@/lib/seo";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -12,37 +14,87 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  applicationName: SITE_CONFIG.name,
   title: {
-    default: SITE_CONFIG.name,
+    default: SITE_CONFIG.title,
     template: `%s | ${SITE_CONFIG.name}`
   },
   description: SITE_CONFIG.description,
   metadataBase: new URL(SITE_CONFIG.url),
+  keywords: [...SITE_CONFIG.keywords],
+  authors: [
+    {
+      name: SITE_CONFIG.authorName,
+      url: SITE_CONFIG.url,
+    },
+  ],
+  creator: SITE_CONFIG.authorName,
+  publisher: SITE_CONFIG.authorName,
+  category: "technology",
+  referrer: "origin-when-cross-origin",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   alternates: {
     canonical: "/",
+    languages: {
+      "ko-KR": "/",
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
   openGraph: {
-    title: SITE_CONFIG.name,
+    title: SITE_CONFIG.title,
     description: SITE_CONFIG.description,
     url: SITE_CONFIG.url,
     siteName: SITE_CONFIG.name,
-    locale: "ko_KR",
+    locale: SITE_CONFIG.locale,
     type: "website"
   },
   twitter: {
     card: "summary_large_image",
-    title: SITE_CONFIG.name,
+    title: SITE_CONFIG.title,
     description: SITE_CONFIG.description,
   }
 };
 
-const websiteStructuredData = JSON.stringify({
+const websiteStructuredData = serializeJsonLd({
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: SITE_CONFIG.name,
-  url: SITE_CONFIG.url,
-  description: SITE_CONFIG.description,
-}).replace(/</g, "\\u003c");
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_CONFIG.url}/#website`,
+      name: SITE_CONFIG.name,
+      url: SITE_CONFIG.url,
+      description: SITE_CONFIG.description,
+      inLanguage: SITE_CONFIG.language,
+      publisher: {
+        "@id": `${SITE_CONFIG.url}/#person`,
+      },
+    },
+    {
+      "@type": "Person",
+      "@id": `${SITE_CONFIG.url}/#person`,
+      name: SITE_CONFIG.authorName,
+      url: SITE_CONFIG.url,
+      image: absoluteUrl("/profile.png"),
+      jobTitle: "백엔드 개발자",
+      sameAs: Object.values(SITE_LINKS),
+      knowsAbout: [...SITE_CONFIG.keywords],
+    },
+  ],
+});
 
 export default function RootLayout({
   children,
@@ -67,6 +119,7 @@ export default function RootLayout({
       </head>
       <body className={`${geistMono.variable} antialiased bg-background text-foreground`}>
         <ThemeProvider>
+          <ClickRipple />
           <TooltipProvider>
             <SiteHeader />
             <main

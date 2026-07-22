@@ -33,14 +33,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
       : toIso(new Date());
 
   const staticPages: MetadataRoute.Sitemap = [
-    { url: `${baseUrl}/`, lastModified: listPageLastModified },
-    { url: `${baseUrl}/portfolio`, lastModified: listPageLastModified },
-    { url: `${baseUrl}/about`, lastModified: listPageLastModified },
+    {
+      url: `${baseUrl}/`,
+      lastModified: listPageLastModified,
+      changeFrequency: "weekly",
+      priority: 1,
+    },
+    {
+      url: `${baseUrl}/portfolio`,
+      lastModified: listPageLastModified,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: listPageLastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
   ];
 
   const portfolioPages: MetadataRoute.Sitemap = portfolios.map((project) => ({
     url: `${baseUrl}/portfolio/${project.category}/${project.slug}`,
     lastModified: toIso(getPortfolioDate(project.period)),
+    changeFrequency: "monthly",
+    priority: 0.8,
+    images: project.images,
   }));
 
   return [...staticPages, ...portfolioPages];
