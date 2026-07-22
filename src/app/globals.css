@@ -182,8 +182,6 @@ html.theme-circle-transition::view-transition-new(root) {
   }
   body {
     @apply bg-background text-foreground;
-    overflow-y: auto;
-    scrollbar-gutter: stable;
     caret-color: transparent;
     font-family: var(--font-sans);
   }
@@ -196,8 +194,10 @@ html.theme-circle-transition::view-transition-new(root) {
   
   /* 다크모드 전환 시 깜빡임 방지를 위한 최적화 */
   html {
+    overflow-y: scroll;
     transition: none;
     scroll-padding-top: var(--site-header-height);
+    scrollbar-gutter: stable;
     scrollbar-color: var(--scrollbar-thumb) transparent;
     scrollbar-width: thin;
   }
