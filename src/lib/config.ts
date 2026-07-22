@@ -4,7 +4,7 @@ const DEFAULT_SITE_NAME = "1000hyehyang.me";
 export const SITE_CONFIG = {
   url: process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL,
   name: process.env.NEXT_PUBLIC_SITE_NAME || DEFAULT_SITE_NAME,
-  title: "여채현 | 백엔드 개발자 포트폴리오",
+  title: "1000hyehyang",
   authorName: "여채현",
   description:
     "개발자 1000hyehyang의 포트폴리오입니다.",
