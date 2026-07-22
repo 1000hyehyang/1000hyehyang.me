@@ -8,7 +8,7 @@ function decodeEncodedCode(encoded: string): string {
   return decodeURIComponent(escape(atob(encoded)));
 }
 
-export function useHydrateMarkdownWidgets(container: HTMLElement | null): void {
+function useHydrateMarkdownWidgets(container: HTMLElement | null): void {
   const rootsRef = useRef<Root[]>([]);
 
   useLayoutEffect(() => {

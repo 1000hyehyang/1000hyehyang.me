@@ -14,7 +14,7 @@ function readFilterFromLocation(): PortfolioFilter {
   );
 }
 
-export interface PortfolioUrlState {
+interface PortfolioUrlState {
   filter: PortfolioFilter;
   setFilter: (filter: PortfolioFilter) => void;
 }

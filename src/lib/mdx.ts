@@ -27,7 +27,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-export function isPortfolioRouteCategory(
+function isPortfolioRouteCategory(
   value: string,
 ): value is PortfolioRouteCategory {
   return ROUTE_CATEGORIES.has(value as PortfolioRouteCategory);

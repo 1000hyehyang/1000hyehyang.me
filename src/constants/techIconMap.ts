@@ -129,8 +129,6 @@ const getMatchingIconName = (tech: string) => {
   return ICON_NAME_LOOKUP[lower] ?? CUSTOM_ICON_NAME_MAP[lower] ?? null;
 };
 
-export const hasTechIcon = (tech: string) => Boolean(getMatchingIconName(tech));
-
 export const getTechIconSrc = (tech: string) => {
   const matchedName = getMatchingIconName(tech);
 

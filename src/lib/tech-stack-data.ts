@@ -1,4 +1,4 @@
-export type TechStackCategory = {
+type TechStackCategory = {
   category: string;
   technologies: readonly string[];
 };
@@ -70,37 +70,10 @@ const PROJECT_TECH_CATEGORIES: Record<string, string> = {
   "Figma": "Tool",
 };
 
-// 기술 이름으로 카테고리를 찾는 함수
-export const getTechCategory = (techName: string): string | null => {
-  for (const category of TECH_STACK) {
-    if (category.technologies.some(tech => tech === techName)) {
-      return category.category;
-    }
-  }
-  return null;
-};
-
-// 기술 배열을 카테고리별로 그룹화하는 함수 (홈 화면용)
-export const groupTechByCategory = (techs: string[]): Record<string, string[]> => {
-  const grouped: Record<string, string[]> = {};
-  
-  techs.forEach((tech) => {
-    const category = getTechCategory(tech) || "Other";
-    if (!grouped[category]) {
-      grouped[category] = [];
-    }
-    grouped[category].push(tech);
-  });
-  
-  return grouped;
-};
-
-// 프로젝트용 기술 카테고리를 찾는 함수
-export const getProjectTechCategory = (techName: string): string | null => {
+function getProjectTechCategory(techName: string): string | null {
   return PROJECT_TECH_CATEGORIES[techName] || null;
-};
+}
 
-// 프로젝트용 기술 배열을 카테고리별로 그룹화하는 함수
 export const groupProjectTechByCategory = (techs: string[]): Record<string, string[]> => {
   const grouped: Record<string, string[]> = {};
   
