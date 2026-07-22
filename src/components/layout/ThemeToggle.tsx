@@ -1,38 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
-import { handleKeyDown } from "@/lib/utils";
+import { useThemeCircleTransition } from "@/hooks/useThemeCircleTransition";
+import { AnimatedThemeIcon } from "./AnimatedThemeIcon";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const {
+    isDark,
+    isMounted,
+    isTransitioning,
+    shouldReduceMotion,
+    toggleTheme,
+  } = useThemeCircleTransition();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
+  if (!isMounted) {
+    return <span aria-hidden="true" className="inline-block size-9" />;
   }
-
-  const isDark = theme === "dark";
-
-  const handleToggle = () => {
-    setTheme(isDark ? "light" : "dark");
-  };
 
   return (
     <button
       type="button"
       aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
-      className="inline-flex items-center justify-center rounded-md p-2 transition-colors hover:bg-accent text-orange-200 dark:text-orange-200 cursor-pointer"
-      onClick={handleToggle}
-      tabIndex={0}
-      onKeyDown={(e) => handleKeyDown(e, handleToggle)}
+      className="inline-flex cursor-pointer items-center justify-center rounded-md p-2 text-orange-200 transition-colors hover:bg-accent"
+      onClick={toggleTheme}
+      disabled={isTransitioning}
     >
-      {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+      <AnimatedThemeIcon
+        showMoon={!isDark}
+        reduceMotion={shouldReduceMotion}
+      />
     </button>
   );
 }

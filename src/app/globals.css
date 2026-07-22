@@ -23,6 +23,36 @@
   }
 }
 
+/* 테마 변경 시 새 화면이 중앙에서 원형으로 펼쳐지는 전환 */
+html.theme-circle-transition::view-transition-group(root) {
+  animation-duration: var(--theme-transition-duration);
+  animation-timing-function: var(--theme-transition-easing);
+}
+
+html.theme-circle-transition::view-transition-old(root) {
+  animation: none;
+}
+
+html.theme-circle-transition::view-transition-new(root) {
+  animation: theme-circle-reveal var(--theme-transition-duration) var(--theme-transition-easing) both;
+}
+
+@keyframes theme-circle-reveal {
+  from {
+    clip-path: circle(0 at 50% 50%);
+  }
+  to {
+    clip-path: circle(150vmax at 50% 50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-circle-transition::view-transition-group(root),
+  html.theme-circle-transition::view-transition-new(root) {
+    animation-duration: 0.01ms;
+  }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -67,6 +97,8 @@
 
 :root {
   --radius: 0.625rem;
+  --theme-transition-duration: 0.7s;
+  --theme-transition-easing: cubic-bezier(0.16, 1, 0.3, 1);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);

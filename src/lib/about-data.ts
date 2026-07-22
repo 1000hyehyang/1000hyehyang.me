@@ -4,11 +4,12 @@ export const EDUCATION_DATA: TimelineItem[] = [
   {
     period: "2022.03 - Now",
     title: "한국외국어대학교 서울캠퍼스",
-    description: "EICC(영어통번역) & 융복합소프트웨어 전공",
+    description: "EICC(영어통번역학과) & 융복합소프트웨어 전공",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/college.png",
     logoAlt: "HUFS 로고",
     url: "https://www.hufs.ac.kr/hufs/index.do",
     activities: [
+      "GPA 4.06",
       "2023 Fall Semester Teaching Assistant, Coding Zone"
     ]
   }
@@ -16,20 +17,7 @@ export const EDUCATION_DATA: TimelineItem[] = [
 
 export const ORGANIZATION_DATA: TimelineItem[] = [
   {
-    period: "2024.10 - Now",
-    title: "UMC 7th, 8th Design - 9th Spring Boot",
-    description: "IT 연합 동아리 UMC 디자인 파트장 / 스프링부트 파트원",
-    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/umc.png",
-    logoAlt: "UMC 로고",
-    url: "https://umc.makeus.in/",
-    activities: [
-      "브랜드·마이크로 인플루언서 매칭 및 협업 플랫폼 ⌜리얼 매치⌟ 백엔드 개발",
-      "디자인 파트장으로 UI/UX 디자인 교육 및 멘토링",
-      "소동물 반려인을 위한 라이프 케어 플랫폼 ⌜리틀펫⌟ UI/UX 설계",
-    ]
-  },
-  {
-    period: "2025.09 - Now",
+    period: "2025.09 - 2026.08.01",
     title: "GDG on Campus HUFS 7th Member",
     description: "Google Developer Group on Campus 7기 멤버",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/gdgoc.png",
@@ -41,6 +29,19 @@ export const ORGANIZATION_DATA: TimelineItem[] = [
       "알고리즘 스터디 스터디장으로 스터디 운영",
       "Docker·Kubernetes 스터디 참여를 통해 컨테이너 기반 서비스 이해 및 실습",
       "개발자 커뮤니티 활동 및 네트워킹",
+    ]
+  },
+  {
+    period: "2024.10 - 2026.02",
+    title: "UMC 7th, 8th Design - 9th Spring Boot",
+    description: "IT 연합 동아리 UMC 디자인 파트장 / 스프링부트 파트원",
+    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/umc.png",
+    logoAlt: "UMC 로고",
+    url: "https://umc.makeus.in/",
+    activities: [
+      "브랜드·마이크로 인플루언서 매칭 및 협업 플랫폼 ⌜리얼 매치⌟ 백엔드 개발",
+      "디자인 파트장으로 UI/UX 디자인 교육 및 멘토링",
+      "소동물 반려인을 위한 라이프 케어 플랫폼 ⌜리틀펫⌟ UI/UX 설계",
     ]
   },
   {
@@ -126,4 +127,14 @@ export const CERTIFICATION_DATA: TimelineItem[] = [
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/ai.png",
     logoAlt: "GTQ-i 로고"
   }
-]; 
+];
+
+export const LANGUAGE_DATA: TimelineItem[] = [
+  {
+    period: "2026.07.06",
+    title: "상공회의소 한자 3급",
+    description: "",
+    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/hanja.png",
+    logoAlt: "상공회의소 로고"
+  }
+];

@@ -10,7 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 const NAV_ITEMS: NavItem[] = [
   { href: "/", icon: Home, label: "홈" },
   { href: "/blog", icon: PenTool, label: "블로그" },
-  { href: "/portfolio", icon: Archive, label: "프로젝트" },
+  { href: "/portfolio", icon: Archive, label: "아카이브" },
   { href: "/game", icon: Gamepad2, label: "놀이터" },
   { href: "/about", icon: Citrus, label: "소개" },
 ];
