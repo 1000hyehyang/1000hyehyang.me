@@ -23,7 +23,7 @@ export const TechStackSection = () => {
             <div className="flex flex-wrap gap-2">
               {category.technologies.map((tech) => {
                 const index = globalIndex++;
-                return <TechIcon key={tech} tech={tech} index={index} />;
+                return <TechIcon key={tech} tech={tech} index={index} priority={index === 0} />;
               })}
             </div>
           </div>

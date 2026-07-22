@@ -9,9 +9,10 @@ import { TECH_ICON_ANIMATION, getAnimationDelay, TECH_ICON_STYLES } from "@/lib/
 type TechIconProps = {
   tech: string;
   index: number;
+  priority?: boolean;
 };
 
-export const TechIcon = ({ tech, index }: TechIconProps) => {
+export const TechIcon = ({ tech, index, priority = false }: TechIconProps) => {
   const iconSrc = getTechIconSrc(tech);
 
   return (
@@ -29,6 +30,7 @@ export const TechIcon = ({ tech, index }: TechIconProps) => {
               alt={`${tech} 아이콘`}
               width={36}
               height={36}
+              priority={priority}
               className="w-9 h-9 object-contain"
             />
           ) : (

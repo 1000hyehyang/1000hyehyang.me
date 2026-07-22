@@ -19,6 +19,13 @@ export function AnimatedThemeIcon({
     duration: reduceMotion ? 0 : ICON_TRANSITION_DURATION,
     ease: "easeInOut" as const,
   };
+  const circleRadius = showMoon ? 10 : 8;
+  const clipPathOffset = { x: showMoon ? -12 : 0, y: showMoon ? 10 : 0 };
+  const sunRaysState = {
+    rotate: showMoon ? -100 : 0,
+    scale: showMoon ? 0.5 : 1,
+    opacity: showMoon ? 0 : 1,
+  };
 
   return (
     <motion.svg
@@ -32,25 +39,26 @@ export function AnimatedThemeIcon({
     >
       <clipPath id={clipPathId}>
         <motion.path
-          animate={{ x: showMoon ? -12 : 0, y: showMoon ? 10 : 0 }}
+          initial={clipPathOffset}
+          animate={clipPathOffset}
           transition={transition}
           d="M0-5h30a1 1 0 0 0 9 13v24H0Z"
         />
       </clipPath>
       <g clipPath={`url(#${clipPathId})`}>
         <motion.circle
-          animate={{ r: showMoon ? 10 : 8 }}
-          transition={transition}
           cx="16"
           cy="16"
+          r={circleRadius}
+          initial={{ r: circleRadius }}
+          animate={{ r: circleRadius }}
+          transition={transition}
         />
         <motion.g
-          animate={{
-            rotate: showMoon ? -100 : 0,
-            scale: showMoon ? 0.5 : 1,
-            opacity: showMoon ? 0 : 1,
-          }}
+          initial={sunRaysState}
+          animate={sunRaysState}
           transition={transition}
+          opacity={sunRaysState.opacity}
           stroke="currentColor"
           strokeWidth="1.5"
           style={{ transformOrigin: "16px 16px" }}
