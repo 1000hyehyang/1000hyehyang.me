@@ -26,20 +26,11 @@ export const metadata: Metadata = {
     description,
     url: "/portfolio",
     type: "website",
-    images: [
-      {
-        url: "/portfolio/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: `${SITE_CONFIG.authorName} 포트폴리오`,
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: `포트폴리오 | ${SITE_CONFIG.name}`,
     description,
-    images: ["/portfolio/opengraph-image"],
   },
 };
 

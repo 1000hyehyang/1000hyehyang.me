@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SITE_CONFIG, SITE_LINKS } from "@/lib/config";
-import { absoluteUrl, serializeJsonLd } from "@/lib/seo";
+import { absoluteUrl, DEFAULT_OG_IMAGE, serializeJsonLd } from "@/lib/seo";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -60,13 +60,15 @@ export const metadata: Metadata = {
     url: SITE_CONFIG.url,
     siteName: SITE_CONFIG.name,
     locale: SITE_CONFIG.locale,
-    type: "website"
+    type: "website",
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: SITE_CONFIG.title,
     description: SITE_CONFIG.description,
-  }
+    images: [DEFAULT_OG_IMAGE.url],
+  },
 };
 
 const websiteStructuredData = serializeJsonLd({
