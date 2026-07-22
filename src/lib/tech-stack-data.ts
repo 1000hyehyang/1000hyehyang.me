@@ -18,7 +18,7 @@ export const TECH_STACK: TechStackCategory[] = [
   },
   {
     category: "Tool",
-    technologies: ["Unity", "Figma", "Adobe Photoshop", "Adobe Illustrator"]
+    technologies: ["Unity", "Blender", "Figma", "Adobe Photoshop", "Adobe Illustrator"]
   }
 ] as const;
 
@@ -66,6 +66,7 @@ const PROJECT_TECH_CATEGORIES: Record<string, string> = {
   "Loki": "DevOps",
   // Tool
   "Unity": "Tool",
+  "Blender": "Tool",
   "Figma": "Tool",
 };
 
