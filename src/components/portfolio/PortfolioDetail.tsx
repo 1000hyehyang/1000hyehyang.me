@@ -53,9 +53,6 @@ export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps)
   const setMarkdownContainerRef = useMarkdownBodyHydration();
   const displayCategory = getPortfolioDisplayCategory(frontmatter);
   const hasLinks = Boolean(frontmatter.githubUrl || frontmatter.siteUrl);
-  const hasProjectDetails = Boolean(
-    frontmatter.teamMembers || frontmatter.myRole,
-  );
 
   useGsapScrollReveal(scrollPaneRef, {
     selector: "[data-scroll-reveal], .markdown-body > *",
@@ -103,7 +100,7 @@ export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps)
             </div>
           </dl>
 
-          {hasProjectDetails ? (
+          {frontmatter.teamMembers ? (
             <section
               className="mt-8 border-t border-border pt-8"
               aria-labelledby="project-details-title"
@@ -115,26 +112,14 @@ export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps)
                 프로젝트 정보
               </h2>
               <dl className="space-y-5">
-                {frontmatter.teamMembers ? (
-                  <div>
-                    <dt className="mb-1.5 text-xs font-medium text-muted-foreground">
-                      팀 구성
-                    </dt>
-                    <dd className="text-sm leading-6 text-foreground">
-                      {frontmatter.teamMembers}
-                    </dd>
-                  </div>
-                ) : null}
-                {frontmatter.myRole ? (
-                  <div>
-                    <dt className="mb-1.5 text-xs font-medium text-muted-foreground">
-                      담당 역할
-                    </dt>
-                    <dd className="break-words text-sm leading-6 text-foreground">
-                      {frontmatter.myRole}
-                    </dd>
-                  </div>
-                ) : null}
+                <div>
+                  <dt className="mb-1.5 text-xs font-medium text-muted-foreground">
+                    팀 구성
+                  </dt>
+                  <dd className="text-sm leading-6 text-foreground">
+                    {frontmatter.teamMembers}
+                  </dd>
+                </div>
               </dl>
             </section>
           ) : null}
@@ -202,6 +187,24 @@ export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps)
                 사용 기술
               </h2>
               <ProjectTechList frontmatter={frontmatter} />
+            </section>
+          ) : null}
+
+          {frontmatter.myRole ? (
+            <section
+              data-scroll-reveal
+              className="mb-12 pb-12"
+              aria-labelledby="project-role-title"
+            >
+              <h2
+                id="project-role-title"
+                className="mb-5 text-lg font-semibold text-foreground"
+              >
+                담당 역할
+              </h2>
+              <p className="break-words text-sm leading-6 text-foreground">
+                {frontmatter.myRole}
+              </p>
             </section>
           ) : null}
 
