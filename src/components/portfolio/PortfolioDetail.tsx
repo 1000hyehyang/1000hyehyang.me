@@ -9,7 +9,6 @@ import type { PortfolioDetailProps, PortfolioFrontmatter } from "@/types";
 import { getPortfolioDisplayCategory } from "@/lib/portfolio";
 import { groupProjectTechByCategory } from "@/lib/tech-stack-data";
 import { useGsapScrollReveal } from "@/hooks/useGsapScrollReveal";
-import { useMarkdownBodyHydration } from "@/hooks/useHydrateMarkdownWidgets";
 import { TechBadge } from "./TechBadge";
 
 function ProjectTechList({ frontmatter }: { frontmatter: PortfolioFrontmatter }) {
@@ -50,7 +49,6 @@ function ProjectTechList({ frontmatter }: { frontmatter: PortfolioFrontmatter })
 export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps) {
   const scrollPaneRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = Boolean(useReducedMotion());
-  const setMarkdownContainerRef = useMarkdownBodyHydration();
   const displayCategory = getPortfolioDisplayCategory(frontmatter);
   const hasLinks = Boolean(frontmatter.githubUrl || frontmatter.siteUrl);
 
@@ -208,7 +206,7 @@ export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps)
             </section>
           ) : null}
 
-          <div ref={setMarkdownContainerRef}>{children}</div>
+          {children}
         </div>
       </div>
     </motion.article>

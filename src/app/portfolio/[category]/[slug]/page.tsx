@@ -3,9 +3,10 @@ import { PortfolioDetail } from "@/components/portfolio/PortfolioDetail";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SITE_CONFIG } from "@/lib/config";
-import { markdownToHtml } from "@/lib/markdownToHtml";
+import { renderMarkdown } from "@/lib/markdown/renderMarkdown";
 import { getPortfolioDisplayCategory, getPortfolioStartTime } from "@/lib/portfolio";
 import { absoluteUrl, serializeJsonLd } from "@/lib/seo";
+import { MarkdownContent } from "@/components/markdown/MarkdownContent";
 
 type PortfolioDetailPageProps = {
   params: Promise<{ category: string; slug: string }>;
@@ -157,7 +158,7 @@ export default async function PortfolioDetailPage({
     ],
   });
 
-  const htmlContent = await markdownToHtml(item.content);
+  const htmlContent = await renderMarkdown(item.content);
 
   return (
     <>
@@ -166,10 +167,7 @@ export default async function PortfolioDetailPage({
         dangerouslySetInnerHTML={{ __html: projectStructuredData }}
       />
       <PortfolioDetail frontmatter={item.frontmatter}>
-        <div
-          className="markdown-body"
-          dangerouslySetInnerHTML={{ __html: htmlContent }}
-        />
+        <MarkdownContent html={htmlContent} />
       </PortfolioDetail>
     </>
   );
