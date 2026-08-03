@@ -4,6 +4,12 @@ export type PortfolioRouteCategory = "project" | "hackathon";
 export type PortfolioDiscipline = "dev" | "design";
 export type PortfolioFilter = "total" | "dev" | "hackathons" | "design";
 
+export type PortfolioRole = {
+  title: string;
+  summary?: string;
+  contributions: string[];
+};
+
 export type PortfolioFrontmatter = {
   title: string;
   period: string;
@@ -18,7 +24,7 @@ export type PortfolioFrontmatter = {
   pinned?: boolean;
   categorizedTech?: boolean;
   teamMembers?: string;
-  myRole?: string;
+  myRole?: PortfolioRole;
 };
 
 export type TimelineItem = {

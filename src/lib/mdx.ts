@@ -6,6 +6,7 @@ import matter from "gray-matter";
 import type {
   PortfolioDiscipline,
   PortfolioFrontmatter,
+  PortfolioRole,
   PortfolioRouteCategory,
 } from "@/types";
 import { sortPortfolioNewestFirst } from "@/lib/portfolio";
@@ -41,6 +42,35 @@ function optionalStringArray(value: unknown): string[] | undefined {
   return Array.isArray(value) && value.every((item) => typeof item === "string")
     ? value
     : undefined;
+}
+
+function optionalPortfolioRole(value: unknown): PortfolioRole | undefined {
+  // 기존 한 줄 형식도 안전하게 표시해 오래된 콘텐츠와의 호환성을 유지한다.
+  if (typeof value === "string" && value.length > 0) {
+    return { title: value, contributions: [] };
+  }
+
+  if (!isRecord(value)) return undefined;
+
+  const title = optionalString(value.title);
+  if (!title) return undefined;
+
+  const hasNoContributions =
+    value.contributions === undefined || value.contributions === "";
+  const parsedContributions = hasNoContributions
+    ? []
+    : optionalStringArray(value.contributions);
+  if (!parsedContributions) return undefined;
+
+  const contributions = parsedContributions.filter(
+    (contribution) => contribution.trim().length > 0,
+  );
+
+  return {
+    title,
+    summary: optionalString(value.summary),
+    contributions,
+  };
 }
 
 function toFrontmatter(
@@ -81,7 +111,7 @@ function toFrontmatter(
     pinned: data.pinned === true,
     categorizedTech: data.categorizedTech === true,
     teamMembers: optionalString(data.teamMembers),
-    myRole: optionalString(data.myRole),
+    myRole: optionalPortfolioRole(data.myRole),
   };
 }
 

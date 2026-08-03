@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, Github } from "lucide-react";
+import { ArrowLeft, Check, ExternalLink, Github } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { PortfolioDetailProps, PortfolioFrontmatter } from "@/types";
 import { getPortfolioDisplayCategory } from "@/lib/portfolio";
@@ -198,11 +198,39 @@ export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps)
                 id="project-role-title"
                 className="mb-5 text-lg font-semibold text-foreground"
               >
-                담당 역할
+                역할과 기여
               </h2>
-              <p className="break-words text-sm leading-6 text-foreground">
-                {frontmatter.myRole}
-              </p>
+              <div className="overflow-hidden rounded-2xl bg-muted/50">
+                <div className="px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
+                  <p className="mb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    My role
+                  </p>
+                  <h3 className="text-lg font-semibold tracking-[-0.02em] text-foreground">
+                    {frontmatter.myRole.title}
+                  </h3>
+                  {frontmatter.myRole.summary ? (
+                    <p className="mt-2 max-w-2xl break-words text-sm leading-6 text-muted-foreground">
+                      {frontmatter.myRole.summary}
+                    </p>
+                  ) : null}
+                </div>
+
+                {frontmatter.myRole.contributions.length > 0 ? (
+                  <ul className="grid grid-cols-1 gap-y-4 px-5 pb-5 pt-3 sm:px-6 sm:pb-6">
+                    {frontmatter.myRole.contributions.map((contribution) => (
+                      <li
+                        key={contribution}
+                        className="flex min-w-0 items-start gap-3 text-sm leading-6 text-foreground"
+                      >
+                        <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-background text-muted-foreground">
+                          <Check className="h-2.5 w-2.5" aria-hidden="true" />
+                        </span>
+                        <span className="break-words">{contribution}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
             </section>
           ) : null}
 
