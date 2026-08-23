@@ -37,7 +37,7 @@ export const ORGANIZATION_DATA: ResumeEntry[] = [
     description: "IT 연합 동아리 UMC 디자인 파트장 / 스프링부트 파트원",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/umc.png",
     logoAlt: "UMC 로고",
-    url: "https://umc.makeus.in/",
+    url: "https://umc.it.kr/",
     activities: [
       "브랜드·마이크로 인플루언서 매칭 및 협업 플랫폼 ⌜리얼 매치⌟ 백엔드 개발",
       "디자인 파트장으로 UI/UX 디자인 교육 및 멘토링",
