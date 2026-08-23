@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import type { PortfolioFrontmatter } from "@/types";
 import { ResumeReveal } from "./ResumeReveal";
 import { ResumeSection } from "./ResumeSection";
@@ -30,9 +31,12 @@ function ProjectItem({ project }: { project: PortfolioFrontmatter }) {
           height={40}
           className="size-10 shrink-0 rounded-lg object-contain"
         />
-        <h3 className="text-base font-semibold text-foreground transition-colors group-hover:text-brand">
-          [{details.context}] {details.title}
-        </h3>
+        <div className="inline-flex items-center gap-1.5 text-foreground transition-colors group-hover:text-brand">
+          <h3 className="text-base font-semibold underline underline-offset-[6px]">
+            [{details.context}] {details.title}
+          </h3>
+          <ArrowUpRight className="size-4 shrink-0" aria-hidden="true" />
+        </div>
       </Link>
 
       <dl className="mt-4 space-y-3">
