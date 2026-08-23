@@ -8,6 +8,7 @@ import type {
   PortfolioFrontmatter,
   PortfolioRole,
   PortfolioRouteCategory,
+  ResumeProjectDetails,
 } from "@/types";
 import { sortPortfolioNewestFirst } from "@/lib/portfolio";
 
@@ -73,6 +74,45 @@ function optionalPortfolioRole(value: unknown): PortfolioRole | undefined {
   };
 }
 
+function optionalResumeProjectDetails(
+  value: unknown,
+): ResumeProjectDetails | undefined {
+  if (!isRecord(value)) return undefined;
+
+  const context = optionalString(value.context);
+  const title = optionalString(value.title);
+  const logo = optionalString(value.logo);
+  const tech = optionalStringArray(value.tech);
+  const team = optionalString(value.team);
+  const service = optionalString(value.service);
+  const infrastructureCriteria = optionalString(value.infrastructureCriteria);
+  const highlights = optionalStringArray(value.highlights);
+
+  if (
+    !context ||
+    !title ||
+    !logo ||
+    !tech?.length ||
+    !team ||
+    !service ||
+    !infrastructureCriteria ||
+    !highlights?.length
+  ) {
+    return undefined;
+  }
+
+  return {
+    context,
+    title,
+    logo,
+    tech,
+    team,
+    service,
+    infrastructureCriteria,
+    highlights,
+  };
+}
+
 function toFrontmatter(
   data: unknown,
   category: PortfolioRouteCategory,
@@ -112,6 +152,7 @@ function toFrontmatter(
     categorizedTech: data.categorizedTech === true,
     teamMembers: optionalString(data.teamMembers),
     myRole: optionalPortfolioRole(data.myRole),
+    resume: optionalResumeProjectDetails(data.resume),
   };
 }
 

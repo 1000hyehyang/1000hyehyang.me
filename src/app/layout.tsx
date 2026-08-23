@@ -4,7 +4,6 @@ import "./globals.css";
 import { ClickRipple } from "@/components/common/ClickRipple";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { SITE_CONFIG, SITE_LINKS } from "@/lib/config";
 import { absoluteUrl, DEFAULT_OG_IMAGE, serializeJsonLd } from "@/lib/seo";
 
@@ -122,15 +121,13 @@ export default function RootLayout({
       <body className={`${geistMono.variable} antialiased bg-background text-foreground`}>
         <ThemeProvider>
           <ClickRipple />
-          <TooltipProvider>
-            <SiteHeader />
-            <main
-              id="main-content"
-              className="min-h-[calc(100dvh-var(--site-header-height))]"
-            >
-              <div className="site-shell">{children}</div>
-            </main>
-          </TooltipProvider>
+          <SiteHeader />
+          <main
+            id="main-content"
+            className="min-h-[calc(100dvh-var(--site-header-height))]"
+          >
+            <div className="site-shell">{children}</div>
+          </main>
         </ThemeProvider>
       </body>
     </html>

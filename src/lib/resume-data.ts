@@ -1,8 +1,8 @@
-import { TimelineItem } from "@/types";
+import type { ResumeEntry } from "@/types";
 
-export const EDUCATION_DATA: TimelineItem[] = [
+export const EDUCATION_DATA: ResumeEntry[] = [
   {
-    period: "2022.03 - Now",
+    period: "2022.03 - 2027.02",
     title: "한국외국어대학교 서울캠퍼스",
     description: "EICC(영어통번역학과) & 융복합소프트웨어 전공",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/college.png",
@@ -15,7 +15,7 @@ export const EDUCATION_DATA: TimelineItem[] = [
   }
 ];
 
-export const ORGANIZATION_DATA: TimelineItem[] = [
+export const ORGANIZATION_DATA: ResumeEntry[] = [
   {
     period: "2025.09 - 2026.08.01",
     title: "GDG on Campus HUFS 7th Member",
@@ -74,11 +74,12 @@ export const ORGANIZATION_DATA: TimelineItem[] = [
   }
 ];
 
-export const AWARDS_DATA: TimelineItem[] = [
+export const AWARDS_DATA: ResumeEntry[] = [
   {
     period: "2026.01",
     title: "2025 HUFS Better World 아이디어 공모전 우수상",
     description: "Slow Is OK! 시니어를 위한 슬로우 키오스크 | 팀장",
+    issuer: "한국외국어대학교",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/college.png",
     logoAlt: "HUFS 로고"
   },
@@ -86,6 +87,7 @@ export const AWARDS_DATA: TimelineItem[] = [
     period: "2024.10",
     title: "2024 메타버스 개발자 경진대회 우수상",
     description: "APOC을 활용한 KBO 구단 브랜딩 XR 웹 서비스 | 팀장",
+    issuer: "팜피(주)",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/apoc.png",
     logoAlt: "APOC 로고"
   },
@@ -93,12 +95,13 @@ export const AWARDS_DATA: TimelineItem[] = [
     period: "2024.07",
     title: "2024 XREAL XR Hackathon 우수상",
     description: "레시피 추천 VR 어시스턴트 ⌜요리보Go!⌟ | 클라이언트 개발",
+    issuer: "XREAL",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/xreal.png",
     logoAlt: "XREAL 로고"
   }
 ];
 
-export const CERTIFICATION_DATA: TimelineItem[] = [
+export const CERTIFICATION_DATA: ResumeEntry[] = [
   {
     period: "2025.09",
     title: "ADsP",
@@ -129,7 +132,7 @@ export const CERTIFICATION_DATA: TimelineItem[] = [
   }
 ];
 
-export const LANGUAGE_DATA: TimelineItem[] = [
+export const LANGUAGE_DATA: ResumeEntry[] = [
   {
     period: "2026.07.06",
     title: "상공회의소 한자 3급",

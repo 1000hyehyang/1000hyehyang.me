@@ -10,6 +10,17 @@ export type PortfolioRole = {
   contributions: string[];
 };
 
+export type ResumeProjectDetails = {
+  context: string;
+  title: string;
+  logo: string;
+  tech: string[];
+  team: string;
+  service: string;
+  infrastructureCriteria: string;
+  highlights: string[];
+};
+
 export type PortfolioFrontmatter = {
   title: string;
   period: string;
@@ -25,12 +36,14 @@ export type PortfolioFrontmatter = {
   categorizedTech?: boolean;
   teamMembers?: string;
   myRole?: PortfolioRole;
+  resume?: ResumeProjectDetails;
 };
 
-export type TimelineItem = {
+export type ResumeEntry = {
   period: string;
   title: string;
   description: string;
+  issuer?: string;
   logo: string;
   logoAlt: string;
   activities?: string[];

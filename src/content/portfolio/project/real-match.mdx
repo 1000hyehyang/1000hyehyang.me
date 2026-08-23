@@ -20,6 +20,18 @@ myRole:
     - "도메인 이벤트와 Redis 멱등성 키를 적용해 시스템 메시지의 정합성 확보"
     - "파일 상태 전이와 접근 정책을 분리한 S3·CloudFront 스토리지 구조 설계"
     - "Outbox·RabbitMQ 기반 FCM 웹 푸시 및 이메일 알림 파이프라인 구현"
+resume:
+  context: "UMC 9기"
+  title: "RealMatch"
+  logo: "/project-logos/real-match.svg"
+  tech: ["Java 21", "Spring Boot 3.5.9", "Spring Security", "JPA", "QueryDSL 5.1.0", "JJWT 0.12.3", "WebSocket·STOMP", "RabbitMQ", "Redis OM 0.9.7", "MySQL", "AWS SDK 2.26.7", "Firebase Admin 9.2.0", "Docker", "GitHub Actions", "HAProxy", "Cloudflare", "S3·CloudFront", "Prometheus·Grafana"]
+  team: "PM 1명, 디자인 1명, FE 4명, BE 5명"
+  service: "브랜드와 마이크로 인플루언서의 매칭부터 제안·협의·콘텐츠 제작·피드백·완료까지 관리하는 협업 플랫폼"
+  infrastructureCriteria: "--"
+  highlights:
+    - "협업 상태 확정 전 시스템 메시지가 전송될 수 있는 정합성 문제를 도메인 이벤트와 Redis 멱등성 키로 해결해 중복·오전송 가능성을 낮춤"
+    - "STOMP 기반 실시간 채팅과 JWT 인증, 메시지 영속화, REST 기반 재접속 복구 흐름 구현"
+    - "Outbox·RabbitMQ 기반 FCM·이메일 알림 파이프라인과 S3·CloudFront 파일 접근 정책, Docker·GitHub Actions 배포 자동화 구축"
 ---
 
 # 프로젝트 개요

@@ -1,14 +1,11 @@
-"use client";
-
 import Image from "next/image";
-import { motion } from "framer-motion";
-import type { TimelineItem } from "@/types";
-import { AboutSection } from "./AboutSection";
+import type { ResumeEntry } from "@/types";
+import { ResumeSection } from "./ResumeSection";
 
 type ExperienceSectionProps = {
   id: string;
   title: string;
-  items: readonly TimelineItem[];
+  items: readonly ResumeEntry[];
   spacing?: "default" | "relaxed";
 };
 
@@ -17,18 +14,12 @@ const spacingClassNames = {
   relaxed: "space-y-8",
 } as const;
 
-function ExperienceCard({ item, index }: { item: TimelineItem; index: number }) {
+function ExperienceCard({ item }: { item: ResumeEntry }) {
   const titleClassName =
     "mb-1 text-sm font-semibold text-foreground transition-colors";
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: -50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      className="flex items-start gap-4"
-    >
+    <article className="flex items-start gap-4">
       <div className="size-16 shrink-0 overflow-hidden rounded-lg border border-logo-border bg-logo-surface">
         <Image
           src={item.logo}
@@ -54,15 +45,18 @@ function ExperienceCard({ item, index }: { item: TimelineItem; index: number }) 
             <span className={titleClassName}>{item.title}</span>
           )}
         </h3>
-        {item.description && (
+        {item.description ? (
           <p className="mb-2 text-xs text-muted-foreground">{item.description}</p>
-        )}
+        ) : null}
         <p className="mb-3 text-xs text-muted-foreground">{item.period}</p>
 
-        {item.activities && item.activities.length > 0 && (
+        {item.activities?.length ? (
           <ul className="space-y-1">
             {item.activities.map((activity) => (
-              <li key={activity} className="flex items-start text-xs text-muted-foreground">
+              <li
+                key={activity}
+                className="flex items-start text-xs text-muted-foreground"
+              >
                 <span aria-hidden="true" className="mr-2 text-brand">
                   •
                 </span>
@@ -70,9 +64,9 @@ function ExperienceCard({ item, index }: { item: TimelineItem; index: number }) 
               </li>
             ))}
           </ul>
-        )}
+        ) : null}
       </div>
-    </motion.article>
+    </article>
   );
 }
 
@@ -83,16 +77,12 @@ export function ExperienceSection({
   spacing = "default",
 }: ExperienceSectionProps) {
   return (
-    <AboutSection id={id} title={title}>
+    <ResumeSection id={id} title={title}>
       <div className={spacingClassNames[spacing]}>
-        {items.map((item, index) => (
-          <ExperienceCard
-            key={`${item.title}-${item.period}`}
-            item={item}
-            index={index}
-          />
+        {items.map((item) => (
+          <ExperienceCard key={`${item.title}-${item.period}`} item={item} />
         ))}
       </div>
-    </AboutSection>
+    </ResumeSection>
   );
 }

@@ -6,9 +6,8 @@ import { SITE_LINKS } from "@/lib/config";
 import { ThemeToggle } from "./ThemeToggle";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Home" },
+  { href: "/", label: "Résumé" },
   { href: "/portfolio", label: "Projects" },
-  { href: "/about", label: "About" },
 ] as const;
 
 const navItemClassName =

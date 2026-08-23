@@ -54,7 +54,7 @@ export async function generateMetadata({
     authors: [
       {
         name: SITE_CONFIG.authorName,
-        url: "/about",
+        url: "/",
       },
     ],
     alternates: {
@@ -69,7 +69,7 @@ export async function generateMetadata({
       locale: SITE_CONFIG.locale,
       publishedTime:
         startTime > 0 ? new Date(startTime).toISOString() : undefined,
-      authors: [absoluteUrl("/about")],
+      authors: [absoluteUrl("/")],
       section: getPortfolioDisplayCategory(item.frontmatter),
       tags: item.frontmatter.tech,
       images: image

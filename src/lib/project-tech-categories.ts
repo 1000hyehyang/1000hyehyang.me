@@ -1,28 +1,3 @@
-type TechStackCategory = {
-  category: string;
-  technologies: readonly string[];
-};
-
-export const TECH_STACK: TechStackCategory[] = [
-  {
-    category: "Backend",
-    technologies: ["Spring Boot", "Java", "Python", "C#"]
-  },
-  {
-    category: "Frontend",
-    technologies: ["React", "TypeScript", "Next.js"]
-  },
-  {
-    category: "DevOps",
-    technologies: ["Docker", "AWS", "GitHub Actions"]
-  },
-  {
-    category: "Tool",
-    technologies: ["Unity", "Blender", "Figma", "Adobe Photoshop", "Adobe Illustrator"]
-  }
-] as const;
-
-// 프로젝트용 기술 카테고리 매핑 (홈 화면 TECH_STACK과 별도 관리)
 const PROJECT_TECH_CATEGORIES: Record<string, string> = {
   // Backend
   "Spring Boot": "Backend",

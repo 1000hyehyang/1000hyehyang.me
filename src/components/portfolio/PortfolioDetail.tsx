@@ -7,7 +7,7 @@ import { ArrowLeft, Check, ExternalLink, Github } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { PortfolioDetailProps, PortfolioFrontmatter } from "@/types";
 import { getPortfolioDisplayCategory } from "@/lib/portfolio";
-import { groupProjectTechByCategory } from "@/lib/tech-stack-data";
+import { groupProjectTechByCategory } from "@/lib/project-tech-categories";
 import { useGsapScrollReveal } from "@/hooks/useGsapScrollReveal";
 import { TechBadge } from "./TechBadge";
 

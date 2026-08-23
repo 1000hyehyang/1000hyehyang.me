@@ -1,17 +1,17 @@
-import { CredentialSection } from "@/components/about/CredentialSection";
-import { ExperienceSection } from "@/components/about/ExperienceSection";
-import { TimelineSection } from "@/components/about/TimelineSection";
 import {
   AWARDS_DATA,
   CERTIFICATION_DATA,
   EDUCATION_DATA,
   LANGUAGE_DATA,
   ORGANIZATION_DATA,
-} from "@/lib/about-data";
+} from "@/lib/resume-data";
+import { CredentialSection } from "./CredentialSection";
+import { ExperienceSection } from "./ExperienceSection";
+import { TimelineSection } from "./TimelineSection";
 
-export default function AboutPage() {
+export function ResumeHistory() {
   return (
-    <div className="mx-auto">
+    <>
       <ExperienceSection id="education" title="Education." items={EDUCATION_DATA} />
       <ExperienceSection
         id="organization"
@@ -30,8 +30,7 @@ export default function AboutPage() {
         title="Language."
         items={LANGUAGE_DATA}
         columns={3}
-        showDivider={false}
       />
-    </div>
+    </>
   );
 }

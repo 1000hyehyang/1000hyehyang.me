@@ -10,8 +10,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@radix-ui/react-tooltip": "^1.2.7",
-    "@upstash/redis": "^1.35.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.6",
     "gray-matter": "^4.0.3",
