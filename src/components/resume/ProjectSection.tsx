@@ -51,18 +51,42 @@ function ProjectItem({ project }: { project: PortfolioFrontmatter }) {
         </ProjectDetail>
       </dl>
 
-      <ul className="mt-5 space-y-2">
-        {details.highlights.map((highlight) => (
-          <li
-            key={highlight}
-            className="flex items-start text-xs leading-5 text-muted-foreground"
-          >
-            <span aria-hidden="true" className="mr-2 text-brand">
-              •
-            </span>
-            <span>{highlight}</span>
-          </li>
-        ))}
+      <ul className="mt-5 space-y-4">
+        {details.highlights.map((highlight) =>
+          typeof highlight === "string" ? (
+            <li
+              key={highlight}
+              className="flex items-start text-xs leading-5 text-muted-foreground"
+            >
+              <span aria-hidden="true" className="mr-2 text-brand">
+                •
+              </span>
+              <span>{highlight}</span>
+            </li>
+          ) : (
+            <li key={highlight.title}>
+              <div className="flex items-start text-xs font-semibold leading-5 text-foreground">
+                <span aria-hidden="true" className="mr-2 text-brand">
+                  •
+                </span>
+                <span>{highlight.title}</span>
+              </div>
+              <ul className="mt-2 space-y-2 pl-4">
+                {highlight.items.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start text-xs leading-5 text-muted-foreground"
+                  >
+                    <span aria-hidden="true" className="mr-2 text-brand/70">
+                      -
+                    </span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ),
+        )}
       </ul>
     </article>
   );

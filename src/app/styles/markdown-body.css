@@ -26,6 +26,34 @@
   padding-bottom: 0.18rem;
   letter-spacing: -0.01em;
 }
+
+.portfolio-tab-panel .markdown-body > :first-child {
+  margin-top: 0;
+}
+
+.portfolio-tab-panel .markdown-body > *,
+.portfolio-tab-panel [data-tab-reveal] {
+  animation: portfolio-tab-item-in 0.36s ease-out both;
+}
+
+@keyframes portfolio-tab-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-tab-panel .markdown-body > *,
+  .portfolio-tab-panel [data-tab-reveal] {
+    animation: none;
+  }
+}
 .markdown-body h2 {
   font-size: 1.125rem;
   font-weight: 600;

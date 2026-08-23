@@ -8,6 +8,7 @@ import type {
   PortfolioFrontmatter,
   PortfolioRole,
   PortfolioRouteCategory,
+  ResumeHighlightGroup,
   ResumeProjectDetails,
 } from "@/types";
 import { sortPortfolioNewestFirst } from "@/lib/portfolio";
@@ -42,6 +43,31 @@ function optionalString(value: unknown): string | undefined {
 function optionalStringArray(value: unknown): string[] | undefined {
   return Array.isArray(value) && value.every((item) => typeof item === "string")
     ? value
+    : undefined;
+}
+
+function optionalResumeHighlights(
+  value: unknown,
+): Array<string | ResumeHighlightGroup> | undefined {
+  if (!Array.isArray(value)) return undefined;
+
+  const highlights = value.map((highlight) => {
+    if (typeof highlight === "string" && highlight.length > 0) {
+      return highlight;
+    }
+
+    if (!isRecord(highlight)) return undefined;
+
+    const title = optionalString(highlight.title);
+    const items = optionalStringArray(highlight.items);
+    return title && items?.length ? { title, items } : undefined;
+  });
+
+  return highlights.every(
+    (highlight): highlight is string | ResumeHighlightGroup =>
+      highlight !== undefined,
+  )
+    ? highlights
     : undefined;
 }
 
@@ -86,7 +112,7 @@ function optionalResumeProjectDetails(
   const team = optionalString(value.team);
   const service = optionalString(value.service);
   const infrastructureCriteria = optionalString(value.infrastructureCriteria);
-  const highlights = optionalStringArray(value.highlights);
+  const highlights = optionalResumeHighlights(value.highlights);
 
   if (
     !context ||

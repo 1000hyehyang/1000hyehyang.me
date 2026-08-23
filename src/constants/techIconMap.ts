@@ -39,6 +39,7 @@ const ICON_NAMES = [
   "Haproxy",
   "HTML5",
   "Hibernate",
+  "Hugging Face",
   "JSON",
   "JUnit",
   "Java",

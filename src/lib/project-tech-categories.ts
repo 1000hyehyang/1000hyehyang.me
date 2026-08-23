@@ -1,4 +1,6 @@
 const PROJECT_TECH_CATEGORIES: Record<string, string> = {
+  // AI
+  "Hugging Face": "AI",
   // Backend
   "Spring Boot": "Backend",
   "JPA": "Backend",

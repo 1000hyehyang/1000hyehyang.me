@@ -10,6 +10,11 @@ export type PortfolioRole = {
   contributions: string[];
 };
 
+export type ResumeHighlightGroup = {
+  title: string;
+  items: string[];
+};
+
 export type ResumeProjectDetails = {
   context: string;
   title: string;
@@ -18,7 +23,7 @@ export type ResumeProjectDetails = {
   team: string;
   service: string;
   infrastructureCriteria: string;
-  highlights: string[];
+  highlights: Array<string | ResumeHighlightGroup>;
 };
 
 export type PortfolioFrontmatter = {
@@ -55,4 +60,5 @@ export type PortfolioCardProps = PortfolioFrontmatter;
 export type PortfolioDetailProps = {
   frontmatter: PortfolioFrontmatter;
   children: ReactNode;
+  infoContent?: ReactNode;
 };

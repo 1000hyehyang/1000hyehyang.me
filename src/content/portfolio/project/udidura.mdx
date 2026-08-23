@@ -2,7 +2,7 @@
 title: "어디더라 - SNS 장소 저장·데이트 코스 추천 서비스"
 slug: "udidura"
 period: "2026.03.05 - 2026.06.17"
-tech: ["Spring Boot", "JPA", "QueryDSL", "FastAPI", "Docker", "PostgreSQL", "Redis", "GitHub Actions", "React", "Vite", "TypeScript", "Capacitor", "Android"]
+tech: ["Spring Boot", "JPA", "QueryDSL", "FastAPI", "Hugging Face", "Docker", "PostgreSQL", "Redis", "GitHub Actions", "React", "Vite", "TypeScript", "Capacitor", "Android"]
 images: ["https://eaalkymxyfskjojh.public.blob.vercel-storage.com/portfolio/udidura/udidura.png"]
 summary: "한국외국어대학교 종합설계 프로젝트"
 githubUrl: "https://github.com/HUFS-Capstone-Project"
@@ -26,12 +26,65 @@ resume:
   tech: ["Java 21", "Spring Boot 3.5.13", "QueryDSL 5.1.0", "JJWT 0.12.6", "PostgreSQL", "Redis 5+", "FastAPI 0.109+", "Playwright 1.58.0", "Docker", "GitHub Actions"]
   team: "총 6명"
   service: "SNS에서 발견한 장소를 구조화해 저장하고 사용자 조건에 맞는 데이트 코스를 자동 생성하는 서비스"
-  infrastructureCriteria: "--"
+  infrastructureCriteria: "DAU 1,000명·피크 50 TPS·링크 분석 요청 5 TPS를 운영 규모로 가정하고 설계"
   highlights:
-    - "SNS 장소가 여러 도구에 분산되어 코스 구성까지 이어지지 않는 문제를 구조화 저장과 조건 기반 코스 생성 흐름으로 해결"
-    - "Spring Boot·JPA·QueryDSL 기반 REST API와 PostgreSQL 데이터 모델, React 기반 핵심 사용자 흐름 구현"
-    - "Spring Boot API와 FastAPI 처리 서버를 분리하고 Docker·GitHub Actions 기반 배포 자동화 및 Capacitor Android 패키징 구축"
+    - title: "백엔드"
+      items:
+        - "EXPLAIN ANALYZE로 넓은 row width와 디스크 정렬을 발견하고 projection 조회로 변경해, 합성 후보 10,000건의 API p95를 1,215.85ms → 187.18ms로 단축"
+        - "Spring Cache self-invocation을 Provider Bean 분리와 Caffeine으로 개선해, 동일 기준정보 warm 조회 5회의 SQL을 10회 → 0회로 축소"
+        - "OAuth2·JWT 기반 웹·모바일 인증과 refresh token rotation·재사용 탐지·CSRF 방어 체계 구축"
+        - "QueryDSL 동적 조회와 커서 페이지네이션을 기반으로 공동 장소 저장·탐색 및 사용자 조건 기반 데이트 코스 생성 기능 구현"
+    - title: "AI·Processing Server"
+      items:
+        - "외부 장소 API를 동시성 상한이 있는 병렬 처리로 전환해 batch p95를 736.83ms → 62.00ms로 단축하고, 후보당 최대 호출 수를 9회 → 5회로 축소"
+        - "Playwright로 SNS 콘텐츠를 수집하고 OCR·LLM으로 장소 후보를 구조화한 뒤 Kakao API로 실제 장소 정보를 보강하는 파이프라인 구현"
+        - "FastAPI 기반 비동기 job 접수·상태 조회와 timeout·실패 상태 관리를 적용해 장시간 AI 분석 작업을 사용자 요청과 분리"
+    - title: "기획 및 협업"
+      items:
+        - "서비스 아이디어 제안 및 핵심 사용자 흐름 기획"
+        - "팀 역할을 조율하고, AI 활용 스터디 진행 및 기술 이슈 해결 지원"
 ---
+
+# EXPLAIN ANALYZE 기반 조회 성능 최적화
+
+### 문제 및 원인
+로컬 합성 후보 10,000건 조회에서 DB 실행시간은 59.374ms였지만 API p95는 1,215.85ms였습니다. DB 실행시간만으로 설명되지 않는 차이를 바탕으로 넓은 조회 결과를 애플리케이션으로 전달하고 Hibernate 엔티티로 materialization하는 과정의 비용을 의심했습니다. `EXPLAIN (ANALYZE, BUFFERS)`에서 플래너가 약 5KB로 추정한 row width와 `DISTINCT` 정렬 과정의 5,848kB 디스크 `external merge`를 확인했습니다.
+
+### 해결 과정
+`RoomPlace`를 제외한 불필요한 연관 엔티티 materialization을 제거하고, 필요한 필드만 조회하는 **scalar projection**으로 변경했습니다. 별도로 조회하던 영업시간 데이터도 하나의 쿼리로 통합했습니다.
+
+### 결과
+예상 row width가 **약 5KB → 509B**로 줄어 디스크 정렬 대신 메모리 `quicksort`가 사용됐습니다. 동일 조건에서 **DB 실행시간 59.374ms → 32.082ms, API p95 1,215.85ms → 187.18ms**로 감소했습니다.
+
+&nbsp;
+
+# Spring Cache 프록시 우회 문제 개선
+
+### 문제 및 원인
+`@Cacheable` 적용 후에도 동일 기준정보를 5회 조회할 때 SQL이 10회 실행됐습니다. Hibernate Statistics로 확인한 결과, 같은 Bean 내부 호출이 Spring Cache 프록시를 우회하는 self-invocation이 원인이었습니다.
+
+### 해결 과정
+캐시 로딩 책임을 별도 Provider Bean으로 분리하고, Caffeine에 TTL·maximum size·`sync=true`를 적용했습니다.
+
+### 결과
+개선 전 동일 조회 5회에서 발생하던 **SQL 10회를 최초 cold load 시 2회로 줄였고, 이후 warm 조회 5회에서는 SQL이 0회 실행**됐습니다. 또한 **8개 스레드의 동시 cold miss에서도 SQL이 2회만 실행**되는 것을 검증했습니다.
+
+&nbsp;
+
+# 외부 API 호출 병렬화 및 호출 수 최적화
+
+### 문제 및 원인
+장소 후보별 외부 API 호출을 순차 처리하면서 후보 수에 비례해 I/O 대기시간이 누적됐습니다.
+
+### 해결 과정
+서로 독립적인 장소 검색을 **동시성 상한이 있는 병렬 처리**로 전환해 I/O 대기시간을 겹쳐 실행했습니다. 검색 전략도 조정해 실패 시 반복되는 불필요한 API 호출을 제거했습니다.
+
+### 결과
+후보 12개·호출당 50ms의 로컬 합성 지연 조건에서 **batch p95 736.83ms → 62.00ms**로 감소했습니다. 동시에 후보당 최악의 외부 API 호출 횟수를 **9회 → 5회**로 줄였습니다.
+
+&nbsp;
+
+<!-- portfolio:info:start -->
 
 # 프로젝트 개요
 
@@ -47,6 +100,8 @@ resume:
 
 &nbsp;
 
-# 시스템 아키텍처 설계
+# 시스템 아키텍처
 
 ![시스템 아키텍처](https://eaalkymxyfskjojh.public.blob.vercel-storage.com/portfolio/udidura/udidura-architecture.png)
+
+<!-- portfolio:info:end -->

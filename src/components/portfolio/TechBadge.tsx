@@ -8,14 +8,19 @@ import { TECH_ICON_ANIMATION, getAnimationDelay, TECH_ICON_STYLES } from "@/lib/
 type TechBadgeProps = {
   tech: string;
   index?: number;
+  disableAnimation?: boolean;
 };
 
-export const TechBadge = ({ tech, index = 0 }: TechBadgeProps) => {
+export const TechBadge = ({
+  tech,
+  index = 0,
+  disableAnimation = false,
+}: TechBadgeProps) => {
   const iconSrc = getTechIconSrc(tech);
 
   return (
     <motion.div
-      initial={TECH_ICON_ANIMATION.initial}
+      initial={disableAnimation ? false : TECH_ICON_ANIMATION.initial}
       animate={TECH_ICON_ANIMATION.animate}
       transition={{ ...TECH_ICON_ANIMATION.transition, delay: getAnimationDelay(index) }}
       className={TECH_ICON_STYLES.badge}

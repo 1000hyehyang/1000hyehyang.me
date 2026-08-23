@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Check, ExternalLink, Github } from "lucide-react";
@@ -11,14 +11,25 @@ import { groupProjectTechByCategory } from "@/lib/project-tech-categories";
 import { useGsapScrollReveal } from "@/hooks/useGsapScrollReveal";
 import { TechBadge } from "./TechBadge";
 
-function ProjectTechList({ frontmatter }: { frontmatter: PortfolioFrontmatter }) {
+function ProjectTechList({
+  frontmatter,
+  disableBadgeAnimation = false,
+}: {
+  frontmatter: PortfolioFrontmatter;
+  disableBadgeAnimation?: boolean;
+}) {
   if (!frontmatter.tech.length) return null;
 
   if (!frontmatter.categorizedTech) {
     return (
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2" data-tab-reveal>
         {frontmatter.tech.map((tech, index) => (
-          <TechBadge key={tech} tech={tech} index={index} />
+          <TechBadge
+            key={tech}
+            tech={tech}
+            index={index}
+            disableAnimation={disableBadgeAnimation}
+          />
         ))}
       </div>
     );
@@ -31,13 +42,18 @@ function ProjectTechList({ frontmatter }: { frontmatter: PortfolioFrontmatter })
   return (
     <div className="space-y-5">
       {categories.map((category) => (
-        <div key={category} className="space-y-2">
+        <div key={category} className="space-y-2" data-tab-reveal>
           <h3 className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
             {category}
           </h3>
           <div className="flex flex-wrap gap-2">
             {groupedTech[category].map((tech) => (
-              <TechBadge key={tech} tech={tech} index={globalIndex++} />
+              <TechBadge
+                key={tech}
+                tech={tech}
+                index={globalIndex++}
+                disableAnimation={disableBadgeAnimation}
+              />
             ))}
           </div>
         </div>
@@ -46,14 +62,24 @@ function ProjectTechList({ frontmatter }: { frontmatter: PortfolioFrontmatter })
   );
 }
 
-export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps) {
+type PortfolioTab = "core" | "info";
+
+export function PortfolioDetail({
+  frontmatter,
+  children,
+  infoContent,
+}: PortfolioDetailProps) {
   const scrollPaneRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState<PortfolioTab>("core");
   const shouldReduceMotion = Boolean(useReducedMotion());
   const displayCategory = getPortfolioDisplayCategory(frontmatter);
   const hasLinks = Boolean(frontmatter.githubUrl || frontmatter.siteUrl);
+  const hasTabbedContent = infoContent !== undefined;
 
   useGsapScrollReveal(scrollPaneRef, {
-    selector: "[data-scroll-reveal], .markdown-body > *",
+    selector: hasTabbedContent
+      ? "[data-scroll-reveal]"
+      : "[data-scroll-reveal], .markdown-body > *",
     initialY: -30,
   });
 
@@ -96,31 +122,17 @@ export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps)
                 {frontmatter.period}
               </dd>
             </div>
+            {frontmatter.teamMembers ? (
+              <div>
+                <dt className="mb-1.5 text-xs font-medium text-muted-foreground">
+                  팀 구성
+                </dt>
+                <dd className="text-sm leading-6 text-foreground">
+                  {frontmatter.teamMembers}
+                </dd>
+              </div>
+            ) : null}
           </dl>
-
-          {frontmatter.teamMembers ? (
-            <section
-              className="mt-8 border-t border-border pt-8"
-              aria-labelledby="project-details-title"
-            >
-              <h2
-                id="project-details-title"
-                className="mb-5 text-sm font-semibold text-foreground"
-              >
-                프로젝트 정보
-              </h2>
-              <dl className="space-y-5">
-                <div>
-                  <dt className="mb-1.5 text-xs font-medium text-muted-foreground">
-                    팀 구성
-                  </dt>
-                  <dd className="text-sm leading-6 text-foreground">
-                    {frontmatter.teamMembers}
-                  </dd>
-                </div>
-              </dl>
-            </section>
-          ) : null}
 
           {hasLinks ? (
             <div className="portfolio-detail-links mt-7 flex flex-wrap gap-2">
@@ -172,17 +184,17 @@ export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps)
             </div>
           ) : null}
 
-          {frontmatter.tech.length > 0 ? (
+          {!hasTabbedContent && frontmatter.tech.length > 0 ? (
             <section
               data-scroll-reveal
-              className="mb-12 pb-12"
+              className="mb-12"
               aria-labelledby="project-tech-title"
             >
               <h2
                 id="project-tech-title"
                 className="mb-5 text-lg font-semibold text-foreground"
               >
-                사용 기술
+                기술 스택
               </h2>
               <ProjectTechList frontmatter={frontmatter} />
             </section>
@@ -191,7 +203,7 @@ export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps)
           {frontmatter.myRole ? (
             <section
               data-scroll-reveal
-              className="mb-12 pb-12"
+              className="mb-12"
               aria-labelledby="project-role-title"
             >
               <h2
@@ -234,7 +246,95 @@ export function PortfolioDetail({ frontmatter, children }: PortfolioDetailProps)
             </section>
           ) : null}
 
-          {children}
+          {hasTabbedContent ? (
+            <>
+              <div
+                className="mb-10 flex gap-8 border-b border-border"
+                role="tablist"
+                aria-label="프로젝트 상세 콘텐츠"
+              >
+                {(["core", "info"] as const).map((tab) => {
+                  const isActive = activeTab === tab;
+                  const label = tab === "core" ? "CORE" : "INFO";
+
+                  return (
+                    <button
+                      key={tab}
+                      type="button"
+                      role="tab"
+                      id={`project-${tab}-tab`}
+                      aria-selected={isActive}
+                      aria-controls={`project-${tab}-panel`}
+                      tabIndex={isActive ? 0 : -1}
+                      onClick={() => setActiveTab(tab)}
+                      onKeyDown={(event) => {
+                        if (
+                          event.key === "ArrowLeft" ||
+                          event.key === "ArrowRight"
+                        ) {
+                          event.preventDefault();
+                          const nextTab = tab === "core" ? "info" : "core";
+                          setActiveTab(nextTab);
+                          event.currentTarget.parentElement
+                            ?.querySelector<HTMLButtonElement>(
+                              `#project-${nextTab}-tab`,
+                            )
+                            ?.focus();
+                        }
+                      }}
+                      className={`relative -mb-px cursor-pointer border-b-2 px-1 pb-3 font-sans text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                        isActive
+                          ? "border-brand text-foreground"
+                          : "border-transparent text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div
+                key={activeTab}
+                id={`project-${activeTab}-panel`}
+                role="tabpanel"
+                aria-labelledby={`project-${activeTab}-tab`}
+                tabIndex={0}
+                className="portfolio-tab-panel focus-visible:outline-none"
+              >
+                {activeTab === "core" ? (
+                  children
+                ) : (
+                  <>
+                    {frontmatter.tech.length > 0 ? (
+                      <section
+                        aria-labelledby="project-info-tech-title"
+                      >
+                        <h2
+                          id="project-info-tech-title"
+                          className="mb-5 text-lg font-semibold text-foreground"
+                          data-tab-reveal
+                        >
+                          기술 스택
+                        </h2>
+                        <ProjectTechList
+                          frontmatter={frontmatter}
+                          disableBadgeAnimation
+                        />
+                      </section>
+                    ) : null}
+                    <div
+                      className={frontmatter.tech.length > 0 ? "mt-12" : undefined}
+                    >
+                      {infoContent}
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          ) : (
+            children
+          )}
         </div>
       </div>
     </motion.article>

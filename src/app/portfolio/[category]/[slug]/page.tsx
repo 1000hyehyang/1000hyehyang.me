@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SITE_CONFIG } from "@/lib/config";
 import { renderMarkdown } from "@/lib/markdown/renderMarkdown";
+import { splitPortfolioContent } from "@/lib/portfolio-content";
 import { getPortfolioDisplayCategory, getPortfolioStartTime } from "@/lib/portfolio";
 import { absoluteUrl, serializeJsonLd } from "@/lib/seo";
 import { MarkdownContent } from "@/components/markdown/MarkdownContent";
@@ -158,7 +159,11 @@ export default async function PortfolioDetailPage({
     ],
   });
 
-  const htmlContent = await renderMarkdown(item.content);
+  const contentSections = splitPortfolioContent(item.content);
+  const [coreHtml, infoHtml] = await Promise.all([
+    renderMarkdown(contentSections.core),
+    contentSections.info ? renderMarkdown(contentSections.info) : undefined,
+  ]);
 
   return (
     <>
@@ -166,8 +171,13 @@ export default async function PortfolioDetailPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: projectStructuredData }}
       />
-      <PortfolioDetail frontmatter={item.frontmatter}>
-        <MarkdownContent html={htmlContent} />
+      <PortfolioDetail
+        frontmatter={item.frontmatter}
+        infoContent={
+          infoHtml ? <MarkdownContent html={infoHtml} /> : undefined
+        }
+      >
+        <MarkdownContent html={coreHtml} />
       </PortfolioDetail>
     </>
   );
