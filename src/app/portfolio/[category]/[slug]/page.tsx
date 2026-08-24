@@ -13,6 +13,8 @@ type PortfolioDetailPageProps = {
   params: Promise<{ category: string; slug: string }>;
 };
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const projects = getAllPortfolio();
   return projects.map((project) => ({
@@ -26,15 +28,7 @@ export async function generateMetadata({
 }: PortfolioDetailPageProps): Promise<Metadata> {
   const { category, slug } = await params;
   const item = getPortfolioBySlug(category, slug);
-  if (!item) {
-    return {
-      title: "프로젝트를 찾을 수 없습니다",
-      robots: {
-        index: false,
-        follow: false,
-      },
-    };
-  }
+  if (!item) notFound();
 
   const projectUrl = `/portfolio/${category}/${slug}`;
   const description =

@@ -226,6 +226,14 @@ export function getAllPortfolio(): PortfolioFrontmatter[] {
     return document ? [document.frontmatter] : [];
   });
 
+  const slugs = new Set<string>();
+  for (const project of projects) {
+    if (slugs.has(project.slug)) {
+      throw new Error(`Duplicate portfolio slug: ${project.slug}`);
+    }
+    slugs.add(project.slug);
+  }
+
   return sortPortfolioNewestFirst(projects);
 }
 
