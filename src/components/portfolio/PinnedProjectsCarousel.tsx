@@ -3,7 +3,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  type PanInfo,
+} from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { PortfolioFrontmatter } from "@/types";
 import { getPortfolioDisplayCategory } from "@/lib/portfolio";
@@ -16,6 +21,30 @@ type CarouselState = {
   index: number;
   direction: -1 | 0 | 1;
 };
+
+const SWIPE_DISTANCE_THRESHOLD_PX = 48;
+const SWIPE_FLING_MIN_DISTANCE_PX = 12;
+const SWIPE_VELOCITY_THRESHOLD_PX_PER_SECOND = 500;
+
+function getSwipeDirection({ offset, velocity }: PanInfo): -1 | 0 | 1 {
+  const horizontalDistance = Math.abs(offset.x);
+  const isHorizontalGesture = horizontalDistance > Math.abs(offset.y);
+  const passesDistanceThreshold =
+    horizontalDistance >= SWIPE_DISTANCE_THRESHOLD_PX;
+  const passesFlingThreshold =
+    horizontalDistance >= SWIPE_FLING_MIN_DISTANCE_PX &&
+    Math.abs(velocity.x) >= SWIPE_VELOCITY_THRESHOLD_PX_PER_SECOND;
+
+  if (
+    !isHorizontalGesture ||
+    (!passesDistanceThreshold && !passesFlingThreshold)
+  ) {
+    return 0;
+  }
+
+  const directionSource = passesDistanceThreshold ? offset.x : velocity.x;
+  return directionSource < 0 ? 1 : -1;
+}
 
 export function PinnedProjectsCarousel({
   projects,
@@ -49,6 +78,13 @@ export function PinnedProjectsCarousel({
     });
   };
 
+  const handleDragEnd = (info: PanInfo) => {
+    const swipeDirection = getSwipeDirection(info);
+    if (swipeDirection === 0) return;
+
+    selectProject(activeIndex + swipeDirection, swipeDirection);
+  };
+
   return (
     <div
       className="min-w-0"
@@ -56,7 +92,14 @@ export function PinnedProjectsCarousel({
       aria-roledescription="carousel"
       aria-label="대표 프로젝트"
     >
-      <div className="relative aspect-[200/81] overflow-hidden">
+      <motion.div
+        className="relative aspect-[200/81] touch-pan-y overflow-hidden"
+        drag={hasMultipleProjects ? "x" : false}
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={shouldReduceMotion ? 0 : 0.12}
+        dragMomentum={false}
+        onDragEnd={(_, info) => handleDragEnd(info)}
+      >
         {projects.map((project, projectIndex) => {
           const isActive = projectIndex === activeIndex;
           const previewOnLeft = direction > 0;
@@ -139,7 +182,7 @@ export function PinnedProjectsCarousel({
             </button>
           </>
         ) : null}
-      </div>
+      </motion.div>
 
       <div className="mx-auto mt-5 min-h-32 w-[72%]">
         <AnimatePresence initial={false} mode="wait">

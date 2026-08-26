@@ -70,7 +70,7 @@ function ContactCard({ item }: { item: ContactItem }) {
 
 export function ContactSection() {
   return (
-    <ResumeSection id="contact" title="Contact.">
+    <ResumeSection id="contact" title="Contact." showDivider={false}>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {CONTACT_ITEMS.map((item) => (
           <ContactCard key={item.label} item={item} />
