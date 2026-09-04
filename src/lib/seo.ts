@@ -1,9 +1,9 @@
 import { SITE_CONFIG } from "@/lib/config";
 
 export const DEFAULT_OG_IMAGE = {
-  url: "/og-portfolio.png",
-  width: 1024,
-  height: 537,
+  url: "/og-1000hyehyang.png",
+  width: 1200,
+  height: 630,
   alt: "1000HYEHYANG PORTFOLIO",
 } as const;
 
