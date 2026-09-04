@@ -35,7 +35,15 @@ export function getPortfolioStartTime(period: string): number {
   if (!match) return 0;
 
   const [, year, month, day] = match;
-  return Date.UTC(Number(year), Number(month) - 1, Number(day));
+  const [numericYear, numericMonth, numericDay] = [year, month, day].map(Number);
+  const time = Date.UTC(numericYear, numericMonth - 1, numericDay);
+  const date = new Date(time);
+
+  return date.getUTCFullYear() === numericYear &&
+    date.getUTCMonth() === numericMonth - 1 &&
+    date.getUTCDate() === numericDay
+    ? time
+    : 0;
 }
 
 export function sortPortfolioNewestFirst(

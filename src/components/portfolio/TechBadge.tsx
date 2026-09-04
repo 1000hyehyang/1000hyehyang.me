@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { getTechIconSrc } from "@/constants/techIconMap";
-import { TECH_ICON_ANIMATION, getAnimationDelay, TECH_ICON_STYLES } from "@/lib/tech-icon-utils";
 
 type TechBadgeProps = {
   tech: string;
@@ -20,10 +19,10 @@ export const TechBadge = ({
 
   return (
     <motion.div
-      initial={disableAnimation ? false : TECH_ICON_ANIMATION.initial}
-      animate={TECH_ICON_ANIMATION.animate}
-      transition={{ ...TECH_ICON_ANIMATION.transition, delay: getAnimationDelay(index) }}
-      className={TECH_ICON_STYLES.badge}
+      initial={disableAnimation ? false : { opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+      className="inline-flex items-center gap-2 rounded-md bg-muted/40 px-3 py-1.5 transition-all duration-200 hover:bg-muted/60 dark:bg-muted/60 dark:hover:bg-muted/80"
     >
       {iconSrc && (
         <Image

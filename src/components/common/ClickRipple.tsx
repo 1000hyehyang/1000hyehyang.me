@@ -1,50 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-type Ripple = {
-  id: number;
-  x: number;
-  y: number;
-};
+import { useEffect, useRef } from "react";
 
 export function ClickRipple() {
-  const [ripples, setRipples] = useState<Ripple[]>([]);
+  const layerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const layer = layerRef.current;
+    if (!layer) return;
+
     const handlePointerDown = (event: PointerEvent) => {
       if (event.button !== 0) return;
 
-      const id = Date.now() + Math.random();
-
-      setRipples((current) => [
-        ...current,
-        { id, x: event.clientX, y: event.clientY },
-      ]);
-
-      window.setTimeout(() => {
-        setRipples((current) =>
-          current.filter((ripple) => ripple.id !== id),
-        );
-      }, 650);
+      const ripple = document.createElement("span");
+      ripple.className = "click-ripple";
+      ripple.style.left = `${event.clientX}px`;
+      ripple.style.top = `${event.clientY}px`;
+      ripple.addEventListener("animationend", () => ripple.remove(), {
+        once: true,
+      });
+      layer.append(ripple);
     };
 
     window.addEventListener("pointerdown", handlePointerDown);
-    return () => window.removeEventListener("pointerdown", handlePointerDown);
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown);
+      layer.replaceChildren();
+    };
   }, []);
 
   return (
     <div
+      ref={layerRef}
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden"
-    >
-      {ripples.map((ripple) => (
-        <span
-          key={ripple.id}
-          className="click-ripple"
-          style={{ left: ripple.x, top: ripple.y }}
-        />
-      ))}
-    </div>
+    />
   );
 }

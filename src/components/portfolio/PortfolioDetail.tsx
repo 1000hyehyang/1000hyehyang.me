@@ -8,7 +8,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import type { PortfolioDetailProps, PortfolioFrontmatter } from "@/types";
 import { getPortfolioDisplayCategory } from "@/lib/portfolio";
 import { groupProjectTechByCategory } from "@/lib/project-tech-categories";
-import { useGsapScrollReveal } from "@/hooks/useGsapScrollReveal";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { TechBadge } from "./TechBadge";
 
 function ProjectTechList({
@@ -76,7 +76,7 @@ export function PortfolioDetail({
   const hasLinks = Boolean(frontmatter.githubUrl || frontmatter.siteUrl);
   const hasTabbedContent = infoContent !== undefined;
 
-  useGsapScrollReveal(scrollPaneRef, {
+  useScrollReveal(scrollPaneRef, {
     selector: hasTabbedContent
       ? "[data-scroll-reveal]"
       : "[data-scroll-reveal], .markdown-body > *",

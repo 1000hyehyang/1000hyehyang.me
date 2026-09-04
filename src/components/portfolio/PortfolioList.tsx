@@ -8,7 +8,7 @@ import {
   PORTFOLIO_FILTERS,
   sortPortfolioNewestFirst,
 } from "@/lib/portfolio";
-import { useGsapScrollReveal } from "@/hooks/useGsapScrollReveal";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { usePortfolioUrlState } from "@/hooks/usePortfolioUrlState";
 import { PinnedProjectsCarousel } from "./PinnedProjectsCarousel";
 import { PortfolioCard } from "./PortfolioCard";
@@ -35,7 +35,7 @@ function FilteredPortfolioGrid({
   shouldReduceMotion,
 }: FilteredPortfolioGridProps) {
   const gridRef = useRef<HTMLDivElement>(null);
-  useGsapScrollReveal(gridRef, { initialY: -30 });
+  useScrollReveal(gridRef, { initialY: -30 });
 
   return (
     <motion.div
@@ -74,7 +74,7 @@ export function PortfolioList({
   const shouldReduceMotion = Boolean(useReducedMotion());
   const { filter: selectedFilter, setFilter } =
     usePortfolioUrlState(initialFilter);
-  useGsapScrollReveal(pageRef, {
+  useScrollReveal(pageRef, {
     selector: "[data-page-scroll-reveal]",
     initialY: -30,
   });

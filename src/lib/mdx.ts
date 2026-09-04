@@ -183,36 +183,29 @@ function toFrontmatter(
 }
 
 function readMdxFilesRecursively(directoryPath: string): string[] {
-  try {
-    return fs.readdirSync(directoryPath, { withFileTypes: true }).flatMap((item) => {
-      const fullPath = path.join(directoryPath, item.name);
-      if (item.isDirectory()) return readMdxFilesRecursively(fullPath);
-      return item.isFile() && item.name.endsWith(".mdx") ? [fullPath] : [];
-    });
-  } catch (error) {
-    console.warn(`포트폴리오 디렉터리 읽기 실패 (${directoryPath}):`, error);
-    return [];
-  }
+  return fs.readdirSync(directoryPath, { withFileTypes: true }).flatMap((item) => {
+    const fullPath = path.join(directoryPath, item.name);
+    if (item.isDirectory()) return readMdxFilesRecursively(fullPath);
+    return item.isFile() && item.name.endsWith(".mdx") ? [fullPath] : [];
+  });
 }
 
 function readPortfolioDocument(
   filePath: string,
   category: PortfolioRouteCategory,
-): PortfolioDocument | null {
+): PortfolioDocument {
   try {
     const source = fs.readFileSync(filePath, "utf8");
     const { data, content } = matter(source);
     const frontmatter = toFrontmatter(data, category);
 
     if (!frontmatter) {
-      console.warn(`유효하지 않은 포트폴리오 frontmatter: ${filePath}`);
-      return null;
+      throw new Error("필수 필드 또는 형식이 올바르지 않습니다.");
     }
 
     return { frontmatter, content };
-  } catch (error) {
-    console.warn(`포트폴리오 파일 파싱 실패 (${filePath}):`, error);
-    return null;
+  } catch (cause) {
+    throw new Error(`포트폴리오 파일 파싱 실패: ${filePath}`, { cause });
   }
 }
 
@@ -223,7 +216,7 @@ export function getAllPortfolio(): PortfolioFrontmatter[] {
     if (!isPortfolioRouteCategory(category)) return [];
 
     const document = readPortfolioDocument(filePath, category);
-    return document ? [document.frontmatter] : [];
+    return [document.frontmatter];
   });
 
   const slugs = new Set<string>();
@@ -250,7 +243,7 @@ export function getPortfolioBySlug(
 
   for (const filePath of files) {
     const document = readPortfolioDocument(filePath, category);
-    if (document?.frontmatter.slug === slug) return document;
+    if (document.frontmatter.slug === slug) return document;
   }
 
   return null;
