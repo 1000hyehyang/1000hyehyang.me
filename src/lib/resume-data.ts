@@ -32,7 +32,7 @@ export const ORGANIZATION_DATA: ResumeEntry[] = [
     ]
   },
   {
-    period: "2024.10 - 2026.02",
+    period: "2024.09 - 2026.02",
     title: "UMC 7th, 8th Design - 9th Spring Boot",
     description: "IT 연합 동아리 UMC 디자인 파트장 / 스프링부트 파트원",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/umc.png",
