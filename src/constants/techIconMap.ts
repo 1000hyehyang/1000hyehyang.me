@@ -99,37 +99,20 @@ const ICON_NAMES = [
   "jQuery",
 ] as const;
 
-const ICON_NAME_LOOKUP = ICON_NAMES.reduce<Record<string, string>>((acc, name) => {
-  acc[name.toLowerCase()] = name;
-  return acc;
-}, {});
-
-const CUSTOM_ICON_NAME_ENTRIES: Array<[string, string]> = [
+const ICON_NAME_LOOKUP = new Map<string, string>([
+  ...ICON_NAMES.map((name): [string, string] => [name.toLowerCase(), name]),
   ["spring boot", "Spring"],
   ["arfoundation", "ARCore"],
   ["idea", "PM"],
   ["unity xr interaction toolkit", "Unity"],
-  ["websocket", "Websocket"],
   ["vite", "Vite.js"],
   ["fcm", "Firebase"],
-  ["haproxy", "Haproxy"], // MDX에서는 HAProxy로 표기
   ["postgresql", "PostgresSQL"],
   ["android", "Kotlin"],
-];
-
-const CUSTOM_ICON_NAME_MAP = CUSTOM_ICON_NAME_ENTRIES.reduce<Record<string, string>>((acc, [alias, target]) => {
-  acc[alias.toLowerCase()] = target;
-  return acc;
-}, {});
-
-const getMatchingIconName = (tech: string) => {
-  const lower = tech.toLowerCase();
-
-  return ICON_NAME_LOOKUP[lower] ?? CUSTOM_ICON_NAME_MAP[lower] ?? null;
-};
+]);
 
 export const getTechIconSrc = (tech: string) => {
-  const matchedName = getMatchingIconName(tech);
+  const matchedName = ICON_NAME_LOOKUP.get(tech.toLowerCase());
 
   if (!matchedName) {
     return null;

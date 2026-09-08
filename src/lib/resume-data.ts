@@ -103,28 +103,28 @@ export const AWARDS_DATA: ResumeEntry[] = [
 
 export const CERTIFICATION_DATA: ResumeEntry[] = [
   {
-    period: "2025.09",
+    period: "2025.09.05",
     title: "ADsP",
     description: "",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/k-data.png",
     logoAlt: "K-data 로고"
   },
   {
-    period: "2025.08",
+    period: "2025.08.18",
     title: "GTQ 1급",
     description: "",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/ps.png",
     logoAlt: "GTQ 로고"
   },
   {
-    period: "2025.06",
+    period: "2025.06.27",
     title: "SQLD",
     description: "",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/k-data.png",
     logoAlt: "K-data 로고"
   },
   {
-    period: "2025.06",
+    period: "2025.06.20",
     title: "GTQ-i 1급",
     description: "",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/ai.png",

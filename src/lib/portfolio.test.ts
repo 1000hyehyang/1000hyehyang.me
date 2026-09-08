@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { getTechIconSrc } from "../constants/techIconMap.ts";
 import type { PortfolioFrontmatter } from "@/types";
 import { splitPortfolioContent } from "./portfolio-content.ts";
 import {
@@ -21,6 +22,20 @@ const project = (
   category: "project",
   discipline: "dev",
   ...overrides,
+});
+
+test("tech icons resolve aliases and case variations, with no icon for unknown names", () => {
+  for (const [name, icon] of [
+    ["Spring Boot", "Spring"],
+    ["HAProxy", "Haproxy"],
+    ["WebSocket", "Websocket"],
+    ["PostgreSQL", "PostgresSQL"],
+    ["C++", "C++"],
+  ]) {
+    assert.equal(getTechIconSrc(name), `/icons/${encodeURIComponent(`${icon}.svg`)}`);
+  }
+  assert.equal(getTechIconSrc("unknown"), null);
+  assert.equal(getTechIconSrc("constructor"), null);
 });
 
 test("portfolio filters, dates, sorting, and content sections", () => {

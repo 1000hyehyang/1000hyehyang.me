@@ -1,9 +1,6 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import type { PortfolioCardProps } from "@/types";
+import type { PortfolioFrontmatter } from "@/types";
 import { getPortfolioDisplayCategory } from "@/lib/portfolio";
 
 export function PortfolioCard({
@@ -15,16 +12,14 @@ export function PortfolioCard({
   slug,
   category,
   discipline,
-}: PortfolioCardProps) {
+}: PortfolioFrontmatter) {
   const linkHref = `/portfolio/${category}/${slug}`;
   const displayCategory = getPortfolioDisplayCategory({ category, discipline });
   const visibleTech = tech.slice(0, 3);
   const overflowTechCount = tech.length - visibleTech.length;
 
   return (
-    <motion.article
-      className="group min-w-0"
-    >
+    <article className="group min-w-0">
       <Link
         href={linkHref}
         aria-label={`${title} 상세 보기`}
@@ -64,6 +59,6 @@ export function PortfolioCard({
           </div>
         </div>
       </Link>
-    </motion.article>
+    </article>
   );
 }

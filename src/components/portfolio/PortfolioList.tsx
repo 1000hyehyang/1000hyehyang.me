@@ -6,7 +6,6 @@ import type { PortfolioFilter, PortfolioFrontmatter } from "@/types";
 import {
   isPortfolioInFilter,
   PORTFOLIO_FILTERS,
-  sortPortfolioNewestFirst,
 } from "@/lib/portfolio";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { usePortfolioUrlState } from "@/hooks/usePortfolioUrlState";
@@ -79,37 +78,32 @@ export function PortfolioList({
     initialY: -30,
   });
 
-  const sortedProjects = useMemo(
-    () => sortPortfolioNewestFirst(projects),
-    [projects],
-  );
-
   const pinnedProjects = useMemo(
-    () => sortedProjects.filter((project) => project.pinned),
-    [sortedProjects],
+    () => projects.filter((project) => project.pinned),
+    [projects],
   );
 
   const otherProjects = useMemo(
     () =>
-      sortedProjects.filter(
+      projects.filter(
         (project) => !project.pinned && isPortfolioInFilter(project, selectedFilter),
       ),
-    [selectedFilter, sortedProjects],
+    [selectedFilter, projects],
   );
 
   const archiveStats = useMemo(
     () => ({
-      total: sortedProjects.length,
-      dev: sortedProjects.filter((project) => isPortfolioInFilter(project, "dev"))
+      total: projects.length,
+      dev: projects.filter((project) => isPortfolioInFilter(project, "dev"))
         .length,
-      hackathons: sortedProjects.filter((project) =>
+      hackathons: projects.filter((project) =>
         isPortfolioInFilter(project, "hackathons"),
       ).length,
-      design: sortedProjects.filter((project) =>
+      design: projects.filter((project) =>
         isPortfolioInFilter(project, "design"),
       ).length,
     }),
-    [sortedProjects],
+    [projects],
   );
 
   return (

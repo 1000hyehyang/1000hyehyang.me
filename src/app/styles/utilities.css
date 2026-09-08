@@ -18,23 +18,6 @@
   backdrop-filter: blur(var(--glass-blur)) saturate(140%);
 }
 
-/* 텍스트 말줄임 유틸 */
-
-.line-clamp-1 {
-  overflow: hidden;
-  line-clamp: 1;
-}
-
-.line-clamp-2 {
-  overflow: hidden;
-  line-clamp: 2;
-}
-
-.line-clamp-3 {
-  overflow: hidden;
-  line-clamp: 3;
-}
-
 .portfolio-split-grid {
   display: grid;
   min-width: 0;

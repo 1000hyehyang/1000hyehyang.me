@@ -55,8 +55,6 @@ export type ResumeEntry = {
   url?: string;
 };
 
-export type PortfolioCardProps = PortfolioFrontmatter;
-
 export type PortfolioDetailProps = {
   frontmatter: PortfolioFrontmatter;
   children: ReactNode;

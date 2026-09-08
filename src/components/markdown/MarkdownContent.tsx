@@ -7,6 +7,7 @@ import type { SanitizedMarkdownHtml } from "@/lib/markdown/types";
 
 type MarkdownContentProps = {
   html: SanitizedMarkdownHtml;
+  className?: string;
 };
 
 type CodeCopyTarget = {
@@ -26,8 +27,8 @@ function findCodeCopyTargets(container: HTMLElement): CodeCopyTarget[] {
   });
 }
 
-/** The only UI boundary allowed to inject sanitized portfolio markdown. */
-export function MarkdownContent({ html }: MarkdownContentProps) {
+/** The only UI boundary allowed to inject sanitized markdown. */
+export function MarkdownContent({ html, className = "markdown-body" }: MarkdownContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [copyTargets, setCopyTargets] = useState<CodeCopyTarget[]>([]);
 
@@ -40,7 +41,7 @@ export function MarkdownContent({ html }: MarkdownContentProps) {
     <>
       <div
         ref={containerRef}
-        className="markdown-body"
+        className={className}
         dangerouslySetInnerHTML={{ __html: html }}
       />
       {copyTargets.map(({ mountPoint, code }, index) =>
