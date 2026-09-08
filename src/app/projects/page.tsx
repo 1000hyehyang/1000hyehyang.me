@@ -3,13 +3,13 @@ import { PortfolioList } from "@/components/portfolio/PortfolioList";
 import { parsePortfolioFilter } from "@/lib/portfolio";
 import type { Metadata } from "next";
 import { SITE_CONFIG } from "@/lib/config";
-import { absoluteUrl, serializeJsonLd } from "@/lib/seo";
+import { absoluteUrl, DEFAULT_OG_IMAGE, serializeJsonLd } from "@/lib/seo";
 
 const description =
   "프로젝트와 해커톤 여정을 한눈에. 서툴던 시작부터 지금까지의 배움의 흔적을 담았습니다.";
 
 export const metadata: Metadata = {
-  title: "포트폴리오",
+  title: "Projects",
   description,
   keywords: [
     "여채현",
@@ -19,18 +19,22 @@ export const metadata: Metadata = {
     "개발자 포트폴리오"
   ],
   alternates: {
-    canonical: "/portfolio",
+    canonical: "/projects",
   },
   openGraph: {
-    title: `포트폴리오 | ${SITE_CONFIG.name}`,
+    title: `Projects | ${SITE_CONFIG.name}`,
     description,
-    url: "/portfolio",
+    url: "/projects",
     type: "website",
+    siteName: SITE_CONFIG.name,
+    locale: SITE_CONFIG.locale,
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
-    title: `포트폴리오 | ${SITE_CONFIG.name}`,
+    title: `Projects | ${SITE_CONFIG.name}`,
     description,
+    images: [DEFAULT_OG_IMAGE.url],
   },
 };
 
@@ -47,15 +51,15 @@ export default async function PortfolioListPage({
 }: PortfolioListPageProps) {
   const params = await searchParams;
   const initialFilter = parsePortfolioFilter(
-    firstParam(params.filter) ?? firstParam(params.category),
+    firstParam(params.filter),
   );
   const projects = getAllPortfolio();
   const portfolioStructuredData = serializeJsonLd({
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "@id": `${absoluteUrl("/portfolio")}#collection`,
-    url: absoluteUrl("/portfolio"),
-    name: `포트폴리오 | ${SITE_CONFIG.name}`,
+    "@id": `${absoluteUrl("/projects")}#collection`,
+    url: absoluteUrl("/projects"),
+    name: `Projects | ${SITE_CONFIG.name}`,
     description,
     inLanguage: SITE_CONFIG.language,
     isPartOf: {
@@ -68,7 +72,7 @@ export default async function PortfolioListPage({
         "@type": "ListItem",
         position: index + 1,
         url: absoluteUrl(
-          `/portfolio/${project.category}/${project.slug}`,
+          `/projects/${project.category}/${project.slug}`,
         ),
         name: project.title,
         image: project.images?.[0],

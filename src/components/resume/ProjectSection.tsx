@@ -15,7 +15,7 @@ function ProjectItem({ project }: { project: PortfolioFrontmatter }) {
 
   if (!details) return null;
 
-  const href = `/portfolio/${project.category}/${project.slug}`;
+  const href = `/projects/${project.category}/${project.slug}`;
 
   return (
     <article className="min-w-0">

@@ -13,7 +13,7 @@ export function PortfolioCard({
   category,
   discipline,
 }: PortfolioFrontmatter) {
-  const linkHref = `/portfolio/${category}/${slug}`;
+  const linkHref = `/projects/${category}/${slug}`;
   const displayCategory = getPortfolioDisplayCategory({ category, discipline });
   const visibleTech = tech.slice(0, 3);
   const overflowTechCount = tech.length - visibleTech.length;

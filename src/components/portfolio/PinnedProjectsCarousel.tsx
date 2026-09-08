@@ -59,7 +59,7 @@ export function PinnedProjectsCarousel({
 
   const activeIndex = Math.min(index, projects.length - 1);
   const activeProject = projects[activeIndex];
-  const href = `/portfolio/${activeProject.category}/${activeProject.slug}`;
+  const href = `/projects/${activeProject.category}/${activeProject.slug}`;
   const displayCategory = getPortfolioDisplayCategory(activeProject);
   const visibleTech = activeProject.tech.slice(0, 5);
   const overflowTechCount = activeProject.tech.length - visibleTech.length;
@@ -103,7 +103,7 @@ export function PinnedProjectsCarousel({
         {projects.map((project, projectIndex) => {
           const isActive = projectIndex === activeIndex;
           const previewOnLeft = direction > 0;
-          const projectHref = `/portfolio/${project.category}/${project.slug}`;
+          const projectHref = `/projects/${project.category}/${project.slug}`;
           const slideContent = project.images?.[0] ? (
             <Image
               src={project.images[0]}
@@ -144,7 +144,7 @@ export function PinnedProjectsCarousel({
                 <Link
                   href={projectHref}
                   aria-label={`${project.title} 상세 보기`}
-                  className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                  className="relative block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
                 >
                   {slideContent}
                 </Link>
@@ -152,7 +152,7 @@ export function PinnedProjectsCarousel({
                 <button
                   type="button"
                   onClick={() => selectProject(projectIndex)}
-                  className="block h-full w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                  className="relative block h-full w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
                   aria-label={`${project.title} 대표 프로젝트로 선택`}
                 >
                   {slideContent}

@@ -24,9 +24,6 @@ export function parsePortfolioFilter(
     return normalized as PortfolioFilter;
   }
 
-  // Keep old hackathon links working while collapsing the former generic
-  // project category into the new default archive view.
-  if (normalized === "hackathon") return "hackathons";
   return "total";
 }
 

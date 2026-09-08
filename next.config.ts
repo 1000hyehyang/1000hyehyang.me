@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { LEGACY_REDIRECTS } from "./src/lib/legacy-redirects";
 
 const canonicalOrigin = "https://www.1000hyehyang.me";
 
@@ -18,7 +17,6 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      ...LEGACY_REDIRECTS,
       {
         source: "/:path*",
         has: [

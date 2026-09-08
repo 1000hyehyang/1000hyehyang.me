@@ -5,13 +5,10 @@ import type { PortfolioFilter } from "@/types";
 import { parsePortfolioFilter } from "@/lib/portfolio";
 
 const FILTER_PARAM = "filter";
-const LEGACY_CATEGORY_PARAM = "category";
 
 function readFilterFromLocation(): PortfolioFilter {
   const params = new URLSearchParams(window.location.search);
-  return parsePortfolioFilter(
-    params.get(FILTER_PARAM) ?? params.get(LEGACY_CATEGORY_PARAM),
-  );
+  return parsePortfolioFilter(params.get(FILTER_PARAM));
 }
 
 interface PortfolioUrlState {
@@ -35,7 +32,6 @@ export function usePortfolioUrlState(
     setFilterState(nextFilter);
 
     const url = new URL(window.location.href);
-    url.searchParams.delete(LEGACY_CATEGORY_PARAM);
 
     if (nextFilter === "total") {
       url.searchParams.delete(FILTER_PARAM);

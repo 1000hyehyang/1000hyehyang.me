@@ -39,7 +39,8 @@ test("tech icons resolve aliases and case variations, with no icon for unknown n
 });
 
 test("portfolio filters, dates, sorting, and content sections", () => {
-  assert.equal(parsePortfolioFilter("HACKATHON"), "hackathons");
+  assert.equal(parsePortfolioFilter("HACKATHONS"), "hackathons");
+  assert.equal(parsePortfolioFilter("hackathon"), "total");
   assert.equal(parsePortfolioFilter("unknown"), "total");
   assert.equal(getPortfolioStartTime("2025.02.29"), 0);
   assert.equal(getPortfolioStartTime("2024.02.29"), Date.UTC(2024, 1, 29));

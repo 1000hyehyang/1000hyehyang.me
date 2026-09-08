@@ -8,6 +8,7 @@
     "start": "next start",
     "test": "node --no-warnings --experimental-strip-types src/lib/portfolio.test.ts",
     "test:cv": "node --no-warnings --experimental-strip-types src/app/cv/cv.test.mjs",
+    "test:routes": "node src/lib/routes.test.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },

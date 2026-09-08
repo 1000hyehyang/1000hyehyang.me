@@ -168,7 +168,7 @@ test("every CV visit requires a password, including visits with an old valid ses
   assert.ok(content.includes("data:image/jpeg;base64,"), "Portrait is embedded in the same authenticated response");
   const photo = await readFile("private/cv/photo.jpg");
   assert.ok(content.includes(photo.toString("base64")), "Embedded portrait matches the private file");
-  const projects = [...content.matchAll(/\/portfolio\/project\/([^"/]+)"/g)].map((match) => match[1]);
+  const projects = [...content.matchAll(/\/projects\/project\/([^"/]+)"/g)].map((match) => match[1]);
   assert.deepEqual(projects, ["udidura", "real-match"]);
   await assertLocked();
 

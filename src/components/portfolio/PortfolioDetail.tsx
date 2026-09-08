@@ -93,7 +93,7 @@ export function PortfolioDetail({
       <div className="portfolio-split-grid">
         <aside className="portfolio-detail-aside min-w-0 pb-2 pt-8 sm:pt-10 lg:sticky lg:top-[var(--site-header-height)] lg:self-start lg:py-10">
           <Link
-            href="/portfolio"
+            href="/projects"
             className="portfolio-detail-back mb-10 inline-flex items-center gap-2 rounded-md py-2 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />

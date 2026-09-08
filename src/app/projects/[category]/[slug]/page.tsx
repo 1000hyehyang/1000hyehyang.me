@@ -30,7 +30,7 @@ export async function generateMetadata({
   const item = getPortfolioBySlug(category, slug);
   if (!item) notFound();
 
-  const projectUrl = `/portfolio/${category}/${slug}`;
+  const projectUrl = `/projects/${category}/${slug}`;
   const description =
     item.frontmatter.summary ??
     `${SITE_CONFIG.authorName}이 진행한 ${item.frontmatter.title} 프로젝트입니다.`;
@@ -94,7 +94,7 @@ export default async function PortfolioDetailPage({
   const item = getPortfolioBySlug(category, slug);
   if (!item) return notFound();
 
-  const projectUrl = absoluteUrl(`/portfolio/${category}/${slug}`);
+  const projectUrl = absoluteUrl(`/projects/${category}/${slug}`);
   const description =
     item.frontmatter.summary ??
     `${SITE_CONFIG.authorName}이 진행한 ${item.frontmatter.title} 프로젝트입니다.`;
@@ -122,7 +122,7 @@ export default async function PortfolioDetailPage({
           "@id": `${SITE_CONFIG.url}/#person`,
         },
         isPartOf: {
-          "@id": `${absoluteUrl("/portfolio")}#collection`,
+          "@id": `${absoluteUrl("/projects")}#collection`,
         },
         sameAs: relatedLinks.length > 0 ? relatedLinks : undefined,
       },
@@ -139,8 +139,8 @@ export default async function PortfolioDetailPage({
           {
             "@type": "ListItem",
             position: 2,
-            name: "포트폴리오",
-            item: absoluteUrl("/portfolio"),
+            name: "Projects",
+            item: absoluteUrl("/projects"),
           },
           {
             "@type": "ListItem",

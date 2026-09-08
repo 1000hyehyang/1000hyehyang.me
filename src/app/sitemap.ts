@@ -7,11 +7,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: absoluteUrl("/") },
-    { url: absoluteUrl("/portfolio") },
+    { url: absoluteUrl("/projects") },
   ];
 
   const portfolioPages: MetadataRoute.Sitemap = portfolios.map((project) => ({
-    url: absoluteUrl(`/portfolio/${project.category}/${project.slug}`),
+    url: absoluteUrl(`/projects/${project.category}/${project.slug}`),
     images: project.images?.map(absoluteUrl),
   }));
 
