@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { PortfolioFrontmatter } from "@/types";
-import { getPortfolioDisplayCategory } from "@/lib/portfolio";
+import { getPortfolioDisplayCategory, getPortfolioPath } from "@/lib/portfolio";
 
 export function PortfolioCard({
   title,
@@ -13,7 +13,7 @@ export function PortfolioCard({
   category,
   discipline,
 }: PortfolioFrontmatter) {
-  const linkHref = `/projects/${category}/${slug}`;
+  const linkHref = getPortfolioPath({ category, slug });
   const displayCategory = getPortfolioDisplayCategory({ category, discipline });
   const visibleTech = tech.slice(0, 3);
   const overflowTechCount = tech.length - visibleTech.length;

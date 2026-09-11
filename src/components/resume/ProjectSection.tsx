@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { PortfolioFrontmatter } from "@/types";
+import { getPortfolioPath } from "@/lib/portfolio";
 import { ResumeReveal } from "./ResumeReveal";
 import { ResumeSection } from "./ResumeSection";
 
@@ -15,7 +16,7 @@ function ProjectItem({ project }: { project: PortfolioFrontmatter }) {
 
   if (!details) return null;
 
-  const href = `/projects/${project.category}/${project.slug}`;
+  const href = getPortfolioPath(project);
 
   return (
     <article className="min-w-0">

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 // Run npm run dev, then npm run test:routes.
-const origin = "http://localhost:3000";
+const origin = process.env.TEST_ORIGIN ?? "http://localhost:3000";
 
 test("Portfolio home and Projects links, metadata, and removed routes", async () => {
   for (const source of [

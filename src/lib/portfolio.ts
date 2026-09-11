@@ -68,3 +68,9 @@ export function getPortfolioDisplayCategory(
   if (project.discipline === "design") return "Design";
   return "Project";
 }
+
+export function getPortfolioPath(
+  project: Pick<PortfolioFrontmatter, "category" | "slug">,
+): string {
+  return `/projects/${project.category}/${project.slug}`;
+}

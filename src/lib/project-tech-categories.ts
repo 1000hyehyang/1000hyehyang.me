@@ -1,4 +1,4 @@
-const PROJECT_TECH_CATEGORIES: Record<string, string> = {
+const PROJECT_TECH_CATEGORIES = new Map<string, string>(Object.entries({
   // AI
   "Hugging Face": "AI",
   // Backend
@@ -45,22 +45,21 @@ const PROJECT_TECH_CATEGORIES: Record<string, string> = {
   "Unity": "Tool",
   "Blender": "Tool",
   "Figma": "Tool",
-};
+}));
 
-function getProjectTechCategory(techName: string): string | null {
-  return PROJECT_TECH_CATEGORIES[techName] || null;
+function getProjectTechCategory(techName: string): string | undefined {
+  return PROJECT_TECH_CATEGORIES.get(techName);
 }
 
-export const groupProjectTechByCategory = (techs: string[]): Record<string, string[]> => {
+export function groupProjectTechByCategory(
+  techs: readonly string[],
+): Record<string, string[]> {
   const grouped: Record<string, string[]> = {};
-  
-  techs.forEach((tech) => {
-    const category = getProjectTechCategory(tech) || "Other";
-    if (!grouped[category]) {
-      grouped[category] = [];
-    }
-    grouped[category].push(tech);
-  });
-  
+
+  for (const tech of techs) {
+    const category = getProjectTechCategory(tech) ?? "Other";
+    (grouped[category] ??= []).push(tech);
+  }
+
   return grouped;
-};
+}

@@ -91,99 +91,6 @@
   background-color: var(--syntax-deletion-background);
 }
 
-/* 다크 모드 */
-.dark .hljs {
-  color: var(--syntax-foreground);
-  background: var(--syntax-background);
-}
-
-.dark .hljs-doctag,
-.dark .hljs-keyword,
-.dark .hljs-meta .hljs-keyword,
-.dark .hljs-template-tag,
-.dark .hljs-template-variable,
-.dark .hljs-type,
-.dark .hljs-variable.language_ {
-  color: var(--syntax-keyword);
-}
-
-.dark .hljs-title,
-.dark .hljs-title.class_,
-.dark .hljs-title.class_.inherited__,
-.dark .hljs-title.function_ {
-  color: var(--syntax-title);
-}
-
-.dark .hljs-attr,
-.dark .hljs-attribute,
-.dark .hljs-literal,
-.dark .hljs-meta,
-.dark .hljs-number,
-.dark .hljs-operator,
-.dark .hljs-variable,
-.dark .hljs-selector-attr,
-.dark .hljs-selector-class,
-.dark .hljs-selector-id {
-  color: var(--syntax-number);
-}
-
-.dark .hljs-regexp,
-.dark .hljs-string,
-.dark .hljs-meta .hljs-string {
-  color: var(--syntax-string);
-}
-
-.dark .hljs-built_in,
-.dark .hljs-symbol {
-  color: var(--syntax-symbol);
-}
-
-.dark .hljs-comment,
-.dark .hljs-code,
-.dark .hljs-formula {
-  color: var(--syntax-comment);
-}
-
-.dark .hljs-name,
-.dark .hljs-quote,
-.dark .hljs-selector-tag,
-.dark .hljs-selector-pseudo {
-  color: var(--syntax-name);
-}
-
-.dark .hljs-subst {
-  color: var(--syntax-foreground);
-}
-
-.dark .hljs-section {
-  color: var(--syntax-number);
-  font-weight: bold;
-}
-
-.dark .hljs-bullet {
-  color: var(--syntax-bullet);
-}
-
-.dark .hljs-emphasis {
-  color: var(--syntax-foreground);
-  font-style: italic;
-}
-
-.dark .hljs-strong {
-  color: var(--syntax-foreground);
-  font-weight: bold;
-}
-
-.dark .hljs-addition {
-  color: var(--syntax-addition);
-  background-color: var(--syntax-addition-background);
-}
-
-.dark .hljs-deletion {
-  color: var(--syntax-deletion);
-  background-color: var(--syntax-deletion-background);
-}
-
 /* Highlight.js 스타일 오버라이드 */
 .markdown-body .hljs {
   background: var(--code-block-background) !important;
@@ -198,11 +105,6 @@
   position: relative;
 }
 
-.dark .markdown-body .hljs {
-  background: var(--code-block-background) !important;
-  color: var(--code-block-foreground) !important;
-}
-
 /* Highlight.js 코드 블록 래퍼 - 기존 스타일 제거 */
 .markdown-body .code-block-wrapper .hljs {
   background: var(--code-block-background) !important;
@@ -215,11 +117,6 @@
   font-family: var(--font-mono, 'Fira Mono', 'Menlo', monospace);
   border: 1px solid var(--border);
   position: relative;
-}
-
-.dark .markdown-body .code-block-wrapper .hljs {
-  background: var(--code-block-background) !important;
-  color: var(--code-block-foreground) !important;
 }
 
 /* highlight.js가 적용된 코드 블록에서 기존 pre 스타일 제거 */

@@ -9,7 +9,7 @@ import ts from "typescript";
 import { verifyCvPassword } from "../../lib/cv-auth.ts";
 
 nextEnv.loadEnvConfig(process.cwd(), true);
-const origin = "http://localhost:3000";
+const origin = process.env.TEST_ORIGIN ?? "http://localhost:3000";
 const password = process.env.CV_PASSWORD;
 
 test("sixth digit submits once, failed attempts reset, and a correct retry opens CV", async () => {
@@ -166,8 +166,8 @@ test("every CV visit requires a password, including visits with an old valid ses
   const content = await response.text();
   assert.ok(content.includes("YEO CHAE HYEON"), "A correct password returns the CV");
   assert.ok(content.includes("data:image/jpeg;base64,"), "Portrait is embedded in the same authenticated response");
-  const photo = await readFile("private/cv/photo.jpg");
-  assert.ok(content.includes(photo.toString("base64")), "Embedded portrait matches the private file");
+  const photo = await readFile("private/cv/profile.jpg");
+  assert.ok(content.includes(photo.toString("base64")), "Embedded portrait matches the private CV image");
   const projects = [...content.matchAll(/\/projects\/project\/([^"/]+)"/g)].map((match) => match[1]);
   assert.deepEqual(projects, ["udidura", "real-match"]);
   await assertLocked();

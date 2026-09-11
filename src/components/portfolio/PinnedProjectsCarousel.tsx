@@ -11,10 +11,10 @@ import {
 } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { PortfolioFrontmatter } from "@/types";
-import { getPortfolioDisplayCategory } from "@/lib/portfolio";
+import { getPortfolioDisplayCategory, getPortfolioPath } from "@/lib/portfolio";
 
 type PinnedProjectsCarouselProps = {
-  projects: PortfolioFrontmatter[];
+  projects: readonly PortfolioFrontmatter[];
 };
 
 type CarouselState = {
@@ -59,7 +59,7 @@ export function PinnedProjectsCarousel({
 
   const activeIndex = Math.min(index, projects.length - 1);
   const activeProject = projects[activeIndex];
-  const href = `/projects/${activeProject.category}/${activeProject.slug}`;
+  const href = getPortfolioPath(activeProject);
   const displayCategory = getPortfolioDisplayCategory(activeProject);
   const visibleTech = activeProject.tech.slice(0, 5);
   const overflowTechCount = activeProject.tech.length - visibleTech.length;
@@ -103,7 +103,7 @@ export function PinnedProjectsCarousel({
         {projects.map((project, projectIndex) => {
           const isActive = projectIndex === activeIndex;
           const previewOnLeft = direction > 0;
-          const projectHref = `/projects/${project.category}/${project.slug}`;
+          const projectHref = getPortfolioPath(project);
           const slideContent = project.images?.[0] ? (
             <Image
               src={project.images[0]}

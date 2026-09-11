@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { PortfolioFilter, PortfolioFrontmatter } from "@/types";
 import {
@@ -13,8 +13,9 @@ import { PinnedProjectsCarousel } from "./PinnedProjectsCarousel";
 import { PortfolioCard } from "./PortfolioCard";
 
 type PortfolioListProps = {
-  projects: PortfolioFrontmatter[];
-  initialFilter: PortfolioFilter;
+  projects: readonly PortfolioFrontmatter[];
+  pinnedProjects: readonly PortfolioFrontmatter[];
+  archiveStats: Readonly<Record<PortfolioFilter, number>>;
 };
 
 const FILTER_ARIA_LABELS: Record<PortfolioFilter, string> = {
@@ -25,7 +26,7 @@ const FILTER_ARIA_LABELS: Record<PortfolioFilter, string> = {
 };
 
 type FilteredPortfolioGridProps = {
-  projects: PortfolioFrontmatter[];
+  projects: readonly PortfolioFrontmatter[];
   shouldReduceMotion: boolean;
 };
 
@@ -67,43 +68,19 @@ function FilteredPortfolioGrid({
 
 export function PortfolioList({
   projects,
-  initialFilter,
+  pinnedProjects,
+  archiveStats,
 }: PortfolioListProps) {
   const pageRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = Boolean(useReducedMotion());
-  const { filter: selectedFilter, setFilter } =
-    usePortfolioUrlState(initialFilter);
+  const { filter: selectedFilter, setFilter } = usePortfolioUrlState();
   useScrollReveal(pageRef, {
     selector: "[data-page-scroll-reveal]",
     initialY: -30,
   });
 
-  const pinnedProjects = useMemo(
-    () => projects.filter((project) => project.pinned),
-    [projects],
-  );
-
-  const otherProjects = useMemo(
-    () =>
-      projects.filter(
-        (project) => !project.pinned && isPortfolioInFilter(project, selectedFilter),
-      ),
-    [selectedFilter, projects],
-  );
-
-  const archiveStats = useMemo(
-    () => ({
-      total: projects.length,
-      dev: projects.filter((project) => isPortfolioInFilter(project, "dev"))
-        .length,
-      hackathons: projects.filter((project) =>
-        isPortfolioInFilter(project, "hackathons"),
-      ).length,
-      design: projects.filter((project) =>
-        isPortfolioInFilter(project, "design"),
-      ).length,
-    }),
-    [projects],
+  const otherProjects = projects.filter((project) =>
+    isPortfolioInFilter(project, selectedFilter),
   );
 
   return (

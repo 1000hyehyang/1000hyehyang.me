@@ -1,7 +1,11 @@
 import { getAllPortfolio } from "@/lib/mdx";
 import { PortfolioList } from "@/components/portfolio/PortfolioList";
-import { parsePortfolioFilter } from "@/lib/portfolio";
+import {
+  getPortfolioPath,
+  isPortfolioInFilter,
+} from "@/lib/portfolio";
 import type { Metadata } from "next";
+import type { PortfolioFilter } from "@/types";
 import { SITE_CONFIG } from "@/lib/config";
 import { absoluteUrl, DEFAULT_OG_IMAGE, serializeJsonLd } from "@/lib/seo";
 
@@ -38,22 +42,21 @@ export const metadata: Metadata = {
   },
 };
 
-type PortfolioListPageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-};
-
-function firstParam(value: string | string[] | undefined): string | undefined {
-  return Array.isArray(value) ? value[0] : value;
-}
-
-export default async function PortfolioListPage({
-  searchParams,
-}: PortfolioListPageProps) {
-  const params = await searchParams;
-  const initialFilter = parsePortfolioFilter(
-    firstParam(params.filter),
-  );
-  const projects = getAllPortfolio();
+export default function PortfolioListPage() {
+  const allProjects = getAllPortfolio();
+  const pinnedProjects = allProjects.filter((project) => project.pinned);
+  const projects = allProjects.filter((project) => !project.pinned);
+  const archiveStats: Record<PortfolioFilter, number> = {
+    total: allProjects.length,
+    dev: allProjects.filter((project) => isPortfolioInFilter(project, "dev"))
+      .length,
+    hackathons: allProjects.filter((project) =>
+      isPortfolioInFilter(project, "hackathons"),
+    ).length,
+    design: allProjects.filter((project) =>
+      isPortfolioInFilter(project, "design"),
+    ).length,
+  };
   const portfolioStructuredData = serializeJsonLd({
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -67,15 +70,13 @@ export default async function PortfolioListPage({
     },
     mainEntity: {
       "@type": "ItemList",
-      numberOfItems: projects.length,
-      itemListElement: projects.map((project, index) => ({
+      numberOfItems: allProjects.length,
+      itemListElement: allProjects.map((project, index) => ({
         "@type": "ListItem",
         position: index + 1,
-        url: absoluteUrl(
-          `/projects/${project.category}/${project.slug}`,
-        ),
+        url: absoluteUrl(getPortfolioPath(project)),
         name: project.title,
-        image: project.images?.[0],
+        image: project.images?.[0] ? absoluteUrl(project.images[0]) : undefined,
       })),
     },
   });
@@ -86,7 +87,11 @@ export default async function PortfolioListPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: portfolioStructuredData }}
       />
-      <PortfolioList projects={projects} initialFilter={initialFilter} />
+      <PortfolioList
+        projects={projects}
+        pinnedProjects={pinnedProjects}
+        archiveStats={archiveStats}
+      />
     </>
   );
 }

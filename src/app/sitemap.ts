@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllPortfolio } from "@/lib/mdx";
+import { getPortfolioPath } from "@/lib/portfolio";
 import { absoluteUrl } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -11,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   const portfolioPages: MetadataRoute.Sitemap = portfolios.map((project) => ({
-    url: absoluteUrl(`/projects/${project.category}/${project.slug}`),
+    url: absoluteUrl(getPortfolioPath(project)),
     images: project.images?.map(absoluteUrl),
   }));
 

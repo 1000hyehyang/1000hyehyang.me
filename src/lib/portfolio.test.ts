@@ -3,7 +3,9 @@ import test from "node:test";
 import { getTechIconSrc } from "../constants/techIconMap.ts";
 import type { PortfolioFrontmatter } from "@/types";
 import { splitPortfolioContent } from "./portfolio-content.ts";
+import { groupProjectTechByCategory } from "./project-tech-categories.ts";
 import {
+  getPortfolioPath,
   getPortfolioStartTime,
   isPortfolioInFilter,
   parsePortfolioFilter,
@@ -36,12 +38,19 @@ test("tech icons resolve aliases and case variations, with no icon for unknown n
   }
   assert.equal(getTechIconSrc("unknown"), null);
   assert.equal(getTechIconSrc("constructor"), null);
+  assert.deepEqual(groupProjectTechByCategory(["constructor"]), {
+    Other: ["constructor"],
+  });
 });
 
 test("portfolio filters, dates, sorting, and content sections", () => {
   assert.equal(parsePortfolioFilter("HACKATHONS"), "hackathons");
   assert.equal(parsePortfolioFilter("hackathon"), "total");
   assert.equal(parsePortfolioFilter("unknown"), "total");
+  assert.equal(
+    getPortfolioPath({ category: "project", slug: "sample" }),
+    "/projects/project/sample",
+  );
   assert.equal(getPortfolioStartTime("2025.02.29"), 0);
   assert.equal(getPortfolioStartTime("2024.02.29"), Date.UTC(2024, 1, 29));
 

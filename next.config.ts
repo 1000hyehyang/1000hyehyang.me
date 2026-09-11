@@ -4,7 +4,7 @@ const canonicalOrigin = "https://www.1000hyehyang.me";
 
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
-    "/cv": ["./private/cv/resume.md", "./private/cv/photo.jpg"],
+    "/cv": ["./private/cv/resume.md", "./private/cv/profile.jpg"],
   },
   images: {
     remotePatterns: [

@@ -2,6 +2,7 @@ import "server-only";
 
 import fs from "fs";
 import path from "path";
+import { cache } from "react";
 import matter from "gray-matter";
 import type {
   PortfolioDiscipline,
@@ -209,28 +210,30 @@ function readPortfolioDocument(
   }
 }
 
-export function getAllPortfolio(): PortfolioFrontmatter[] {
-  const projects = readMdxFilesRecursively(PORTFOLIO_PATH).flatMap((filePath) => {
-    const relativePath = path.relative(PORTFOLIO_PATH, filePath);
-    const [category] = relativePath.split(path.sep);
-    if (!isPortfolioRouteCategory(category)) return [];
+export const getAllPortfolio = cache(
+  function getAllPortfolio(): readonly PortfolioFrontmatter[] {
+    const projects = readMdxFilesRecursively(PORTFOLIO_PATH).flatMap((filePath) => {
+      const relativePath = path.relative(PORTFOLIO_PATH, filePath);
+      const [category] = relativePath.split(path.sep);
+      if (!isPortfolioRouteCategory(category)) return [];
 
-    const document = readPortfolioDocument(filePath, category);
-    return [document.frontmatter];
-  });
+      const document = readPortfolioDocument(filePath, category);
+      return [document.frontmatter];
+    });
 
-  const slugs = new Set<string>();
-  for (const project of projects) {
-    if (slugs.has(project.slug)) {
-      throw new Error(`Duplicate portfolio slug: ${project.slug}`);
+    const slugs = new Set<string>();
+    for (const project of projects) {
+      if (slugs.has(project.slug)) {
+        throw new Error(`Duplicate portfolio slug: ${project.slug}`);
+      }
+      slugs.add(project.slug);
     }
-    slugs.add(project.slug);
-  }
 
-  return sortPortfolioNewestFirst(projects);
-}
+    return sortPortfolioNewestFirst(projects);
+  },
+);
 
-export function getPortfolioBySlug(
+export const getPortfolioBySlug = cache(function getPortfolioBySlug(
   category: string,
   slug: string,
 ): PortfolioDocument | null {
@@ -247,4 +250,4 @@ export function getPortfolioBySlug(
   }
 
   return null;
-}
+});

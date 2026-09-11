@@ -5,8 +5,12 @@ import type { Metadata } from "next";
 import { SITE_CONFIG } from "@/lib/config";
 import { renderMarkdown } from "@/lib/markdown/renderMarkdown";
 import { splitPortfolioContent } from "@/lib/portfolio-content";
-import { getPortfolioDisplayCategory, getPortfolioStartTime } from "@/lib/portfolio";
-import { absoluteUrl, serializeJsonLd } from "@/lib/seo";
+import {
+  getPortfolioDisplayCategory,
+  getPortfolioPath,
+  getPortfolioStartTime,
+} from "@/lib/portfolio";
+import { absoluteUrl, DEFAULT_OG_IMAGE, serializeJsonLd } from "@/lib/seo";
 import { MarkdownContent } from "@/components/markdown/MarkdownContent";
 
 type PortfolioDetailPageProps = {
@@ -30,11 +34,11 @@ export async function generateMetadata({
   const item = getPortfolioBySlug(category, slug);
   if (!item) notFound();
 
-  const projectUrl = `/projects/${category}/${slug}`;
+  const projectPath = getPortfolioPath(item.frontmatter);
   const description =
     item.frontmatter.summary ??
     `${SITE_CONFIG.authorName}이 진행한 ${item.frontmatter.title} 프로젝트입니다.`;
-  const image = item.frontmatter.images?.[0];
+  const image = absoluteUrl(item.frontmatter.images?.[0] ?? DEFAULT_OG_IMAGE.url);
   const startTime = getPortfolioStartTime(item.frontmatter.period);
 
   return {
@@ -53,13 +57,13 @@ export async function generateMetadata({
       },
     ],
     alternates: {
-      canonical: projectUrl,
+      canonical: projectPath,
     },
     openGraph: {
       title: item.frontmatter.title,
       description,
       type: "article",
-      url: projectUrl,
+      url: projectPath,
       siteName: SITE_CONFIG.name,
       locale: SITE_CONFIG.locale,
       publishedTime:
@@ -67,22 +71,20 @@ export async function generateMetadata({
       authors: [absoluteUrl("/")],
       section: getPortfolioDisplayCategory(item.frontmatter),
       tags: item.frontmatter.tech,
-      images: image
-        ? [
-            {
-              url: image,
-              width: 1200,
-              height: 630,
-              alt: `${item.frontmatter.title} 대표 이미지`,
-            },
-          ]
-        : undefined,
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: `${item.frontmatter.title} 대표 이미지`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: item.frontmatter.title,
       description,
-      images: image ? [image] : undefined,
+      images: [image],
     },
   };
 }
@@ -94,7 +96,7 @@ export default async function PortfolioDetailPage({
   const item = getPortfolioBySlug(category, slug);
   if (!item) return notFound();
 
-  const projectUrl = absoluteUrl(`/projects/${category}/${slug}`);
+  const projectUrl = absoluteUrl(getPortfolioPath(item.frontmatter));
   const description =
     item.frontmatter.summary ??
     `${SITE_CONFIG.authorName}이 진행한 ${item.frontmatter.title} 프로젝트입니다.`;
@@ -112,7 +114,7 @@ export default async function PortfolioDetailPage({
         url: projectUrl,
         name: item.frontmatter.title,
         description,
-        image: item.frontmatter.images,
+        image: item.frontmatter.images?.map(absoluteUrl),
         dateCreated:
           startTime > 0 ? new Date(startTime).toISOString() : undefined,
         inLanguage: SITE_CONFIG.language,

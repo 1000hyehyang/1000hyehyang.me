@@ -16,10 +16,8 @@ interface PortfolioUrlState {
   setFilter: (filter: PortfolioFilter) => void;
 }
 
-export function usePortfolioUrlState(
-  initialFilter: PortfolioFilter,
-): PortfolioUrlState {
-  const [filter, setFilterState] = useState<PortfolioFilter>(initialFilter);
+export function usePortfolioUrlState(): PortfolioUrlState {
+  const [filter, setFilterState] = useState<PortfolioFilter>("total");
 
   useEffect(() => {
     const syncFromUrl = () => setFilterState(readFilterFromLocation());

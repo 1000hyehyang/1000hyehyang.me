@@ -10,7 +10,7 @@ export async function unlockCv(password: unknown) {
 
   const [source, photo] = await Promise.all([
     readFile(path.join(process.cwd(), "private/cv/resume.md"), "utf8"),
-    readFile(path.join(process.cwd(), "private/cv/photo.jpg")),
+    readFile(path.join(process.cwd(), "private/cv/profile.jpg")),
   ]);
   const bodyStart = source.search(/^## /m);
   if (bodyStart < 0) throw new Error("CV must include a section heading");
