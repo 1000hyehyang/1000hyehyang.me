@@ -101,7 +101,14 @@ export const AWARDS_DATA: ResumeEntry[] = [
   }
 ];
 
-export const CERTIFICATION_DATA: ResumeEntry[] = [
+export const IT_CERTIFICATION_DATA: ResumeEntry[] = [
+  {
+    period: "2026.09.11",
+    title: "정보처리기사",
+    description: "",
+    logo: "/icons/Q-Net.svg",
+    logoAlt: "Q-Net 로고"
+  },
   {
     period: "2025.09.05",
     title: "ADsP",
@@ -110,18 +117,21 @@ export const CERTIFICATION_DATA: ResumeEntry[] = [
     logoAlt: "K-data 로고"
   },
   {
-    period: "2025.08.18",
-    title: "GTQ 1급",
-    description: "",
-    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/ps.png",
-    logoAlt: "GTQ 로고"
-  },
-  {
     period: "2025.06.27",
     title: "SQLD",
     description: "",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/k-data.png",
     logoAlt: "K-data 로고"
+  }
+];
+
+export const DESIGN_CERTIFICATION_DATA: ResumeEntry[] = [
+  {
+    period: "2025.08.18",
+    title: "GTQ 1급",
+    description: "",
+    logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/ps.png",
+    logoAlt: "GTQ 로고"
   },
   {
     period: "2025.06.20",

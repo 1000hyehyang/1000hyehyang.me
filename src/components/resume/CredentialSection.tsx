@@ -9,6 +9,12 @@ type CredentialSectionProps = {
   columns?: 3 | 4;
 };
 
+type CredentialGroupProps = {
+  title?: string;
+  items: readonly ResumeEntry[];
+  columns?: 3 | 4;
+};
+
 const columnClassNames = {
   3: "grid-cols-1 md:grid-cols-3",
   4: "grid-cols-2 md:grid-cols-4",
@@ -28,7 +34,7 @@ function CredentialCard({ item }: { item: ResumeEntry }) {
           />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="whitespace-nowrap text-sm font-semibold">{item.title}</h3>
+          <p className="whitespace-nowrap text-sm font-semibold">{item.title}</p>
           <p className="text-xs text-muted-foreground">{item.period}</p>
         </div>
       </div>
@@ -36,6 +42,23 @@ function CredentialCard({ item }: { item: ResumeEntry }) {
         <p className="mt-2 text-xs text-muted-foreground">{item.description}</p>
       ) : null}
     </article>
+  );
+}
+
+export function CredentialGroup({
+  title,
+  items,
+  columns = 4,
+}: CredentialGroupProps) {
+  return (
+    <div>
+      {title ? <h3 className="mb-3 text-base font-semibold">{title}</h3> : null}
+      <div className={`grid gap-4 ${columnClassNames[columns]}`}>
+        {items.map((item) => (
+          <CredentialCard key={`${item.title}-${item.period}`} item={item} />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -47,11 +70,7 @@ export function CredentialSection({
 }: CredentialSectionProps) {
   return (
     <ResumeSection id={id} title={title}>
-      <div className={`grid gap-4 ${columnClassNames[columns]}`}>
-        {items.map((item) => (
-          <CredentialCard key={`${item.title}-${item.period}`} item={item} />
-        ))}
-      </div>
+      <CredentialGroup items={items} columns={columns} />
     </ResumeSection>
   );
 }
