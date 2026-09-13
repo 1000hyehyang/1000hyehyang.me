@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-// Run npm run dev, then npm run test:routes.
+// Run npm run build and npm run start, then npm run test:routes.
 const origin = process.env.TEST_ORIGIN ?? "http://localhost:3000";
 
 test("Portfolio home and Projects links, metadata, and removed routes", async () => {
@@ -61,7 +61,8 @@ test("Portfolio home and Projects links, metadata, and removed routes", async ()
   assert.equal(filtered.status, 200);
   assert.match(await filtered.text(), /rel="canonical" href="https:\/\/www\.1000hyehyang\.me\/projects"/);
   const cv = await fetch(origin + "/cv");
+  assert.equal(cv.status, 404);
   assert.match(cv.headers.get("x-robots-tag"), /noindex/);
-  assert.match(await cv.text(), /name="robots" content="noindex, nofollow"/);
+  assert.doesNotMatch(await cv.text(), /YEO CHAE HYEON|ducogus12|type="password"/);
   assert.equal((await fetch(origin + "/portfolio/nonexistent-route-check")).status, 404);
 });

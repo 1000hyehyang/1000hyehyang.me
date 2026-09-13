@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { isCvAvailable } from "@/lib/cv-auth";
 import { CvAccess } from "./CvAccess";
 
 export const metadata: Metadata = {
@@ -8,5 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default function CvPage() {
+  if (!isCvAvailable()) notFound();
   return <CvAccess />;
 }

@@ -11,6 +11,7 @@ import { verifyCvPassword } from "../../lib/cv-auth.ts";
 nextEnv.loadEnvConfig(process.cwd(), true);
 const origin = process.env.TEST_ORIGIN ?? "http://localhost:3000";
 const password = process.env.CV_PASSWORD;
+const nodeEnv = process.env.NODE_ENV;
 
 test("sixth digit submits once, failed attempts reset, and a correct retry opens CV", async () => {
   const require = createRequire(import.meta.url);
@@ -106,7 +107,12 @@ test("password validation fails closed", () => {
     assert.equal(verifyCvPassword(process.env.CV_PASSWORD), true);
     process.env.CV_PASSWORD = "abcdef";
     assert.equal(verifyCvPassword("abcdef"), false);
+    process.env.CV_PASSWORD = "654321";
+    process.env.NODE_ENV = "production";
+    assert.equal(verifyCvPassword("654321"), false);
   } finally {
+    if (nodeEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = nodeEnv;
     if (password === undefined) delete process.env.CV_PASSWORD;
     else process.env.CV_PASSWORD = password;
   }
@@ -172,7 +178,7 @@ test("every CV visit requires a password, including visits with an old valid ses
   assert.deepEqual(projects, ["udidura", "real-match"]);
   await assertLocked();
 
-  for (const url of ["/cv/photo", "/cv.md", "/cv-photo.jpg", "/private/cv/resume.md", "/private/cv/photo.jpg"]) {
+  for (const url of ["/cv/photo", "/cv.md", "/cv-photo.jpg", "/private/cv/resume.md", "/private/cv/profile.jpg"]) {
     assert.equal((await fetch(origin + url, { headers: { Cookie: legacyCookie } })).status, 404, url);
   }
 });

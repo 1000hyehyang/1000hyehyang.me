@@ -10,7 +10,12 @@ function equal(left: string, right: string): boolean {
   return timingSafeEqual(digest(left), digest(right));
 }
 
+export function isCvAvailable(): boolean {
+  return process.env.NODE_ENV !== "production";
+}
+
 export function verifyCvPassword(value: string): boolean {
+  if (!isCvAvailable()) return false;
   const password = configuredPassword();
   return !!password && /^[0-9]{6}$/.test(value) && equal(value, password);
 }
