@@ -2,11 +2,11 @@ import {
   AWARDS_DATA,
   DESIGN_CERTIFICATION_DATA,
   EDUCATION_DATA,
+  ETC_CERTIFICATION_DATA,
   IT_CERTIFICATION_DATA,
-  LANGUAGE_DATA,
   ORGANIZATION_DATA,
 } from "@/lib/resume-data";
-import { CredentialGroup, CredentialSection } from "./CredentialSection";
+import { CredentialGroup } from "./CredentialSection";
 import { ExperienceSection } from "./ExperienceSection";
 import { ResumeSection } from "./ResumeSection";
 import { TimelineSection } from "./TimelineSection";
@@ -26,14 +26,9 @@ export function ResumeHistory() {
         <div className="space-y-8">
           <CredentialGroup title="IT" items={IT_CERTIFICATION_DATA} />
           <CredentialGroup title="Design" items={DESIGN_CERTIFICATION_DATA} />
+          <CredentialGroup title="ETC" items={ETC_CERTIFICATION_DATA} />
         </div>
       </ResumeSection>
-      <CredentialSection
-        id="language"
-        title="Language."
-        items={LANGUAGE_DATA}
-        columns={3}
-      />
     </>
   );
 }

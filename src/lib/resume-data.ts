@@ -142,7 +142,7 @@ export const DESIGN_CERTIFICATION_DATA: ResumeEntry[] = [
   }
 ];
 
-export const LANGUAGE_DATA: ResumeEntry[] = [
+export const ETC_CERTIFICATION_DATA: ResumeEntry[] = [
   {
     period: "2026.07.06",
     title: "상공회의소 한자 3급",
