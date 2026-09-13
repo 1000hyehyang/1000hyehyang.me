@@ -4,7 +4,7 @@ export const EDUCATION_DATA: ResumeEntry[] = [
   {
     period: "2022.03 - 2027.02",
     title: "한국외국어대학교 서울캠퍼스",
-    description: "EICC(영어통번역학과) & 융복합소프트웨어 전공",
+    description: "EICC(영어통번역학과) & AI융합전공(Software&AI) 전공",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/college.png",
     logoAlt: "HUFS 로고",
     url: "https://www.hufs.ac.kr/hufs/index.do",
