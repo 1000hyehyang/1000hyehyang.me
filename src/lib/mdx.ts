@@ -122,7 +122,6 @@ function optionalResumeProjectDetails(
     !tech?.length ||
     !team ||
     !service ||
-    !infrastructureCriteria ||
     !highlights?.length
   ) {
     return undefined;

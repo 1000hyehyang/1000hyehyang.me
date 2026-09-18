@@ -103,7 +103,7 @@ export function PortfolioDetail({
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-brand">
             {displayCategory}
           </p>
-          <h1 className="portfolio-detail-title text-3xl font-semibold leading-tight tracking-[-0.04em] text-foreground lg:text-[2rem]">
+          <h1 className="portfolio-detail-title text-2xl font-semibold leading-tight tracking-[-0.04em] text-foreground lg:text-[1.75rem]">
             {frontmatter.title}
           </h1>
 
@@ -255,7 +255,7 @@ export function PortfolioDetail({
               >
                 {(["core", "info"] as const).map((tab) => {
                   const isActive = activeTab === tab;
-                  const label = tab === "core" ? "CORE" : "INFO";
+                  const label = tab === "core" ? "DEEP DIVE" : "INFO";
 
                   return (
                     <button

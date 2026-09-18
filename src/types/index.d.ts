@@ -22,7 +22,7 @@ export type ResumeProjectDetails = {
   tech: string[];
   team: string;
   service: string;
-  infrastructureCriteria: string;
+  infrastructureCriteria?: string;
   highlights: Array<string | ResumeHighlightGroup>;
 };
 

@@ -4,6 +4,20 @@ import test from "node:test";
 // Run npm run build and npm run start, then npm run test:routes.
 const origin = process.env.TEST_ORIGIN ?? "http://localhost:3000";
 
+test("Resume shows infrastructure criteria only for projects that provide it", async () => {
+  const response = await fetch(origin);
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const articles = html.match(/<article\b[^>]*>[\s\S]*?<\/article>/g) ?? [];
+  const realMatch = articles.find((article) => article.includes('/projects/project/real-match"'));
+  const udidura = articles.find((article) => article.includes('/projects/project/udidura"'));
+  assert.ok(realMatch, "RealMatch remains visible without infrastructure criteria");
+  assert.ok(udidura, "Udidura remains visible");
+  assert.doesNotMatch(realMatch, /인프라 설계 기준|<dd[^>]*>--<\/dd>/);
+  assert.match(udidura, /인프라 설계 기준/);
+  assert.match(udidura, /DAU 1,000명/);
+});
+
 test("Portfolio home and Projects links, metadata, and removed routes", async () => {
   for (const source of [
     "/portfolio",

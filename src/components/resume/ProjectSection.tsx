@@ -47,9 +47,11 @@ function ProjectItem({ project }: { project: PortfolioFrontmatter }) {
         </ProjectDetail>
         <ProjectDetail label="참여 인력">{details.team}</ProjectDetail>
         <ProjectDetail label="서비스 소개">{details.service}</ProjectDetail>
-        <ProjectDetail label="인프라 설계 기준">
-          {details.infrastructureCriteria}
-        </ProjectDetail>
+        {details.infrastructureCriteria && (
+          <ProjectDetail label="인프라 설계 기준">
+            {details.infrastructureCriteria}
+          </ProjectDetail>
+        )}
       </dl>
 
       <ul className="mt-5 space-y-4">
