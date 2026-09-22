@@ -4,16 +4,12 @@ import { useLayoutEffect, type RefObject } from "react";
 
 type UseScrollRevealOptions = {
   selector?: string;
-  initialY?: number;
-  stagger?: number;
 };
 
 export function useScrollReveal(
   scopeRef: RefObject<HTMLElement | null>,
   {
     selector = "[data-scroll-reveal]",
-    initialY = 28,
-    stagger = 0,
   }: UseScrollRevealOptions = {},
 ): void {
   useLayoutEffect(() => {
@@ -31,7 +27,7 @@ export function useScrollReveal(
     const animations = new Map<HTMLElement, Animation>();
     const hiddenFrame = {
       opacity: 0,
-      transform: `translateY(${initialY}px)`,
+      transform: "translateY(-12px)",
     } as const;
 
     targets.forEach((element) => { element.style.opacity = "0"; });
@@ -58,7 +54,7 @@ export function useScrollReveal(
             [hiddenFrame, { opacity: 1, transform: "translateY(0)" }],
             {
               duration: 720,
-              delay: Math.min(index * stagger, 280),
+              delay: Math.min(index * 70, 280),
               easing: "cubic-bezier(0.165, 0.84, 0.44, 1)",
               fill: "backwards",
             },
@@ -100,5 +96,5 @@ export function useScrollReveal(
       reducedMotion.removeEventListener("change", handleMotionChange);
       stop();
     };
-  }, [scopeRef, selector, initialY, stagger]);
+  }, [scopeRef, selector]);
 }

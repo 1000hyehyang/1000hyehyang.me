@@ -4,11 +4,11 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  AnimatePresence,
   motion,
   useReducedMotion,
   type PanInfo,
 } from "framer-motion";
+import { RevealContent } from "@/components/common/RevealContent";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { PortfolioFrontmatter } from "@/types";
 import { getPortfolioDisplayCategory, getPortfolioPath } from "@/lib/portfolio";
@@ -46,6 +46,42 @@ function getSwipeDirection({ offset, velocity }: PanInfo): -1 | 0 | 1 {
   return directionSource < 0 ? 1 : -1;
 }
 
+function ProjectSummary({ project }: { project: PortfolioFrontmatter }) {
+  const href = getPortfolioPath(project);
+  const displayCategory = getPortfolioDisplayCategory(project);
+  const visibleTech = project.tech.slice(0, 5);
+  const overflowTechCount = project.tech.length - visibleTech.length;
+
+  return (
+    <RevealContent className="mx-auto mt-5 min-h-32 w-full sm:w-[72%]">
+      <div data-content-reveal aria-live="polite">
+        <p className="mb-2 text-xs font-medium text-brand">
+          {displayCategory} · {project.period}
+        </p>
+        <Link
+          href={href}
+          className="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <h3 className="text-xl font-semibold leading-snug tracking-[-0.02em] text-foreground sm:text-2xl">
+            {project.title}
+          </h3>
+        </Link>
+        {project.summary ? (
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            {project.summary}
+          </p>
+        ) : null}
+        <div className="mt-4 flex flex-wrap gap-x-2 gap-y-1 text-xs text-muted-foreground">
+          {visibleTech.map((tech) => (
+            <span key={tech}>{tech}</span>
+          ))}
+          {overflowTechCount > 0 ? <span>+{overflowTechCount}</span> : null}
+        </div>
+      </div>
+    </RevealContent>
+  );
+}
+
 export function PinnedProjectsCarousel({
   projects,
 }: PinnedProjectsCarouselProps) {
@@ -60,10 +96,6 @@ export function PinnedProjectsCarousel({
 
   const activeIndex = Math.min(index, projects.length - 1);
   const activeProject = projects[activeIndex];
-  const href = getPortfolioPath(activeProject);
-  const displayCategory = getPortfolioDisplayCategory(activeProject);
-  const visibleTech = activeProject.tech.slice(0, 5);
-  const overflowTechCount = activeProject.tech.length - visibleTech.length;
   const hasMultipleProjects = projects.length > 1;
 
   const selectProject = (nextIndex: number, nextDirection?: -1 | 1) => {
@@ -93,85 +125,86 @@ export function PinnedProjectsCarousel({
       aria-roledescription="carousel"
       aria-label="대표 프로젝트"
     >
-      <motion.div
-        className="relative aspect-[200/81] touch-pan-y overflow-hidden"
-        drag={hasMultipleProjects ? "x" : false}
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={shouldReduceMotion ? 0 : 0.12}
-        dragMomentum={false}
-        onDragStart={() => { isDragging.current = true; }}
-        onDragEnd={(_, info) => {
-          handleDragEnd(info);
-          requestAnimationFrame(() => { isDragging.current = false; });
-        }}
-        onClickCapture={(event) => {
-          if (isDragging.current) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-        }}
-      >
-        {projects.map((project, projectIndex) => {
-          const isActive = projectIndex === activeIndex;
-          const previewOnLeft = direction > 0;
-          const projectHref = getPortfolioPath(project);
-          const slideContent = project.images?.[0] ? (
-            <Image
-              src={project.images[0]}
-              alt={`${project.title} 썸네일`}
-              draggable={false}
-              fill
-              priority={projectIndex === 0}
-              sizes="(max-width: 639px) 80vw, (max-width: 1023px) 60vw, 540px"
-              className="object-cover"
-            />
-          ) : (
-            <span className="flex h-full items-center justify-center bg-muted text-sm text-muted-foreground">
-              이미지 준비 중
-            </span>
-          );
+      <div data-page-scroll-reveal>
+        <motion.div
+          className="relative aspect-[200/81] touch-pan-y overflow-hidden"
+          drag={hasMultipleProjects ? "x" : false}
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={shouldReduceMotion ? 0 : 0.12}
+          dragMomentum={false}
+          onDragStart={() => { isDragging.current = true; }}
+          onDragEnd={(_, info) => {
+            handleDragEnd(info);
+            requestAnimationFrame(() => { isDragging.current = false; });
+          }}
+          onClickCapture={(event) => {
+            if (isDragging.current) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+          }}
+        >
+          {projects.map((project, projectIndex) => {
+            const isActive = projectIndex === activeIndex;
+            const previewOnLeft = direction > 0;
+            const projectHref = getPortfolioPath(project);
+            const slideContent = project.images?.[0] ? (
+              <Image
+                src={project.images[0]}
+                alt={`${project.title} 썸네일`}
+                draggable={false}
+                fill
+                priority={projectIndex === 0}
+                sizes="(max-width: 639px) 80vw, (max-width: 1023px) 60vw, 540px"
+                className="object-cover"
+              />
+            ) : (
+              <span className="flex h-full items-center justify-center bg-muted text-sm text-muted-foreground">
+                이미지 준비 중
+              </span>
+            );
 
-          return (
-            <motion.div
-              key={project.slug}
-              initial={false}
-              animate={{
-                left: isActive ? "14%" : previewOnLeft ? "-18%" : "76%",
-                width: isActive ? "72%" : "42%",
-                top: "50%",
-                y: "-50%",
-                opacity: isActive ? 1 : 0.68,
-                scale: isActive ? 1 : 0.98,
-              }}
-              transition={
-                shouldReduceMotion
-                  ? { duration: 0 }
-                  : { duration: 0.55, ease: [0.16, 1, 0.3, 1] }
-              }
-              className={`absolute aspect-video overflow-hidden rounded-xl ${
-                isActive ? "z-10" : "z-0"
-              }`}
-            >
-              {isActive ? (
-                <Link
-                  href={projectHref}
-                  draggable={false}
-                  aria-label={`${project.title} 상세 보기`}
-                  className="relative block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
-                >
-                  {slideContent}
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => selectProject(projectIndex)}
-                  className="relative block h-full w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
-                  aria-label={`${project.title} 대표 프로젝트로 선택`}
-                >
-                  {slideContent}
-                </button>
-              )}
-            </motion.div>
+            return (
+              <motion.div
+                key={project.slug}
+                initial={false}
+                animate={{
+                  left: isActive ? "14%" : previewOnLeft ? "-18%" : "76%",
+                  width: isActive ? "72%" : "42%",
+                  top: "50%",
+                  y: "-50%",
+                  opacity: isActive ? 1 : 0.68,
+                  scale: isActive ? 1 : 0.98,
+                }}
+                transition={
+                  shouldReduceMotion
+                    ? { duration: 0 }
+                    : { duration: 0.55, ease: [0.16, 1, 0.3, 1] }
+                }
+                className={`absolute aspect-video overflow-hidden rounded-xl ${
+                  isActive ? "z-10" : "z-0"
+                }`}
+              >
+                {isActive ? (
+                  <Link
+                    href={projectHref}
+                    draggable={false}
+                    aria-label={`${project.title} 상세 보기`}
+                    className="relative block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                  >
+                    {slideContent}
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => selectProject(projectIndex)}
+                    className="relative block h-full w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                    aria-label={`${project.title} 대표 프로젝트로 선택`}
+                  >
+                    {slideContent}
+                  </button>
+                )}
+              </motion.div>
           );
         })}
 
@@ -197,52 +230,13 @@ export function PinnedProjectsCarousel({
         ) : null}
       </motion.div>
 
-      <div className="mx-auto mt-5 min-h-32 w-full sm:w-[72%]">
-        <AnimatePresence initial={false} mode="wait">
-          <motion.div
-            key={activeProject.slug}
-            initial={
-              shouldReduceMotion
-                ? false
-                : { opacity: 0, filter: "blur(8px)", y: -12 }
-            }
-            animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-            exit={
-              shouldReduceMotion
-                ? undefined
-                : { opacity: 0, filter: "blur(8px)", y: 8 }
-            }
-            transition={{ duration: 0.35, ease: "easeOut" }}
-            aria-live="polite"
-          >
-            <p className="mb-2 text-xs font-medium text-brand">
-              {displayCategory} · {activeProject.period}
-            </p>
-            <Link
-              href={href}
-              className="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <h3 className="text-xl font-semibold leading-snug tracking-[-0.02em] text-foreground sm:text-2xl">
-                {activeProject.title}
-              </h3>
-            </Link>
-            {activeProject.summary ? (
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {activeProject.summary}
-              </p>
-            ) : null}
-            <div className="mt-4 flex flex-wrap gap-x-2 gap-y-1 text-xs text-muted-foreground">
-              {visibleTech.map((tech) => (
-                <span key={tech}>{tech}</span>
-              ))}
-              {overflowTechCount > 0 ? <span>+{overflowTechCount}</span> : null}
-            </div>
-          </motion.div>
-        </AnimatePresence>
       </div>
+
+      <ProjectSummary key={activeProject.slug} project={activeProject} />
 
       {hasMultipleProjects ? (
         <div
+          data-page-scroll-reveal
           className="mt-5 flex items-center justify-center"
           aria-label="대표 프로젝트 선택"
         >

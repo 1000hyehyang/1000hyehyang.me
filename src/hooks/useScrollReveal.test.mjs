@@ -57,7 +57,7 @@ function mount(reducedMotion = false) {
     },
     require: () => ({ useLayoutEffect: effect => { cleanup = effect(); } }),
   });
-  exports.useScrollReveal({ current: scope }, { initialY: -24, stagger: 70 });
+  exports.useScrollReveal({ current: scope });
   return {
     targets, observer: observers[0], cleanup,
     focus: target => focus({ target }),
@@ -71,7 +71,8 @@ test("reveals only intersecting items once, caps stagger, and releases finished 
   assert.ok(targets.every(target => target.style.opacity === "0"));
   observer.notify(targets.map((target, index) => ({ target, isIntersecting: index < 5 })));
   assert.deepEqual(targets.slice(0, 5).map(target => target.animations[0].options.delay), [0, 70, 140, 210, 280]);
-  assert.equal(targets[0].animations[0].frames[0].transform, "translateY(-24px)");
+  assert.equal(targets[0].animations[0].frames[0].transform, "translateY(-12px)");
+  assert.equal(targets[0].animations[0].options.duration, 720);
   assert.equal(targets[0].animations[0].options.fill, "backwards");
   assert.equal(targets[5].animations.length, 0);
   targets[0].animations[0].onfinish();
