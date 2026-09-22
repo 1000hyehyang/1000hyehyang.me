@@ -1,13 +1,10 @@
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
 import { ResumeReveal } from "./ResumeReveal";
 
 type ResumeSectionProps = {
-  id?: string;
-  title?: string;
+  id: string;
+  title: string;
   children: ReactNode;
-  className?: string;
-  showDivider?: boolean;
   revealContent?: boolean;
 };
 
@@ -15,11 +12,9 @@ export function ResumeSection({
   id,
   title,
   children,
-  className,
-  showDivider = true,
   revealContent = true,
 }: ResumeSectionProps) {
-  const headingId = id && title ? `${id}-heading` : undefined;
+  const headingId = `${id}-heading`;
   const content = revealContent ? (
     <ResumeReveal>{children}</ResumeReveal>
   ) : (
@@ -28,18 +23,16 @@ export function ResumeSection({
 
   return (
     <section
+      id={id}
       aria-labelledby={headingId}
-      className={cn("w-full max-w-2xl", className)}
+      className="portfolio-split-grid w-full scroll-mt-24 py-12 sm:py-16 lg:py-20 border-t border-border/60"
     >
-      {title ? (
-        <ResumeReveal>
-          <h2 id={headingId} className="mb-4 text-xl font-semibold">
-            {title}
-          </h2>
-        </ResumeReveal>
-      ) : null}
-      <div className={title ? "mb-16" : undefined}>{content}</div>
-      {showDivider ? <hr className="mb-16 border-t border-border/50" /> : null}
+      <ResumeReveal>
+        <h2 id={headingId} className="text-2xl font-semibold tracking-[-0.025em]">
+          {title}
+        </h2>
+      </ResumeReveal>
+      <div className="min-w-0">{content}</div>
     </section>
   );
 }

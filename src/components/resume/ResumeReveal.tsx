@@ -1,38 +1,19 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { useRef, type ReactNode } from "react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 type ResumeRevealProps = {
   children: ReactNode;
-  className?: string;
 };
 
-const revealVariants: Variants = {
-  hidden: { opacity: 0, y: -24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: 0.08,
-      duration: 0.8,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-};
-
-export function ResumeReveal({ children, className }: ResumeRevealProps) {
-  const shouldReduceMotion = Boolean(useReducedMotion());
+export function ResumeReveal({ children }: ResumeRevealProps) {
+  const scopeRef = useRef<HTMLDivElement>(null);
+  useScrollReveal(scopeRef, { initialY: -24 });
 
   return (
-    <motion.div
-      initial={shouldReduceMotion ? false : "hidden"}
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.12 }}
-      variants={revealVariants}
-      className={className}
-    >
-      {children}
-    </motion.div>
+    <div ref={scopeRef}>
+      <div data-scroll-reveal>{children}</div>
+    </div>
   );
 }

@@ -1,4 +1,3 @@
-/* Highlight.js 테마 - GitHub 스타일 */
 .hljs {
   color: var(--syntax-foreground);
   background: var(--syntax-background);
@@ -91,21 +90,7 @@
   background-color: var(--syntax-deletion-background);
 }
 
-/* Highlight.js 스타일 오버라이드 */
-.markdown-body .hljs {
-  background: var(--code-block-background) !important;
-  color: var(--code-block-foreground) !important;
-  border-radius: 0.5rem;
-  padding: 1.1em 1.3em;
-  margin: 0;
-  overflow-x: auto;
-  font-size: 0.98em;
-  font-family: var(--font-mono, 'Fira Mono', 'Menlo', monospace);
-  border: 1px solid var(--border);
-  position: relative;
-}
-
-/* Highlight.js 코드 블록 래퍼 - 기존 스타일 제거 */
+.markdown-body .hljs,
 .markdown-body .code-block-wrapper .hljs {
   background: var(--code-block-background) !important;
   color: var(--code-block-foreground) !important;
@@ -119,19 +104,6 @@
   position: relative;
 }
 
-/* highlight.js가 적용된 코드 블록에서 기존 pre 스타일 제거 */
-.markdown-body .code-block-wrapper pre.hljs {
-  background: inherit !important;
-  color: inherit !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  font-size: inherit !important;
-  font-family: inherit !important;
-}
-
-/* highlight.js 내부 요소들의 배경색과 테두리 완전 제거 */
 .markdown-body .hljs *,
 .markdown-body .hljs *::before,
 .markdown-body .hljs *::after {
@@ -143,42 +115,22 @@
   padding: 0 !important;
   margin: 0 !important;
   border-radius: 0 !important;
-  /* display 관련 속성 제거 - 줄바꿈 보존을 위해 */
 }
 
-/* highlight.js span 요소들의 불필요한 스타일 완전 제거 */
 .markdown-body .hljs span,
 .markdown-body .hljs p {
-  background: transparent !important;
-  background-color: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  outline: none !important;
   display: inline !important;
   width: auto !important;
   height: auto !important;
 }
 
-/* pre와 code는 블록 성격 유지 */
 .markdown-body .hljs pre,
 .markdown-body .hljs div {
-  background: transparent !important;
-  background-color: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  outline: none !important;
   display: block !important;
   white-space: pre !important;
   overflow-x: auto !important;
 }
 
-/* pre code에 줄바꿈 보존 속성 명시 */
 .markdown-body pre code {
   white-space: pre !important;
   display: block !important;
@@ -188,55 +140,6 @@
   margin: 0 !important;
 }
 
-/* highlight.js 라인별 박스 제거 */
-.markdown-body .hljs-line,
-.markdown-body .hljs-line-number,
-.markdown-body .hljs-line-numbers {
-  background: transparent !important;
-  background-color: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  display: inline !important;
-}
-
-/* highlight.js 모든 클래스의 배경색 강제 제거 */
-.markdown-body .hljs .hljs-keyword,
-.markdown-body .hljs .hljs-string,
-.markdown-body .hljs .hljs-comment,
-.markdown-body .hljs .hljs-title,
-.markdown-body .hljs .hljs-meta,
-.markdown-body .hljs .hljs-type,
-.markdown-body .hljs .hljs-variable,
-.markdown-body .hljs .hljs-attr,
-.markdown-body .hljs .hljs-attribute,
-.markdown-body .hljs .hljs-literal,
-.markdown-body .hljs .hljs-number,
-.markdown-body .hljs .hljs-operator,
-.markdown-body .hljs .hljs-built_in,
-.markdown-body .hljs .hljs-symbol,
-.markdown-body .hljs .hljs-name,
-.markdown-body .hljs .hljs-quote,
-.markdown-body .hljs .hljs-selector-tag,
-.markdown-body .hljs .hljs-selector-pseudo,
-.markdown-body .hljs .hljs-subst,
-.markdown-body .hljs .hljs-section,
-.markdown-body .hljs .hljs-bullet,
-.markdown-body .hljs .hljs-emphasis,
-.markdown-body .hljs .hljs-strong,
-.markdown-body .hljs .hljs-addition,
-.markdown-body .hljs .hljs-deletion {
-  background: transparent !important;
-  background-color: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  box-shadow: none !important;
-  outline: none !important;
-  border-radius: 0 !important;
-}
-
-/* 복사 버튼 스타일 */
 .markdown-body .copy-code-button {
   position: absolute;
   top: 0.25rem;
@@ -244,20 +147,17 @@
   z-index: 10;
 }
 
-/* 복사 버튼 기본 스타일 - 항상 표시 */
 .markdown-body .copy-code-button button {
   opacity: 0.7;
   transform: translateY(0);
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-/* 코드 블록 호버 시 복사 버튼 강조 */
 .markdown-body .code-block-wrapper:hover .copy-code-button button {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* 모바일에서는 항상 복사 버튼 표시 */
 @media (max-width: 768px) {
   .markdown-body .copy-code-button button {
     opacity: 1;

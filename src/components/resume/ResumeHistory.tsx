@@ -6,7 +6,7 @@ import {
   IT_CERTIFICATION_DATA,
   ORGANIZATION_DATA,
 } from "@/lib/resume-data";
-import { CredentialGroup } from "./CredentialSection";
+import { CredentialGroup } from "./CredentialGroup";
 import { ExperienceSection } from "./ExperienceSection";
 import { ResumeSection } from "./ResumeSection";
 import { TimelineSection } from "./TimelineSection";

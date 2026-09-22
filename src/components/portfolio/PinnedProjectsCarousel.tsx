@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -49,6 +49,7 @@ function getSwipeDirection({ offset, velocity }: PanInfo): -1 | 0 | 1 {
 export function PinnedProjectsCarousel({
   projects,
 }: PinnedProjectsCarouselProps) {
+  const isDragging = useRef(false);
   const shouldReduceMotion = Boolean(useReducedMotion());
   const [{ index, direction }, setCarouselState] = useState<CarouselState>({
     index: 0,
@@ -98,7 +99,17 @@ export function PinnedProjectsCarousel({
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={shouldReduceMotion ? 0 : 0.12}
         dragMomentum={false}
-        onDragEnd={(_, info) => handleDragEnd(info)}
+        onDragStart={() => { isDragging.current = true; }}
+        onDragEnd={(_, info) => {
+          handleDragEnd(info);
+          requestAnimationFrame(() => { isDragging.current = false; });
+        }}
+        onClickCapture={(event) => {
+          if (isDragging.current) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }}
       >
         {projects.map((project, projectIndex) => {
           const isActive = projectIndex === activeIndex;
@@ -108,6 +119,7 @@ export function PinnedProjectsCarousel({
             <Image
               src={project.images[0]}
               alt={`${project.title} 썸네일`}
+              draggable={false}
               fill
               priority={projectIndex === 0}
               sizes="(max-width: 639px) 80vw, (max-width: 1023px) 60vw, 540px"
@@ -143,6 +155,7 @@ export function PinnedProjectsCarousel({
               {isActive ? (
                 <Link
                   href={projectHref}
+                  draggable={false}
                   aria-label={`${project.title} 상세 보기`}
                   className="relative block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
                 >
@@ -184,7 +197,7 @@ export function PinnedProjectsCarousel({
         ) : null}
       </motion.div>
 
-      <div className="mx-auto mt-5 min-h-32 w-[72%]">
+      <div className="mx-auto mt-5 min-h-32 w-full sm:w-[72%]">
         <AnimatePresence initial={false} mode="wait">
           <motion.div
             key={activeProject.slug}
@@ -230,7 +243,7 @@ export function PinnedProjectsCarousel({
 
       {hasMultipleProjects ? (
         <div
-          className="mt-5 flex items-center justify-center gap-2"
+          className="mt-5 flex items-center justify-center"
           aria-label="대표 프로젝트 선택"
         >
           {projects.map((project, projectIndex) => (
@@ -238,14 +251,12 @@ export function PinnedProjectsCarousel({
               key={project.slug}
               type="button"
               onClick={() => selectProject(projectIndex)}
-              className={`h-1.5 cursor-pointer rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                projectIndex === activeIndex
-                  ? "w-8 bg-brand"
-                  : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/60"
-              }`}
+              className="flex size-11 cursor-pointer items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={`${project.title} 보기`}
               aria-current={projectIndex === activeIndex ? "true" : undefined}
-            />
+            >
+              <span aria-hidden="true" className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${projectIndex === activeIndex ? "w-8 bg-brand" : "w-1.5 bg-muted-foreground/30"}`} />
+            </button>
           ))}
         </div>
       ) : null}

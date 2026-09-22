@@ -87,7 +87,7 @@ export const AWARDS_DATA: ResumeEntry[] = [
     period: "2024.10",
     title: "2024 메타버스 개발자 경진대회 우수상",
     description: "APOC을 활용한 KBO 구단 브랜딩 XR 웹 서비스 | 팀장",
-    issuer: "팜피(주)",
+    issuer: "(주)팜피",
     logo: "https://eaalkymxyfskjojh.public.blob.vercel-storage.com/about/apoc.png",
     logoAlt: "APOC 로고"
   },

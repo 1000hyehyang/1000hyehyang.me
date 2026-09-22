@@ -1,24 +1,10 @@
 import Image from "next/image";
 import type { ResumeEntry } from "@/types";
-import { ResumeSection } from "./ResumeSection";
-
-type CredentialSectionProps = {
-  id: string;
-  title: string;
-  items: readonly ResumeEntry[];
-  columns?: 3 | 4;
-};
 
 type CredentialGroupProps = {
-  title?: string;
+  title: string;
   items: readonly ResumeEntry[];
-  columns?: 3 | 4;
 };
-
-const columnClassNames = {
-  3: "grid-cols-1 md:grid-cols-3",
-  4: "grid-cols-2 md:grid-cols-4",
-} as const;
 
 function CredentialCard({ item }: { item: ResumeEntry }) {
   return (
@@ -34,7 +20,7 @@ function CredentialCard({ item }: { item: ResumeEntry }) {
           />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="whitespace-nowrap text-sm font-semibold">{item.title}</p>
+          <p className="break-keep text-sm font-semibold">{item.title}</p>
           <p className="text-xs text-muted-foreground">{item.period}</p>
         </div>
       </div>
@@ -48,29 +34,15 @@ function CredentialCard({ item }: { item: ResumeEntry }) {
 export function CredentialGroup({
   title,
   items,
-  columns = 4,
 }: CredentialGroupProps) {
   return (
     <div>
-      {title ? <h3 className="mb-3 text-base font-semibold">{title}</h3> : null}
-      <div className={`grid gap-4 ${columnClassNames[columns]}`}>
+      <h3 className="mb-3 text-base font-semibold">{title}</h3>
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
         {items.map((item) => (
           <CredentialCard key={`${item.title}-${item.period}`} item={item} />
         ))}
       </div>
     </div>
-  );
-}
-
-export function CredentialSection({
-  id,
-  title,
-  items,
-  columns = 4,
-}: CredentialSectionProps) {
-  return (
-    <ResumeSection id={id} title={title}>
-      <CredentialGroup items={items} columns={columns} />
-    </ResumeSection>
   );
 }

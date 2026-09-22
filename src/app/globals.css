@@ -3,7 +3,6 @@
 @import "./styles/markdown-body.css";
 @import "./styles/utilities.css";
 
-/* 테마 변경 시 새 화면이 중앙에서 원형으로 펼쳐지는 전환 */
 html.theme-circle-transition::view-transition-group(root) {
   animation-duration: var(--theme-transition-duration);
   animation-timing-function: var(--theme-transition-easing);
@@ -66,7 +65,6 @@ html.theme-circle-transition::view-transition-new(root) {
 :root {
   --radius: 0.625rem;
   --layout-wide: 70rem;
-  --layout-reading: 48rem;
   --layout-gutter: clamp(1rem, 3vw, 2rem);
   --portfolio-rail-width: 18rem;
   --portfolio-grid-gap: clamp(2.5rem, 5vw, 4rem);
@@ -100,6 +98,7 @@ html.theme-circle-transition::view-transition-new(root) {
   --logo-border: #e5e7eb;
   --glass-blur: 1rem;
   --scrollbar-thumb: #fed7aa;
+  --scrollbar-thumb-hover: #fdba74;
   --selection-background: #fed7aa;
   --selection-foreground: #1e293b;
   --theme-transition-duration: 0.7s;
@@ -170,23 +169,18 @@ html.theme-circle-transition::view-transition-new(root) {
     font-family: var(--font-sans);
   }
   
-  /* 텍스트 선택 시 주황색 배경 */
   ::selection {
     background-color: var(--selection-background);
     color: var(--selection-foreground);
   }
   
-  /* 다크모드 전환 시 깜빡임 방지를 위한 최적화 */
   html {
     overflow-y: scroll;
     transition: none;
     scroll-padding-top: var(--site-header-height);
     scrollbar-gutter: stable;
-    scrollbar-color: var(--scrollbar-thumb) transparent;
-    scrollbar-width: thin;
   }
   
-  /* 핵심 UI 요소들만 부드러운 전환 적용 */
   .bg-background,
   .bg-card,
   .bg-muted,
@@ -216,6 +210,24 @@ html.theme-circle-transition::view-transition-new(root) {
 *::-webkit-scrollbar-thumb {
   background-color: var(--scrollbar-thumb);
   border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+/* Standard scrollbar properties override WebKit button styling. */
+@supports selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-color: auto;
+    scrollbar-width: auto;
+  }
+
+  *::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
 }
 
 .click-ripple {

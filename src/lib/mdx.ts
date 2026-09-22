@@ -73,7 +73,6 @@ function optionalResumeHighlights(
 }
 
 function optionalPortfolioRole(value: unknown): PortfolioRole | undefined {
-  // 기존 한 줄 형식도 안전하게 표시해 오래된 콘텐츠와의 호환성을 유지한다.
   if (typeof value === "string" && value.length > 0) {
     return { title: value, contributions: [] };
   }

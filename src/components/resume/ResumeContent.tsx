@@ -10,7 +10,7 @@ type ResumeContentProps = {
 
 export function ResumeContent({ projects }: ResumeContentProps) {
   return (
-    <div className="flex min-h-screen flex-col items-center pt-12">
+    <div className="w-full pb-8 pt-8 sm:pt-12 lg:pt-16">
       <ResumeHero />
       <ProjectSection projects={projects} />
       <ResumeHistory />

@@ -1,22 +1,18 @@
-import { ResumeSection } from "./ResumeSection";
+import { SITE_CONFIG } from "@/lib/config";
 
 export function ResumeHero() {
   return (
-    <ResumeSection className="mb-12" showDivider={false}>
-      <h1 className="flex flex-col gap-2 font-bold tracking-tight">
-        <span className="flex items-baseline gap-3">
-          <span className="text-3xl font-semibold sm:text-4xl">여채현</span>
-          <span className="text-2xl font-normal text-muted-foreground sm:text-3xl">
-            呂採炫
-          </span>
-        </span>
-        <span className="text-3xl text-muted-foreground sm:text-4xl">
-          YEO CHAE HYEON
-        </span>
-        <span className="mt-2 text-xl font-light text-muted-foreground sm:text-2xl">
-          Backend Engineer
-        </span>
+    <header className="pb-12 sm:pb-16 lg:pb-20">
+      <p className="mb-6 text-xs font-medium uppercase tracking-[0.16em] text-brand">
+        {SITE_CONFIG.title} · Portfolio
+      </p>
+      <h1 className="text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl lg:text-6xl">
+        Backend Engineer<span className="text-brand">.</span>
       </h1>
-    </ResumeSection>
+      <p className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <span className="text-xl font-semibold sm:text-2xl">{SITE_CONFIG.authorName}</span>
+        <span className="text-sm text-muted-foreground">呂採炫 · YEO CHAE HYEON</span>
+      </p>
+    </header>
   );
 }
