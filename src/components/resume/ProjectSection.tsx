@@ -35,6 +35,7 @@ function ProjectItem({ project }: { project: PortfolioFrontmatter }) {
               {details.highlights.map((highlight) =>
                 typeof highlight === "string" ? (
                   <li
+                    data-scroll-reveal
                     key={highlight}
                     className="flex items-start text-xs leading-5 text-muted-foreground"
                   >
@@ -44,7 +45,7 @@ function ProjectItem({ project }: { project: PortfolioFrontmatter }) {
                     <span>{highlight}</span>
                   </li>
                 ) : (
-                  <li key={highlight.title}>
+                  <li data-scroll-reveal key={highlight.title}>
                     <div className="flex items-start text-xs font-semibold leading-5 text-foreground">
                       <span aria-hidden="true" className="mr-2 text-brand">
                         •
@@ -83,7 +84,7 @@ function ProjectDetail({
   children: ReactNode;
 }) {
   return (
-    <div className="grid gap-1 text-xs sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-4">
+    <div data-scroll-reveal className="grid gap-1 text-xs sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-4">
       <dt className="font-medium leading-5 text-foreground">{label}</dt>
       <dd className="leading-5 text-muted-foreground">{children}</dd>
     </div>
@@ -92,7 +93,7 @@ function ProjectDetail({
 
 export function ProjectSection({ projects }: ProjectSectionProps) {
   return (
-    <ResumeSection id="projects" title="Projects." revealContent={false}>
+    <ResumeSection id="projects" title="Projects.">
       <ProjectCarousel
         projects={projects}
         details={Object.fromEntries(

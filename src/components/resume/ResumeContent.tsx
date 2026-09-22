@@ -3,6 +3,7 @@ import { ContactSection } from "./ContactSection";
 import { ProjectSection } from "./ProjectSection";
 import { ResumeHero } from "./ResumeHero";
 import { ResumeHistory } from "./ResumeHistory";
+import { ResumeReveal } from "./ResumeReveal";
 
 type ResumeContentProps = {
   projects: readonly PortfolioFrontmatter[];
@@ -10,11 +11,11 @@ type ResumeContentProps = {
 
 export function ResumeContent({ projects }: ResumeContentProps) {
   return (
-    <div className="w-full pb-8 pt-8 sm:pt-12 lg:pt-16">
+    <ResumeReveal>
       <ResumeHero />
       <ProjectSection projects={projects} />
       <ResumeHistory />
       <ContactSection />
-    </div>
+    </ResumeReveal>
   );
 }

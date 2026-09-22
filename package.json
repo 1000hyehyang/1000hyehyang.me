@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "test": "node --no-warnings --experimental-strip-types src/lib/portfolio.test.ts",
+    "test": "node --no-warnings --experimental-strip-types src/lib/portfolio.test.ts && node src/hooks/useScrollReveal.test.mjs",
     "test:cv": "node --no-warnings --experimental-strip-types src/app/cv/cv.test.mjs",
     "test:routes": "node src/lib/routes.test.mjs",
     "lint": "eslint .",

@@ -19,7 +19,7 @@ function ExperienceCard({ item }: { item: ResumeEntry }) {
     "mb-1 text-sm font-semibold text-foreground transition-colors";
 
   return (
-    <article className="flex items-start gap-4">
+    <article data-scroll-reveal className="flex items-start gap-4">
       <div className="size-16 shrink-0 overflow-hidden rounded-lg border border-logo-border bg-logo-surface">
         <Image
           src={item.logo}

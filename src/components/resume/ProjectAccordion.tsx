@@ -12,6 +12,7 @@ export function ProjectAccordion({ title, context, children }: { title: string; 
   return (
     <div className="mt-6 overflow-hidden rounded-2xl bg-muted/20">
       <button
+        data-scroll-reveal
         id={`${id}-trigger`}
         type="button"
         aria-expanded={open}

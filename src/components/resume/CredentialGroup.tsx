@@ -8,7 +8,7 @@ type CredentialGroupProps = {
 
 function CredentialCard({ item }: { item: ResumeEntry }) {
   return (
-    <article className="rounded-lg bg-muted/25 p-4 transition-colors duration-200 hover:bg-muted/40 dark:bg-muted/40 dark:hover:bg-muted/60">
+    <article data-scroll-reveal className="rounded-lg bg-muted/25 p-4 transition-colors duration-200 hover:bg-muted/40 dark:bg-muted/40 dark:hover:bg-muted/60">
       <div className="flex items-center gap-3">
         <div className="relative size-8 shrink-0">
           <Image
@@ -37,7 +37,7 @@ export function CredentialGroup({
 }: CredentialGroupProps) {
   return (
     <div>
-      <h3 className="mb-3 text-base font-semibold">{title}</h3>
+      <h3 data-scroll-reveal className="mb-3 text-base font-semibold">{title}</h3>
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
         {items.map((item) => (
           <CredentialCard key={`${item.title}-${item.period}`} item={item} />

@@ -10,7 +10,7 @@ type TimelineSectionProps = {
 
 function TimelineCard({ item }: { item: ResumeEntry }) {
   return (
-    <article className="w-full rounded-lg bg-muted/25 p-4 dark:bg-muted/40">
+    <article data-scroll-reveal className="w-full rounded-lg bg-muted/25 p-4 dark:bg-muted/40">
       <p className="mb-1 text-xs text-muted-foreground">{item.period}</p>
       <div className="mb-1 flex items-center gap-2">
         <div className="relative size-6 shrink-0">

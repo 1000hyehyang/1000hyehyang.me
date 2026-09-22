@@ -51,6 +51,7 @@ function ContactCard({ item }: { item: ContactItem }) {
 
   return (
     <a
+      data-scroll-reveal
       href={item.href}
       target={item.external ? "_blank" : undefined}
       rel={item.external ? "noopener noreferrer" : undefined}
@@ -71,8 +72,8 @@ function ContactCard({ item }: { item: ContactItem }) {
 export function ContactSection() {
   return (
     <ResumeSection id="contact" title="Contact.">
-      <p className="mb-3 text-2xl font-semibold tracking-[-0.025em]">함께 만들어 갈 이야기를 기다립니다<span className="text-brand">.</span></p>
-      <p className="mb-8 text-sm leading-7 text-muted-foreground">프로젝트와 개발에 관한 이야기는 아래 채널로 편하게 전해 주세요.</p>
+      <p data-scroll-reveal className="mb-3 text-2xl font-semibold tracking-[-0.025em]">함께 만들어 갈 이야기를 기다립니다<span className="text-brand">.</span></p>
+      <p data-scroll-reveal className="mb-8 text-sm leading-7 text-muted-foreground">프로젝트와 개발에 관한 이야기는 아래 채널로 편하게 전해 주세요.</p>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {CONTACT_ITEMS.map((item) => (
           <ContactCard key={item.label} item={item} />

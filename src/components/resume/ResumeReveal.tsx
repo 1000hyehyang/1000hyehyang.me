@@ -9,11 +9,11 @@ type ResumeRevealProps = {
 
 export function ResumeReveal({ children }: ResumeRevealProps) {
   const scopeRef = useRef<HTMLDivElement>(null);
-  useScrollReveal(scopeRef, { initialY: -24 });
+  useScrollReveal(scopeRef, { initialY: -12, stagger: 70 });
 
   return (
-    <div ref={scopeRef}>
-      <div data-scroll-reveal>{children}</div>
+    <div ref={scopeRef} className="w-full pb-8 pt-8 sm:pt-12 lg:pt-16">
+      {children}
     </div>
   );
 }
