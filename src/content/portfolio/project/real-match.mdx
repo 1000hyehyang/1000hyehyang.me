@@ -2,7 +2,7 @@
 title: "RealMatch - 브랜드 & 크리에이터 매칭 플랫폼"
 slug: "real-match"
 period: "2026.01.02 - 2026.02.20"
-tech: ["Spring Boot", "JPA", "QueryDSL", "WebSocket", "RabbitMQ", "FCM", "Docker", "MySQL", "Redis", "GitHub Actions", "HAProxy", "Cloudflare", "CloudFront", "S3", "Prometheus", "Grafana", "React", "Vite", "TypeScript"]
+tech: ["Spring Boot", "JPA", "QueryDSL", "WebSocket", "RabbitMQ", "FCM", "Docker", "MySQL", "Redis", "GitHub Actions", "HAProxy", "Cloudflare", "CloudFront", "S3", "Prometheus", "React", "Vite", "TypeScript"]
 images: ["https://eaalkymxyfskjojh.public.blob.vercel-storage.com/portfolio/real-match/real-match.png"]
 summary: "UMC 9기 프로젝트 SpringBoot 백엔드 개발"
 githubUrl: "https://github.com/RealMatchTeam"
@@ -22,12 +22,12 @@ resume:
   context: "UMC 9기"
   title: "RealMatch"
   logo: "/project-logos/real-match.svg"
-  tech: ["Java 21", "Spring Boot 3.5.9", "Spring Security", "JPA", "QueryDSL 5.1.0", "JJWT 0.12.3", "WebSocket·STOMP", "RabbitMQ", "Redis OM 0.9.7", "MySQL", "AWS SDK 2.26.7", "Firebase Admin 9.2.0", "Docker", "GitHub Actions", "HAProxy", "Cloudflare", "S3·CloudFront", "Prometheus·Grafana"]
+  tech: ["Java 21", "Spring Boot 3.5.9", "Spring Security", "JPA", "QueryDSL 5.1.0", "JJWT 0.12.3", "WebSocket·STOMP", "RabbitMQ", "Redis OM 0.9.7", "MySQL", "AWS SDK 2.26.7", "Firebase Admin 9.2.0", "Docker", "GitHub Actions", "HAProxy", "Cloudflare", "S3·CloudFront", "Prometheus"]
   team: "PM 1명, 디자인 1명, FE 4명, BE 5명"
   service: "브랜드와 마이크로 인플루언서의 매칭부터 제안·협의·피드백·완료까지 관리하는 협업 플랫폼"
   highlights:
     - "WebSocket·STOMP 기반 실시간 채팅과 협업 상태 연동 시스템 메시지를 구현하고, DB 저장과 실시간 전송의 트랜잭션 경계를 분리"
-    - "DB Unique Constraint와 조건부 UPDATE를 적용해 메시지 중복 저장과 동시 처리 시 최신 상태 역행을 방지"
+    - "DB Unique Constraint로 메시지 중복 저장을 방지하고, 조건부 UPDATE로 마지막 메시지와 읽음 위치의 역행을 방지"
     - "Transactional Outbox·RabbitMQ 기반 FCM·이메일 비동기 알림을 구축하고, 실패 작업의 재시도·복구 구조를 설계"
 ---
 
@@ -62,18 +62,18 @@ resume:
 
 ### ① 요구사항
 
-✓ 서비스에 접속하지 않은 사용자에게도 제안 수신, 지원 결과, 매칭 완료와 같은 주요 협업 이벤트를 전달해야 했습니다.
+✓ 서비스에 접속하지 않은 사용자에게도 제안 수신, 지원 요청, 매칭 완료와 같은 주요 협업 이벤트를 전달해야 했습니다.
 
 ✓ 확정된 비즈니스 이벤트만 알림으로 전달하고, FCM·이메일의 지연이나 장애가 핵심 요청에 영향을 주지 않아야 했습니다.
 
-✓ 사용자가 설정한 수신 채널에 따라 푸시 알림과 이메일을 발송해야 했습니다.
+✓ 알림 유형별 지원 채널과 사용자의 수신 설정에 따라 푸시 알림과 이메일을 발송해야 했습니다.
 
 ### ② 설계
 
 ✓ **DB와 MQ 사이의 유실 구간을 줄이기 위해** `Transactional Outbox`**를 적용했습니다.** 
 비즈니스 데이터와 발송 작업을 같은 트랜잭션에 저장해, DB 커밋 이후 MQ 발행 전에 서버가 중단되더라도 처리할 작업이 남도록 했습니다.
 
-✓ **외부 발송은 RabbitMQ를 통해 핵심 요청과 분리했습니다** 
+✓ **외부 발송은 RabbitMQ를 통해 핵심 요청과 분리했습니다.**
 FCM·이메일 호출을 비동기로 처리하고 발송 결과를 DB에 기록해, 외부 서비스의 지연과 장애가 제안·매칭 처리로 전파되지 않도록 했습니다. 
 실패하거나 처리 중 중단된 작업은 저장된 상태를 기준으로 재처리했습니다.
 
@@ -95,7 +95,7 @@ FCM·이메일 호출을 비동기로 처리하고 발송 결과를 DB에 기록
 **RealMatch**의 채팅은 단순 대화 기능이 아니라 브랜드와 크리에이터의 협업 진행을 위한 주요 인터페이스입니다. 
 사용자는 채팅을 통해 일정·요구사항·피드백을 조율하며, 지원·제안·매칭 결과와 같은 협업 상태도 시스템 메시지로 전달받습니다.
 
-STOMP의 구독 모델을 이용해 채팅방 단위로 메시지를 브로드캐스트하고, WebSocket 연결 및 구독 과정에 인증·인가 검증을 적용했습니다. 
+STOMP의 구독 모델을 이용해 채팅방 단위로 메시지를 브로드캐스트하고, STOMP CONNECT 단계에서 JWT 인증을 수행한 뒤 SUBSCRIBE 단계에서 채팅방 참여 권한을 검증했습니다.
 메시지는 DB에 영속화하여 연결이 끊기더라도 REST 조회를 통해 대화 내역을 복구할 수 있도록 구성했습니다.
 
 ### ① 요구사항
@@ -104,7 +104,7 @@ STOMP의 구독 모델을 이용해 채팅방 단위로 메시지를 브로드�
 
 ✓ 제안 수락, 지원 결과, 매칭 정보와 같은 협업 상태가 채팅방의 시스템 메시지로 함께 기록되어야 했습니다.
 
-✓ 인증된 사용자만 WebSocket에 연결하고, 해당 채팅방의 참여자만 메시지를 구독할 수 있어야 했습니다.
+✓ 인증된 사용자만 STOMP 연결을 완료하고, 해당 채팅방의 참여자만 메시지를 구독할 수 있어야 했습니다.
 
 ### ② 설계
 
