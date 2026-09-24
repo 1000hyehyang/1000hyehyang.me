@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, Check, ExternalLink, Github } from "lucide-react";
 import { RevealContent } from "@/components/common/RevealContent";
 import type { PortfolioDetailProps, PortfolioFrontmatter } from "@/types";
@@ -58,6 +59,7 @@ export function PortfolioDetail({
 }: PortfolioDetailProps) {
   const pageRef = useRef<HTMLElement>(null);
   const [activeTab, setActiveTab] = useState<PortfolioTab>("core");
+  const shouldReduceMotion = Boolean(useReducedMotion());
   const displayCategory = getPortfolioDisplayCategory(frontmatter);
   const hasLinks = Boolean(frontmatter.githubUrl || frontmatter.siteUrl);
   const hasTabbedContent = infoContent !== undefined;
@@ -261,52 +263,77 @@ export function PortfolioDetail({
                             ?.focus();
                         }
                       }}
-                      className={`relative -mb-px cursor-pointer border-b-2 px-1 pb-3 font-sans text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                      className={`relative -mb-px cursor-pointer px-1 pb-3 font-sans text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                         isActive
-                          ? "border-brand text-foreground"
-                          : "border-transparent text-muted-foreground hover:text-foreground"
+                          ? "text-foreground"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {label}
+                      {isActive ? (
+                        <motion.span
+                          layout
+                          layoutId="portfolio-detail-tab-indicator"
+                          transition={
+                            shouldReduceMotion
+                              ? { duration: 0 }
+                              : {
+                                  type: "spring",
+                                  stiffness: 245,
+                                  damping: 36,
+                                  mass: 1.2,
+                                }
+                          }
+                          className="absolute inset-x-0 bottom-0 h-0.5 bg-brand"
+                        />
+                      ) : null}
                     </button>
                   );
                 })}
               </div>
 
-              <RevealContent
+              <motion.div
                 key={activeTab}
                 id={`project-${activeTab}-panel`}
                 role="tabpanel"
                 aria-labelledby={`project-${activeTab}-tab`}
                 tabIndex={0}
+                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: shouldReduceMotion ? 0 : 0.18,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
                 className="portfolio-tab-panel focus-visible:outline-none"
               >
-                {activeTab === "core" ? (
-                  children
-                ) : (
-                  <>
-                    {frontmatter.tech.length > 0 ? (
-                      <section
-                        aria-labelledby="project-info-tech-title"
-                      >
-                        <h2
-                          id="project-info-tech-title"
-                          className="mb-5 text-lg font-semibold text-foreground"
-                          data-content-reveal
+                <RevealContent>
+                  {activeTab === "core" ? (
+                    children
+                  ) : (
+                    <>
+                      {frontmatter.tech.length > 0 ? (
+                        <section
+                          aria-labelledby="project-info-tech-title"
                         >
-                          기술 스택
-                        </h2>
-                        <ProjectTechList frontmatter={frontmatter} />
-                      </section>
-                    ) : null}
-                    <div
-                      className={frontmatter.tech.length > 0 ? "mt-12" : undefined}
-                    >
-                      {infoContent}
-                    </div>
-                  </>
-                )}
-              </RevealContent>
+                          <h2
+                            id="project-info-tech-title"
+                            className="mb-5 text-lg font-semibold text-foreground"
+                            data-content-reveal
+                          >
+                            기술 스택
+                          </h2>
+                          <ProjectTechList frontmatter={frontmatter} />
+                        </section>
+                      ) : null}
+                      <div
+                        className={frontmatter.tech.length > 0 ? "mt-12" : undefined}
+                      >
+                        {infoContent}
+                      </div>
+                    </>
+                  )}
+                </RevealContent>
+              </motion.div>
             </>
           ) : (
             <RevealContent>{children}</RevealContent>
