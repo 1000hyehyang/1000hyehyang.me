@@ -38,23 +38,17 @@ html.theme-circle-transition::view-transition-new(root) {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-brand: var(--brand);
-  --color-brand-foreground: var(--brand-foreground);
   --color-brand-soft: var(--brand-soft);
   --color-brand-strong: var(--brand-strong);
   --color-brand-pale: var(--brand-pale);
   --color-logo-surface: var(--logo-surface);
   --color-logo-border: var(--logo-border);
   --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  --font-mono: var(--font-geist-mono);
   --color-ring: var(--ring);
   --color-border: var(--border);
-  --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -70,7 +64,6 @@ html.theme-circle-transition::view-transition-new(root) {
   --portfolio-grid-gap: clamp(2.5rem, 5vw, 4rem);
   --site-header-height: 4rem;
   --brand: #fdba74;
-  --brand-foreground: #1c1917;
   --brand-soft: rgb(253 186 116 / 14%);
   --brand-strong: #fb923c;
   --brand-pale: #fed7aa;
@@ -78,7 +71,6 @@ html.theme-circle-transition::view-transition-new(root) {
   --code-block-foreground: #1e293b;
   --code-inline-background: #fff7ed;
   --code-inline-foreground: #fb923c;
-  --syntax-background: #f6f8fa;
   --syntax-foreground: #24292f;
   --syntax-keyword: #d73a49;
   --syntax-title: #6f42c1;
@@ -106,20 +98,15 @@ html.theme-circle-transition::view-transition-new(root) {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
   --border: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
 }
 
 .dark {
   --brand: #fdba74;
-  --brand-foreground: #1c1917;
   --brand-soft: rgb(253 186 116 / 14%);
   --brand-strong: #fb923c;
   --brand-pale: #fed7aa;
@@ -127,7 +114,6 @@ html.theme-circle-transition::view-transition-new(root) {
   --code-block-foreground: #f4f4f5;
   --code-inline-background: #2d2a2a;
   --code-inline-foreground: #fdba74;
-  --syntax-background: #0d1117;
   --syntax-foreground: #e6edf3;
   --syntax-keyword: #ff7b72;
   --syntax-title: #d2a8ff;
@@ -148,13 +134,9 @@ html.theme-circle-transition::view-transition-new(root) {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
   --border: oklch(1 0 0 / 10%);
   --ring: oklch(0.556 0 0);
 }
@@ -209,7 +191,7 @@ html.theme-circle-transition::view-transition-new(root) {
 
 *::-webkit-scrollbar-thumb {
   background-color: var(--scrollbar-thumb);
-  border-radius: 9999px;
+  border-radius: 0;
 }
 
 *::-webkit-scrollbar-thumb:hover {

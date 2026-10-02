@@ -1,8 +1,3 @@
-.hljs {
-  color: var(--syntax-foreground);
-  background: var(--syntax-background);
-}
-
 .hljs-doctag,
 .hljs-keyword,
 .hljs-meta .hljs-keyword,
@@ -99,7 +94,6 @@
   margin: 0;
   overflow-x: auto;
   font-size: 0.98em;
-  font-family: var(--font-mono, 'Fira Mono', 'Menlo', monospace);
   border: 1px solid var(--border);
   position: relative;
 }
@@ -108,7 +102,6 @@
 .markdown-body .hljs *::before,
 .markdown-body .hljs *::after {
   background: transparent !important;
-  background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
@@ -155,12 +148,10 @@
 
 .markdown-body .code-block-wrapper:hover .copy-code-button button {
   opacity: 1;
-  transform: translateY(0);
 }
 
 @media (max-width: 768px) {
   .markdown-body .copy-code-button button {
     opacity: 1;
-    transform: translateY(0);
   }
 }

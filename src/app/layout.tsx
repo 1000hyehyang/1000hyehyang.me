@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ClickRipple } from "@/components/common/ClickRipple";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SITE_CONFIG, SITE_LINKS } from "@/lib/config";
 import { absoluteUrl, DEFAULT_OG_IMAGE, serializeJsonLd } from "@/lib/seo";
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   applicationName: SITE_CONFIG.name,
@@ -118,7 +112,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${geistMono.variable} antialiased bg-background text-foreground`}>
+      <body className="antialiased bg-background text-foreground">
         <ThemeProvider>
           <ClickRipple />
           <SiteHeader />

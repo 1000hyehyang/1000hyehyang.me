@@ -12,7 +12,7 @@ export function ResumeReveal({ children }: ResumeRevealProps) {
   useScrollReveal(scopeRef);
 
   return (
-    <div ref={scopeRef} className="w-full pb-8 pt-8 sm:pt-12 lg:pt-16">
+    <div ref={scopeRef} className="mx-auto w-full max-w-3xl pb-8 pt-8 sm:pt-12 lg:pt-16">
       {children}
     </div>
   );

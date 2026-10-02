@@ -1,17 +1,37 @@
+import Image from "next/image";
 import { SITE_CONFIG } from "@/lib/config";
 
 export function ResumeHero() {
   return (
     <header className="pb-12 sm:pb-16 lg:pb-20">
-      <p data-scroll-reveal className="mb-6 text-xs font-medium uppercase tracking-[0.16em] text-brand">
-        {SITE_CONFIG.title} · Portfolio
-      </p>
-      <h1 data-scroll-reveal className="text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl lg:text-6xl">
-        Backend Engineer<span className="text-brand">.</span>
-      </h1>
-      <p data-scroll-reveal className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="text-xl font-semibold sm:text-2xl">{SITE_CONFIG.authorName}</span>
-        <span className="text-sm text-muted-foreground">呂採炫 · YEO CHAE HYEON</span>
+      <div data-scroll-reveal className="flex items-center gap-4 sm:gap-6">
+        <Image
+          src="/profile.png"
+          alt={`${SITE_CONFIG.authorName} 프로필`}
+          width={96}
+          height={96}
+          sizes="(max-width: 639px) 80px, 96px"
+          priority
+          className="size-20 shrink-0 rounded-2xl object-cover sm:size-24"
+        />
+        <div className="min-w-0">
+          <h1 className="text-lg font-semibold tracking-tight sm:text-xl">
+            {SITE_CONFIG.authorName}
+          </h1>
+          <p className="mt-1 flex flex-wrap gap-x-2 text-[11px] text-muted-foreground">
+            <span>呂採炫</span>
+            <span>YEO CHAE HYEON</span>
+          </p>
+          <p className="mt-2 text-[13px] text-muted-foreground sm:text-sm">
+            Backend Engineer
+          </p>
+        </div>
+      </div>
+      <p data-scroll-reveal className="mt-6 flex flex-wrap gap-x-3 gap-y-1 text-[13px] text-muted-foreground sm:text-sm">
+        <span>#Java</span>
+        <span>#SpringBoot</span>
+        <span>#Backend</span>
+        <span>#AX</span>
       </p>
     </header>
   );

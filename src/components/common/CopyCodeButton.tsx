@@ -2,14 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Copy, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 type CopyCodeButtonProps = {
   code: string;
-  className?: string;
 };
 
-export function CopyCodeButton({ code, className = "" }: CopyCodeButtonProps) {
+export function CopyCodeButton({ code }: CopyCodeButtonProps) {
   const [copied, setCopied] = useState(false);
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -34,10 +32,7 @@ export function CopyCodeButton({ code, className = "" }: CopyCodeButtonProps) {
     <button
       type="button"
       onClick={handleCopy}
-      className={cn(
-        "cursor-pointer rounded-md bg-muted/80 p-2 text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground",
-        className,
-      )}
+      className="cursor-pointer rounded-md bg-muted/80 p-2 text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground"
       title={copied ? "복사됨!" : "코드 복사"}
       aria-label={copied ? "복사됨!" : "코드 복사"}
     >

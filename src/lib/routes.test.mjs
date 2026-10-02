@@ -4,6 +4,15 @@ import test from "node:test";
 // Run npm run build and npm run start, then npm run test:routes.
 const origin = process.env.TEST_ORIGIN ?? "http://localhost:3000";
 
+test("Home starts Projects immediately after the profile without a tech stack", async () => {
+  const response = await fetch(origin);
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.doesNotMatch(html, /<section id="tech-stack"/);
+  assert.doesNotMatch(html, /사용자에게 필요한 서비스를 만들고|경험을 넓혀가고 있습니다/);
+  assert.match(html, /<\/header><section id="projects"/);
+});
+
 test("Resume shows infrastructure criteria only for projects that provide it", async () => {
   const response = await fetch(origin);
   assert.equal(response.status, 200);
@@ -55,8 +64,11 @@ test("Portfolio home and Projects links, metadata, and removed routes", async ()
   assert.match(homeHtml, /aria-roledescription="carousel"/);
   assert.match(homeHtml, /id="projects-heading"[^>]*>Projects\.<\/h2>/);
   assert.doesNotMatch(homeHtml, /Selected projects|직접 설계하고 구현한 서비스와 그 과정에서 해결한 문제들입니다|프로젝트 살펴보기|전체 프로젝트 보기/);
-  assert.match(homeHtml, /<h1\b[^>]*>Backend Engineer/);
-  assert.doesNotMatch(homeHtml, /alt="여채현 프로필"/);
+  assert.match(homeHtml, /<h1\b[^>]*>여채현<\/h1>/);
+  assert.match(homeHtml, /alt="여채현 프로필"/);
+  assert.match(homeHtml, /呂採炫/);
+  assert.match(homeHtml, /YEO CHAE HYEON/);
+  assert.match(homeHtml, /Backend Engineer/);
   assert.match(homeHtml, /<button\b[^>]*aria-expanded="true"[\s\S]*?프로젝트 정보/);
   assert.match(homeHtml, /href="mailto:ducogus12@gmail.com"/);
 

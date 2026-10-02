@@ -3,7 +3,6 @@
   font-size: 1rem;
   line-height: 1.8;
   word-break: break-word;
-  font-family: var(--font-sans);
 }
 
 .markdown-body,
@@ -137,7 +136,6 @@
   margin: 0;
   overflow-x: auto;
   font-size: 0.98em;
-  font-family: var(--font-mono, "Fira Mono", "Menlo", monospace);
   border: 1px solid var(--border);
   position: relative;
 }
@@ -150,7 +148,6 @@
   margin: 1.5rem 0;
   overflow-x: auto;
   font-size: 0.98em;
-  font-family: var(--font-mono, "Fira Mono", "Menlo", monospace);
   border: 1px solid var(--border);
 }
 
@@ -160,7 +157,6 @@
   border-radius: 0.3rem;
   padding: 0.2em 0.4em;
   font-size: 0.97em;
-  font-family: var(--font-mono, "Fira Mono", "Menlo", monospace);
 }
 
 .markdown-body pre code {
