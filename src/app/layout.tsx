@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { ClickRipple } from "@/components/common/ClickRipple";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
@@ -91,6 +92,8 @@ const websiteStructuredData = serializeJsonLd({
   ],
 });
 
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim();
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -123,6 +126,21 @@ export default function RootLayout({
             <div className="site-shell">{children}</div>
           </main>
         </ThemeProvider>
+        {process.env.NODE_ENV === "production" &&
+          gaMeasurementId &&
+          /^G-[A-Z0-9]+$/.test(gaMeasurementId) && (
+            <>
+              <Script id="ga4-init">
+                {`
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag() { window.dataLayer.push(arguments); }
+                  gtag('js', new Date());
+                  gtag('config', ${JSON.stringify(gaMeasurementId)});
+                `}
+              </Script>
+              <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} />
+            </>
+          )}
       </body>
     </html>
   );
